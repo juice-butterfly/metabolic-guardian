@@ -1,0 +1,3616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>代谢健康守护 · AI 代谢管理教练</title>
+<style>
+:root{
+  /* ---------- 色板（沿用 v2.0，一处不改） ---------- */
+  --ink:#0B1F1A; --ink2:#3D5852; --ink3:#7B918C;
+  --line:#DBE5E2; --line2:#EDF2F0;
+  --bg:#F3F6F5; --card:#FFFFFF;
+  --accent:#0E7C66; --accent-d:#0A5E4E; --accent-l:#E7F4F0;
+  --accent-b:#14A085;                   /* 主色亮档（新增）：深底上专用，浅底不用 */
+  --warn:#A9610A; --warn-bg:#FDF5E6; --warn-ln:#F0DDBB;
+  --danger:#B03A2E; --danger-bg:#FCEDEA; --danger-ln:#F2D2CC;
+
+  /* ---------- 共享令牌 · 字号阶梯（值 = v2.0 现有取值，逐字节等价） ---------- */
+  --fs-11-5:11.5px; --fs-12:12px; --fs-12-5:12.5px; --fs-13:13px; --fs-13-5:13.5px;
+  --fs-14:14px; --fs-14-5:14.5px; --fs-15:15px; --fs-15-5:15.5px; --fs-16:16px;
+  --fs-16-5:16.5px; --fs-17:17px; --fs-20:20px; --fs-21:21px; --fs-24:24px;
+  --fs-26:26px; --fs-28:28px; --fs-32:32px; --fs-34:34px;
+  --fs-body:var(--fs-14-5); --fs-h1:var(--fs-28); --fs-h2:var(--fs-21);
+  --fs-h3:var(--fs-17); --fs-hint:var(--fs-13-5); --fs-metric:var(--fs-32);
+
+  /* ---------- 共享令牌 · 间距 ---------- */
+  --sp-0:0px; --sp-1:1px; --sp-2:2px; --sp-3:3px; --sp-4:4px; --sp-5:5px; --sp-6:6px;
+  --sp-7:7px; --sp-8:8px; --sp-9:9px; --sp-10:10px; --sp-11:11px; --sp-12:12px;
+  --sp-13:13px; --sp-14:14px; --sp-16:16px; --sp-18:18px; --sp-20:20px; --sp-22:22px;
+  --sp-24:24px; --sp-26:26px; --sp-28:28px; --sp-30:30px; --sp-32:32px; --sp-48:48px;
+  --sp-64:64px;
+  --sp-gap:var(--sp-14); --sp-pad-card:var(--sp-24); --sp-pad-card-x:var(--sp-26);
+  --sp-sec:var(--sp-18);
+
+  /* ---------- 共享令牌 · 圆角 ---------- */
+  --r-4:4px; --r-8:8px; --r-9:9px; --r-10:10px; --r-14:14px; --r-pill:99px;
+  --r-btn:var(--r-9); --r-card:var(--r-14);
+  --r:var(--r-14); --r-s:var(--r-9);    /* 兼容：既有引用一处不用改 */
+
+  /* ---------- 共享令牌 · 阴影 ---------- */
+  --sh-0:none; --sh-1:0 1px 2px rgba(11,31,26,.04); --sh-2:0 3px 14px rgba(14,124,102,.10);
+  --sh-3:0 18px 50px rgba(0,0,0,.28); --ring:0 0 0 3px rgba(14,124,102,.12);
+
+  /* ---------- 共享令牌 · 动效（S4 使用） ---------- */
+  --dur-fast:120ms; --dur-base:150ms; --dur-enter:300ms; --dur-trans:300ms;
+  --dur-reveal:350ms; --dur-grow:420ms; --dur-grow-lg:600ms; --dur-count:800ms;
+  --dur-flow:4000ms; --dur-aurora-1:28s; --dur-aurora-2:34s; --dur-aurora-3:41s;
+  --ease-out:cubic-bezier(.22,.61,.36,1); --ease-inout:cubic-bezier(.45,.05,.55,.95);
+
+  /* ---------- 展示层令牌（首页 · 极光与玻璃） ---------- */
+  --night:#08130F; --night-2:#0B1F1A;
+  --night-card:rgba(255,255,255,.045); --night-line:rgba(255,255,255,.10);
+  --night-ink:#F2F7F5; --night-ink2:rgba(242,247,245,.72); --night-ink3:rgba(242,247,245,.52);
+  --aurora-1:#0E7C66; --aurora-2:#C98A2E; --aurora-3:#E8F5F0;
+  --glass-blur:18px; --glass-sat:160%; --glass-bd:rgba(255,255,255,.18);
+
+  /* ---------- 操作层令牌（内页 · S6 起由 .tint-top 引用） ---------- */
+  --tint-top:rgba(14,124,102,.08); --tint-0:rgba(14,124,102,0);
+  --surface-solid:var(--card);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; padding:0 0 96px; background:var(--bg); color:var(--ink);
+  font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:var(--fs-16); line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0; font-weight:700; line-height:1.4}
+.wrap{max-width:1120px; margin:0 auto; padding:0 var(--sp-22)}
+
+/* 表格横向滑动层（S8 手机端适配）。
+   ⚠️ 这里**不能**写 overflow —— 实测：一旦在全局把 .tscroll 设成滚动容器，
+      它就形成新的 BFC，内部表格的 margin-top 行为改变，桌面端 s4 / s11 / s18
+      三张截图立刻与基线不符（详见 验证脚本/verify_desktop_unchanged.py）。
+      滚动是手机端才需要的行为，规则放在 ≤640px 的媒体查询里。 */
+
+/* ---------- 顶栏 ---------- */
+.top{background:#0B1F1A; color:#fff; padding:var(--sp-16) 0}
+.top .wrap{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+.brand{font-size:var(--fs-24); letter-spacing:2px; font-weight:700}
+.brand small{font-size:var(--fs-13); letter-spacing:0; font-weight:400; color:#8FB3AB; margin-left:var(--sp-10)}
+
+/* ---------- 步骤条 ---------- */
+.steps{background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20}
+.steps .wrap{display:flex; gap:6px; overflow-x:auto; padding-top:8px; padding-bottom:8px}
+.stepbtn{
+  flex:0 0 auto; border:1px solid var(--line); background:#fff; color:var(--ink2);
+  border-radius:var(--r-pill); padding:var(--sp-7) var(--sp-18); font-size:var(--fs-14-5); cursor:pointer; white-space:nowrap;
+  font-family:inherit; transition:var(--dur-base) var(--ease-out);
+}
+.stepbtn:hover{border-color:var(--accent); color:var(--accent)}
+.stepbtn.on{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700}
+.stepbtn i{font-style:normal; opacity:.7; margin-right:6px}
+
+/* 两页状态机：由 body[data-page] 驱动。
+   home = 首页（展示层），app = 四步主流程（操作层）。
+   首页态不挂步骤条 —— 它是独立一页，不是主流程的第一个标签。 */
+body[data-page="home"] .steps{display:none}
+
+/* 顶栏右侧「进入产品」：只在首页出现，是首页唯一的全局入口 */
+#btnEnter{
+  margin-left:auto; display:none; font-family:inherit; font-size:14.5px; font-weight:400;
+  color:#fff; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.30);
+  border-radius:99px; padding:7px 18px; cursor:pointer; transition:.15s;
+}
+#btnEnter:hover{background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.48)}
+body[data-page="home"] #btnEnter{display:inline-block}
+
+/* ---------- 总览首页（独立于 .panel 体系） ---------- */
+#home{display:block; padding-top:26px}
+body[data-page="app"] #home{display:none}
+
+/* ---------- 产品介绍页（进入产品后的第一页） ----------
+   刻意**不做成 .panel**：.panel 的 DOM 顺序就是 go(0~3) 的编号索引，
+   往里插一页会让 shoot.py / smoke_test.js 里既有的 go() 调用全部错位。
+   这里用第三个 body[data-page] 态驱动显隐，go() / .panel 一处都不动。
+   配色走内页浅色底（.card / .hint / .funnel 等基础样式本就是全局浅色版），
+   与首页的极光深色刻意区分：首页是「展示层」，进产品后是「阅读层」。 */
+#intro{display:none; padding-top:var(--sp-26)}
+body[data-page="intro"] #intro{display:block}
+body[data-page="intro"] #home{display:none}
+body[data-page="intro"] .aurora{display:none}
+/* 首页把 .stat-mets 染成极光绿；介绍页在浅底上要用深绿，避免对比度不足 */
+#intro .stat-mets{color:var(--accent-d)}
+/* 漏斗搬进介绍页后，生长动效的静态锚（scaleX 的原点）也要跟过来 */
+#intro .funnel .bar{transform-origin:left}
+/* 介绍页顶部导语：比 .lead 略重，用来一句话交代产品定位 */
+#intro .pitch{font-size:var(--fs-16); line-height:1.85; color:var(--ink2); margin:var(--sp-8) 0 var(--sp-22)}
+#intro .pitch b{color:var(--accent-d)}
+#intro .kick{display:flex; flex-wrap:wrap; gap:var(--sp-10); margin-top:var(--sp-18)}
+
+.hero{background:linear-gradient(180deg,#FFFFFF 0%,#F7FBFA 100%);
+  border:1px solid var(--line); border-radius:var(--r); padding:30px 30px 28px; margin-bottom:18px}
+.hero h1{font-size:28px; line-height:1.5; letter-spacing:.3px}
+.hero h1 b{color:var(--accent-d)}
+.hero .sub{margin-top:12px; color:var(--ink2); font-size:15.5px}
+.hero .acts{margin-top:20px; display:flex; gap:10px; flex-wrap:wrap}
+.hero .acts .btn{padding:11px 26px; font-size:15.5px}
+
+.num3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+.num3 .n{background:var(--bg); border:1px solid var(--line); border-radius:var(--r); padding:18px 18px 16px}
+.num3 .n .v{font-size:32px; font-weight:700; color:var(--accent-d); line-height:1.2; font-variant-numeric:tabular-nums}
+.num3 .n .t{font-size:15px; color:var(--ink2); margin-top:8px; line-height:1.6}
+.num3 .n .s{font-size:13px; color:var(--ink3); margin-top:8px}
+
+.funnel .lvl{display:flex; align-items:center; gap:12px; margin-bottom:9px}
+.funnel .lb{font-size:15px; color:var(--ink2); flex:0 0 300px; line-height:1.5}
+.funnel .track{flex:1 1 auto; min-width:0}
+.funnel .bar{height:32px; background:var(--accent-l); border:1px solid var(--line);
+  border-radius:var(--r-s)}
+.funnel .bar.top{background:var(--accent); border-color:var(--accent)}
+.funnel .vl{flex:0 0 92px; text-align:right; white-space:nowrap;
+  font-size:15.5px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.funnel .vl.na{font-weight:400; color:var(--ink3); font-size:13.5px}
+
+.comp{border:1px solid var(--line); border-radius:var(--r); padding:18px 20px}
+.comp.bad{background:var(--danger-bg); border-color:var(--danger-ln)}
+.comp.good{background:var(--accent-l)}
+.comp .ttl{font-size:14.5px; color:var(--ink2)}
+.comp .big{font-size:34px; font-weight:700; line-height:1.25; font-variant-numeric:tabular-nums}
+.comp.bad .big{color:var(--danger)}
+.comp.good .big{color:var(--accent-d)}
+.comp .ds{font-size:14px; color:var(--ink3); margin-top:6px; line-height:1.6}
+
+.leg{border:1px solid var(--line); border-radius:var(--r); padding:18px 20px; background:var(--bg)}
+.leg .lh{font-size:17px; font-weight:700; color:var(--accent-d)}
+.leg .lt{font-size:15px; color:var(--ink2); margin-top:8px; line-height:1.65}
+.leg .ld{font-size:14.5px; color:var(--ink3); margin-top:8px}
+
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+.navcard{border:1px solid var(--line); border-radius:var(--r); padding:18px 16px;
+  display:flex; flex-direction:column; gap:8px; background:var(--bg)}
+.navcard .ni{font-size:13px; font-weight:700; color:var(--accent); letter-spacing:1.5px}
+.navcard .nt{font-size:16.5px; font-weight:700}
+.navcard .nd{font-size:14.5px; color:var(--ink2); line-height:1.65; flex:1}
+.navcard .btn{align-self:flex-start}
+
+tbody tr.hl{background:var(--accent-l)}
+tbody tr.hl td{color:var(--accent-d)}
+
+.loop{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.loop .nd{background:var(--accent-l); border:1px solid var(--line); border-radius:99px;
+  padding:8px 16px; font-size:14.5px; color:var(--accent-d); font-weight:700}
+.loop .nd.hi{background:var(--accent); border-color:var(--accent); color:#fff}
+.loop .ar{color:var(--ink3); font-size:15px}
+
+/* ---------- 卡片 ---------- */
+.panel{display:none; padding-top:var(--sp-26)}
+.panel.on{display:block}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r-card); padding:var(--sp-pad-card) var(--sp-pad-card-x); margin-bottom:var(--sp-sec)}
+.card>h2{font-size:var(--fs-h2); margin-bottom:var(--sp-6)}
+.card>h2 .num{color:var(--accent); margin-right:8px}
+.lead{color:var(--ink2); font-size:var(--fs-15); margin:var(--sp-6) 0 var(--sp-18)}
+h3.sec{font-size:var(--fs-h3); margin:var(--sp-26) 0 var(--sp-10); padding-left:var(--sp-12); border-left:4px solid var(--accent); line-height:1.3}
+h3.sec:first-child{margin-top:0}
+h4.sub{font-size:var(--fs-15-5); margin:var(--sp-18) 0 var(--sp-8); color:var(--ink)}
+p{margin:0 0 var(--sp-12)}
+.hint{font-size:var(--fs-hint); color:var(--ink3); line-height:1.6}
+
+/* ---------- 通用件 ---------- */
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-gap)}
+.grid2{display:grid; grid-template-columns:repeat(2,1fr); gap:var(--sp-gap)}
+@media(max-width:820px){.grid3,.grid2{grid-template-columns:1fr}}
+
+.case{
+  border:1.5px solid var(--line); border-radius:var(--r-btn); padding:var(--sp-16) var(--sp-18); cursor:pointer;
+  background:#fff; transition:var(--dur-base) var(--ease-out); position:relative;
+}
+.case:hover{border-color:var(--accent); box-shadow:var(--sh-2)}
+.case.on{border-color:var(--accent); background:var(--accent-l)}
+.case .nm{font-size:var(--fs-h3); font-weight:700}
+.case .meta{font-size:var(--fs-13); color:var(--ink3); margin-top:var(--sp-2)}
+.case .cmt{font-size:13px; color:var(--ink2); margin-top:10px; line-height:1.55}
+.lv{
+  position:absolute; top:var(--sp-14); right:var(--sp-14); width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#fff;
+}
+.lv.A{background:#2E8B72}.lv.B{background:#C08A2E}.lv.C{background:#B3453A}
+
+/* 网格子项默认 min-width:auto，内容一撑就整列变形。统一压成 0。 */
+.grid3>*,.grid2>*{min-width:0}
+
+table{width:100%; border-collapse:collapse; font-size:var(--fs-14-5)}
+th,td{padding:var(--sp-10) var(--sp-12); border-bottom:1px solid var(--line2); text-align:left; vertical-align:top}
+thead th{background:#F7FAF9; font-weight:700; font-size:var(--fs-14); color:var(--ink2); border-bottom:1.5px solid var(--line)}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+.ok{color:#2E8B72; font-weight:700}
+.no{color:var(--ink3)}
+.flag{display:inline-block; font-size:var(--fs-12); border-radius:var(--r-pill); padding:1px var(--sp-9); margin-left:var(--sp-6); white-space:nowrap}
+.flag.hi{background:var(--danger-bg); color:var(--danger); border:1px solid var(--danger-ln)}
+.flag.mid{background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-ln)}
+
+.kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-12); margin:4px 0 8px}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+/* S6：向首页数字卡靠拢 —— 左侧 3px 主色条（与 h3.sec / 数字卡同一套「左侧色条」语言），
+   数值 26 → 28px（补上「关键数字 ≥28px」的可读性下限），加 tabular-nums 防数字跳动。
+   ⚠️ 不铺玻璃、底色不动 —— 对齐的是几何与语言，不是把展示层搬过来。 */
+.kpi{border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--r-btn); padding:var(--sp-14) var(--sp-16); background:#FBFDFC}
+.kpi .lb{font-size:var(--fs-13); color:var(--ink3)}
+.kpi .vl{font-size:var(--fs-28); font-weight:700; line-height:1.25; letter-spacing:-.5px; font-variant-numeric:tabular-nums}
+.kpi .vl small{font-size:14px; font-weight:400; color:var(--ink3); margin-left:3px}
+.kpi .dlt{font-size:13px; margin-top:2px}
+.up{color:#2E8B72}.down{color:var(--danger)}
+
+.verdict{border-radius:var(--r-btn); padding:var(--sp-18) var(--sp-20); border:1.5px solid var(--accent); background:var(--accent-l); margin-top:6px}
+.verdict .big{font-size:var(--fs-20); font-weight:700; margin-bottom:4px}
+.verdict.bad{border-color:var(--danger); background:var(--danger-bg)}
+.verdict.bad .big{color:var(--danger)}
+
+.btn{
+  font-family:inherit; font-size:var(--fs-15); border-radius:var(--r-btn); cursor:pointer; transition:var(--dur-base) var(--ease-out);
+  border:1.5px solid var(--accent); background:var(--accent); color:#fff; padding:var(--sp-9) var(--sp-20); font-weight:700;
+}
+.btn:hover{background:var(--accent-d); border-color:var(--accent-d)}
+.btn.ghost{background:#fff; color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-l); color:var(--accent-d)}
+.btn.sm{font-size:var(--fs-13-5); padding:var(--sp-6) var(--sp-14); font-weight:400}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+/* S6：键盘焦点统一用共享的 --ring（与 input:focus 同一条）。
+   用 :focus-visible 而不是 :focus —— 鼠标点击不该留下焦环。 */
+.btn:focus-visible,.stepbtn:focus-visible{outline:none; box-shadow:var(--ring)}
+.row{display:flex; gap:var(--sp-10); flex-wrap:wrap; align-items:center}
+
+input[type=number],input[type=text],select{
+  font-family:inherit; font-size:var(--fs-15); padding:var(--sp-8) var(--sp-11); border:1px solid var(--line);
+  border-radius:var(--r-btn); width:100%; color:var(--ink); background:#fff;
+}
+input:focus,select:focus{outline:none; border-color:var(--accent); box-shadow:var(--ring)}
+.frm{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-12)}
+@media(max-width:820px){.frm{grid-template-columns:repeat(2,1fr)}}
+.fld label{display:block; font-size:var(--fs-13); color:var(--ink2); margin-bottom:var(--sp-4)}
+
+/* 打卡 */
+.days{display:flex; gap:var(--sp-8); flex-wrap:wrap; margin:6px 0 4px}
+.day{
+  width:46px; height:46px; border-radius:var(--r-10); border:1.5px solid var(--line); background:#fff;
+  cursor:pointer; font-family:inherit; font-size:var(--fs-14); color:var(--ink3); transition:var(--dur-fast) var(--ease-out);
+}
+.day:hover{border-color:var(--accent)}
+.day.on{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700}
+.daygrid{display:grid; grid-template-columns:minmax(104px,140px) repeat(7,minmax(0,1fr));
+         gap:var(--sp-6); margin:8px 0 6px; align-items:center}
+.dayhd{font-size:var(--fs-13); color:var(--ink3); text-align:center; padding-bottom:2px}
+/* 五维打卡：一维一行、一天一格。按钮是方格，所以比旧版紧凑。 */
+.chk{min-height:34px; display:flex; align-items:center; justify-content:center;
+     border:1.5px solid var(--line); border-radius:var(--r-8); background:#fff;
+     font-family:inherit; font-size:var(--fs-14); line-height:1; color:#C3CFCC; cursor:pointer; transition:var(--dur-fast) var(--ease-out)}
+.chk:hover{border-color:var(--accent)}
+.chk.on{color:#fff; font-weight:700}
+/* 各维一个色，方便一眼看出「哪一维被落下了」 */
+.chk.d0.on{background:#0E7C66; border-color:#0E7C66}
+.chk.d1.on{background:#5B6FB0; border-color:#5B6FB0}
+.chk.d2.on{background:#B03A2E; border-color:#B03A2E}
+.chk.d3.on{background:#A9610A; border-color:#A9610A}
+.chk.d4.on{background:#2E8B72; border-color:#2E8B72}
+.dimlb{font-size:var(--fs-12-5); line-height:1.25; padding-right:var(--sp-6)}
+.dimlb b{color:var(--ink)}
+.dimlb span{display:block; font-size:var(--fs-11-5); color:var(--ink3)}
+.dimlb.zero b{color:#A9610A}
+
+/* 「需要精算确定」标注 —— ⚠️ 不要给这个类加 white-space:nowrap，
+   它常出现在表格单元格里，nowrap 会把整列撑变形。 */
+.na{font-size:var(--fs-11-5); color:#8A5A00; background:#FDF3DC; border:1px solid #E6C77A;
+    border-radius:var(--r-4); padding:0 var(--sp-4); margin-left:var(--sp-3); white-space:normal; font-weight:400}
+/* 维度小标签 */
+.dtag{display:inline-block; font-size:var(--fs-11-5); padding:0 var(--sp-6); border-radius:var(--r-4);
+      background:#EEF3F2; color:var(--ink2); margin-right:var(--sp-4)}
+.wk{font-size:22px; font-weight:700}
+.wk small{font-size:14px; font-weight:400; color:var(--ink3)}
+
+.chat{margin-top:10px}
+.msg{display:flex; gap:var(--sp-10); margin-bottom:var(--sp-12); align-items:flex-start}
+.av{width:34px; height:34px; border-radius:var(--r-btn); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:var(--fs-13); font-weight:700}
+.av.ai{background:var(--accent); color:#fff}
+.av.us{background:#E4EBE9; color:var(--ink2)}
+.bub{border-radius:var(--r-10); padding:var(--sp-10) var(--sp-14); font-size:var(--fs-14-5); line-height:1.65; max-width:82%}
+.bub.ai{background:#F4F9F7; border:1px solid #DDEDE7}
+.bub.us{background:#F7F9F9; border:1px solid var(--line2); color:var(--ink2)}
+.bub b{color:var(--accent-d)}
+
+.todo{border:1.5px dashed var(--warn-ln); background:var(--warn-bg); border-radius:var(--r-s); padding:12px 16px; font-size:13.5px; color:var(--warn); margin-top:12px}
+.todo b{color:#7A4508}
+
+.mono{font-family:Consolas,"Courier New",monospace; font-size:var(--fs-13)}
+svg{display:block; width:100%; height:auto}
+.legend{display:flex; gap:var(--sp-18); flex-wrap:wrap; font-size:var(--fs-13); color:var(--ink2); margin-top:var(--sp-8)}
+.legend span{display:flex; align-items:center; gap:6px}
+.sw{width:14px; height:10px; border-radius:2px; display:inline-block}
+
+/* ---------- 参保人端：积分账户 + 积分商城 ---------- */
+.goodsgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:10px 0 6px}
+.goodsgrid>*{min-width:0}
+@media(max-width:820px){.goodsgrid{grid-template-columns:1fr}}
+.goods{border:1px solid var(--line); border-radius:var(--r-btn); padding:var(--sp-14) var(--sp-16); background:#fff;
+       display:flex; flex-direction:column; gap:var(--sp-6)}
+.goods.enough{border-color:var(--accent); background:#FBFDFC}
+.goods .gd-hd{font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.goods .gd-tag{font-size:var(--fs-11-5); font-weight:400; color:var(--ink3); border:1px solid var(--line);
+               border-radius:var(--r-pill); padding:0 var(--sp-9)}
+.goods .gd-spec{font-size:12.5px; color:var(--ink3); line-height:1.55; flex:1}
+.goods .gd-ft{display:flex; align-items:center; justify-content:space-between; gap:10px;
+              margin-top:4px; flex-wrap:wrap}
+.goods .gd-cost{font-size:var(--fs-h3); font-weight:700; color:var(--accent-d); font-variant-numeric:tabular-nums}
+.goods .gd-cost small{font-size:12px; font-weight:400; color:var(--ink3); margin-left:2px}
+
+/* ---------- AI 健康助手：模式条 / 输入区 ---------- */
+.aiBar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:8px 0 12px}
+.aiBar .hint{margin-left:auto; text-align:right}
+.aiCtl{margin-top:12px}
+#aiInput{flex:1; min-width:220px}
+code{font-family:Consolas,"Courier New",monospace; font-size:var(--fs-12-5); background:#F1F5F4;
+     padding:1px 5px; border-radius:4px}
+.aiKey{margin-top:10px; border:1px solid var(--line); border-radius:var(--r-btn);
+       padding:var(--sp-10) var(--sp-14); background:#FBFDFC}
+.aiKey summary{cursor:pointer; font-size:13.5px; color:var(--ink2)}
+.briefTop{display:flex; gap:var(--sp-20); flex-wrap:wrap; font-size:var(--fs-14-5); color:var(--ink2); margin-bottom:var(--sp-10)}
+.briefTop b{color:var(--accent-d)}
+.cur{display:inline-block; width:7px; height:15px; background:var(--accent);
+     vertical-align:-3px; margin-left:2px; animation:khbBlink 1s steps(2) infinite}
+@keyframes khbBlink{50%{opacity:0}}
+.bub.err{background:var(--danger-bg); border-color:var(--danger-ln); color:var(--danger)}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   首页展示层主题（v3.0 · S3）
+   —— 极光背景 + 液态玻璃 + 宽屏左右分栏。
+   全部规则限定在 body[data-page="home"] 或 #home 作用域内，
+   .panel（操作层 p1–p4）的既有规则一条都不动。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- 底色与极光背景层 ---------- */
+/* 配色锁死在产品色系：青绿（主）+ 琥珀 + 暖白高光，深墨绿底。
+   ⚠️ 禁止紫色 / 蓝紫渐变 —— 既是被列为过时的模板配色，也与健康调性冲突。 */
+body[data-page="home"]{background:var(--night)}
+.aurora{position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none;
+  background:linear-gradient(180deg,var(--night-2) 0%,var(--night) 62%,#060E0B 100%)}
+body[data-page="app"] .aurora{display:none}
+.aurora i{position:absolute; display:block; border-radius:50%}
+.aurora .b1{left:-14%; top:-26%; width:900px; height:900px; opacity:.62; filter:blur(96px);
+  background:radial-gradient(circle at 50% 50%,var(--aurora-1) 0%,rgba(14,124,102,0) 68%)}
+.aurora .b2{right:-12%; top:-6%; width:760px; height:760px; opacity:.34; filter:blur(110px);
+  background:radial-gradient(circle at 50% 50%,var(--aurora-2) 0%,rgba(201,138,46,0) 66%)}
+.aurora .b3{left:26%; top:44%; width:680px; height:680px; opacity:.12; filter:blur(120px);
+  background:radial-gradient(circle at 50% 50%,var(--aurora-3) 0%,rgba(232,245,240,0) 64%)}
+
+/* ---------- 液态玻璃 1/3 · 首页顶栏 ---------- */
+/* 只在 home 页态加玻璃，好让顶栏透出下面的极光；
+   app 页态沿用 v2.0 既有的 #0B1F1A 实色（不是把展示层的深色搬进内页）。 */
+body[data-page="home"] .top{position:sticky; top:0; z-index:60;
+  background:rgba(11,31,26,.55); border-bottom:1px solid var(--glass-bd);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat))}
+
+/* ---------- Hero：宽屏左右分栏 ---------- */
+/* ⚠️ 列比不是规格里的 1.15fr .85fr —— 原因见 patch_v30_s3b.py 文件头：
+   1.15/.85 只给左栏 591px，装不下主标题第 1 句（15 字 × 39.5px = 592.5px），
+   44px 下更装不下（653px），会把「保险」拆行并把标题挤成 4 行。
+   改成 1.55fr 1fr 后左栏 625px，主标题落回 3 行且留 32px 余量。 */
+body[data-page="home"] #home{padding-top:0}
+#home .hero{display:grid; grid-template-columns:1.55fr 1fr; gap:var(--sp-48);
+  align-items:center; background:none; border:0; border-radius:0;
+  padding:var(--sp-64) 0; margin-bottom:var(--sp-48)}
+#home .eyebrow{font-size:var(--fs-13); line-height:1.4; letter-spacing:2px; font-weight:700;
+  color:var(--accent-b); margin-bottom:var(--sp-14)}
+/* 主标题 = 定稿定位句，整体呈现，只在第一句的句号后换行；
+   不得拆成「眉标 + 标题」来凑版式（眉标写的是品类归属，与定位句各司其职）。 */
+#home .hero h1{font-size:40px; line-height:1.22; letter-spacing:-.5px; color:var(--night-ink)}
+#home .hero h1 b{color:var(--accent-b)}
+#home .hero .sub{margin-top:var(--sp-20); font-size:var(--fs-16); line-height:1.8;
+  color:var(--night-ink2)}
+#home .hero .acts{margin-top:var(--sp-32); gap:var(--sp-14)}
+
+/* ---------- 液态玻璃 2/3 · Hero 数字卡 ----------
+   填充用「暗玻璃」而不是规格 3.1 写的白玻璃 rgba(255,255,255,.09)：
+   琥珀极光正好铺在卡背后，白玻璃会把有效背景抬到 (58,63,36)，
+   实测青绿数字只有 3.34:1、卡内标签 3.65:1，都低于 4.5。
+   换成 rgba(9,22,17,.55) 后同一位置实测 5.17:1 / 6.56:1（19/19 达标）。
+   模糊 22px 与 saturate 未动 —— 玻璃的透光与模糊仍在，只是把底压暗。 */
+#home .num-card{border-radius:var(--r-14); padding:var(--sp-28) var(--sp-30);
+  background:rgba(9,22,17,.55); border:1px solid var(--glass-bd); box-shadow:var(--sh-3);
+  -webkit-backdrop-filter:blur(22px) saturate(var(--glass-sat));
+  backdrop-filter:blur(22px) saturate(var(--glass-sat))}
+/* 卡内标签是分区标题（相当于 h3.sec 的角色），不用脚注档的 ink3 */
+#home .num-card .nc-lb{font-size:var(--fs-13); line-height:1.5; letter-spacing:.3px;
+  color:var(--night-ink2)}
+#home .num-card .nc-row{display:flex; align-items:flex-start; gap:var(--sp-14); margin-top:var(--sp-16)}
+#home .num-card .nc-item{flex:1 1 0; min-width:0}
+#home .num-card .nc-t{font-size:var(--fs-13); line-height:1.5; color:var(--night-ink2)}
+#home .num-card .nc-v{font-size:40px; line-height:1.15; letter-spacing:-.5px; font-weight:700;
+  font-variant-numeric:tabular-nums}
+#home .num-card .nc-item.bad .nc-v{color:#E0A33C}
+#home .num-card .nc-item.good .nc-v{color:var(--accent-b)}
+#home .num-card .nc-arrow{flex:0 0 auto; padding-top:22px; font-size:var(--fs-20);
+  color:var(--night-ink3)}
+#home .num-card .nc-bar{height:6px; margin-top:var(--sp-20); border-radius:var(--r-pill);
+  background:rgba(255,255,255,.14); overflow:hidden}
+/* 静态呈现终态：28,536 ÷ 44,628 = .63937 → .6394（S4 再把 scaleX 从 1 收到 .6394） */
+#home .num-card .nc-bar i{display:block; width:100%; height:100%; border-radius:var(--r-pill);
+  transform:scaleX(.6394); transform-origin:left;
+  background:linear-gradient(90deg,var(--aurora-2) 0%,var(--accent-b) 100%)}
+#home .num-card .nc-foot{display:flex; align-items:baseline; gap:var(--sp-6);
+  margin-top:var(--sp-16); padding-top:var(--sp-14); border-top:1px solid var(--night-line)}
+#home .num-card .nc-flb{font-size:var(--fs-13); color:var(--night-ink3)}
+#home .num-card .nc-fv{font-size:var(--fs-28); line-height:1.2; letter-spacing:-.5px;
+  font-weight:700; font-variant-numeric:tabular-nums; color:var(--night-ink)}
+#home .num-card .nc-fu{font-size:var(--fs-13); color:var(--night-ink3)}
+
+/* ---------- 液态玻璃 3/3 · 首页主 CTA 胶囊 ---------- */
+#home .hero .btn.hero-main{font-size:var(--fs-16); line-height:1.2; font-weight:700; color:#fff;
+  border-radius:var(--r-pill); padding:var(--sp-14) var(--sp-32);
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(12px) saturate(140%);
+  backdrop-filter:blur(12px) saturate(140%)}
+#home .hero .btn.hero-main:hover{background:rgba(255,255,255,.20); border-color:rgba(255,255,255,.42)}
+#home .hero .btn.hero-alt{font-size:var(--fs-15); line-height:1.2; border-radius:var(--r-pill);
+  padding:var(--sp-12) var(--sp-24)}
+#home .btn.ghost{background:transparent; color:var(--night-ink); border-color:var(--glass-bd)}
+#home .btn.ghost:hover{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.42); color:#fff}
+
+/* ---------- 块 9 · 关键词带（2026-10-11 第二轮瘦身） ----------
+   负责人要求首页最多两屏截图：Hero 之后不再放整卡长文，只留关键词。
+   版式走「编辑排版」路数：无卡片框，一条细分隔线起头，大字关键词 + 一行小注，
+   与参考图里 Luxury Minimal / Editorial 一类的「留白 + 字级对比」做法一致。 */
+#home .kband{margin-bottom:var(--sp-sec)}
+#home .kgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:0 var(--sp-48)}
+#home .ki{padding:var(--sp-18) 0 var(--sp-16); border-top:1px solid var(--night-line)}
+#home .ki .kh{font-size:22px; line-height:1.35; font-weight:700; letter-spacing:-.3px;
+  color:var(--night-ink)}
+#home .ki .kt{margin-top:var(--sp-6); font-size:var(--fs-14); line-height:1.7;
+  color:var(--night-ink3)}
+#home .knav{display:flex; flex-wrap:wrap; gap:var(--sp-12); margin-top:var(--sp-26)}
+#home .knav .btn{border-radius:var(--r-pill); font-size:var(--fs-14)}
+#home .krow{display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-14);
+  margin-top:var(--sp-32); padding-top:var(--sp-24); border-top:1px solid var(--night-line)}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   首页动效（v3.0 · S4）
+   —— 八条动效点，全部只动 transform / opacity
+   （④ 改 textContent 是规格 4.3 明示的唯一例外，理由见该处注释）。
+   关闭动效只有两个入口：html.shot（截图）与 prefers-reduced-motion: reduce，
+   两者都必须落在「终态」而不是隐藏态 —— 落隐藏态会让内容永久不可见。
+   ⚠️ 两个列表必须**覆盖上面全部 10 个动效选择器**，且两份必须一致。
+      漏掉一个的后果：截图侧是「截到随机相位」（如 .cur 的 steps(2) 闪烁），
+      降级侧是「系统开了减少动态效果但仍有东西在动」。断言里锁死了这一条。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- 动效总开关 ----------
+   动画被移除后，元素各自回落到静态值；而这些静态值本来就是终态：
+   .card 无 opacity 声明 → 1；.funnel .bar 无 transform → scaleX(1)；
+   .nc-bar i 的静态值是要展示的 .633。所以「关掉动画」天然等于「呈现终态」。 */
+html.shot .aurora i,
+html.shot #home .hero-copy > *,
+html.shot #home .num-card,
+html.shot #intro .funnel .bar,
+html.shot #home .num-card .nc-bar i,
+html.shot #intro .loop .glow,
+html.shot .panel.on,
+html.shot body[data-page="intro"] #intro,
+html.shot .stepbtn::after,
+html.shot .cur { animation: none; transition: none }
+
+@media (prefers-reduced-motion: reduce){
+  .aurora i,
+  #home .hero-copy > *,
+  #home .num-card,
+  #intro .funnel .bar,
+  #home .num-card .nc-bar i,
+  #intro .loop .glow,
+  .panel.on,
+  body[data-page="intro"] #intro,
+  .stepbtn::after,
+  .cur { animation: none; transition: none }
+}
+
+/* ---------- 动效① · 极光缓慢漂移（全页唯一的无限环境循环） ----------
+   只动 transform。**不动 filter 的 blur 半径** —— 那会让浏览器逐帧重算模糊，
+   答辩机（可能无独显）会直接卡死，这也是规格 4.2 第 1 条明令禁止的。
+   三条周期 28s / 34s / 41s 互质，再用负延迟错相，
+   避免三个色块同频同相地一起「呼吸」。 */
+@keyframes khbDrift1{
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) }
+  100% { transform: translate3d(6%, 4%, 0) rotate(12deg) }
+}
+@keyframes khbDrift2{
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) }
+  100% { transform: translate3d(-5%, 6%, 0) rotate(-10deg) }
+}
+@keyframes khbDrift3{
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) }
+  100% { transform: translate3d(4%, -5%, 0) rotate(8deg) }
+}
+/* alternate 让往复是连续的：不加它，100% → 0% 回绕时会出现一次可见的瞬跳 */
+.aurora .b1{ animation: khbDrift1 var(--dur-aurora-1) linear infinite alternate; animation-delay: -8s }
+.aurora .b2{ animation: khbDrift2 var(--dur-aurora-2) linear infinite alternate; animation-delay: -16s }
+.aurora .b3{ animation: khbDrift3 var(--dur-aurora-3) linear infinite alternate; animation-delay: -24s }
+
+/* ---------- 动效② · Hero 错峰入场 ----------
+   四件（眉标 / 主标题 / 副标题 / CTA）按 0 / 120 / 240 / 360ms 依次进入，
+   数字卡跟在 180ms —— 让它落在「主标题与副标题之间」的节奏缝里。
+   fill: both → 动画开始前就是 from 状态（opacity:0），所以入场不会先闪一下。
+   html.shot / reduce 下 animation:none，元素回落到无 opacity 声明的静态值（=1）。 */
+@keyframes khbEnter{
+  from { opacity: 0; transform: translate3d(0, 12px, 0) }
+  to   { opacity: 1; transform: none }
+}
+#home .hero-copy > *{ animation: khbEnter var(--dur-enter) var(--ease-out) both }
+#home .hero-copy > *:nth-child(1){ animation-delay: 0ms }
+#home .hero-copy > *:nth-child(2){ animation-delay: 120ms }
+#home .hero-copy > *:nth-child(3){ animation-delay: 240ms }
+#home .hero-copy > *:nth-child(4){ animation-delay: 360ms }
+#home .num-card{ animation: khbEnter var(--dur-enter) var(--ease-out) both; animation-delay: 180ms }
+
+/* ---------- 动效③ · 七个内容块的滚动揭示 ----------
+   ⚠️ 本步最容易翻车的一处：滚动时间线（view()）会让**尚未进入视口**的元素
+   停在 from 状态，而整页截图（s20）并不「滚动进入视口」，
+   于是截出来的下半部分会整块空白。
+   所以隐藏态**只写在 @supports 命中分支里**；不支持时落终态。
+   降级分支里绝对不能出现 opacity:0 / visibility:hidden / display:none。 */
+/* ---------- 动效③ · 滚动揭示（2026-10-11 撤销） ----------
+   首页第二轮瘦身后再无整卡，#home .card 的滚动揭示（khbReveal + view() 时间线）整体删除；
+   介绍页不做逐卡揭示（只有页面级 khbPanelIn），避免 view() 时间线在长页整页截图下停帧。
+   khbRevealFuse 的 JS 巡检保留为惰性保险丝（#home .card 已为空集，直接早退）。 */
+
+/* ---------- 动效⑤ · 漏斗六条从左端生长 ----------
+   用 transform: scaleX() 而不是动 width —— 动 width 会触发重排，
+   而 scaleX 只在合成层上做，这也是规格 4.2 第 1 条的核心用意。
+   条本身的宽度仍由 HTML 内联的 width 决定（那是信息，不能被动画改掉），
+   scaleX 只是把「已经定宽的条」从左端展开。
+   初始态只在 html.khb-motion 下存在 —— 没有这个 class 时保持静态的 scaleX(1)。 */
+html.khb-motion #intro .funnel .bar{
+  transform: scaleX(.02);
+  transition: transform var(--dur-grow) var(--ease-out);
+}
+html.khb-motion #intro .funnel.grow .bar{ transform: scaleX(1) }
+/* 逐级 +80ms，让「一级一级被筛掉」这件事在时间上可读 */
+html.khb-motion #intro .funnel .lvl:nth-child(1) .bar{ transition-delay: 0ms }
+html.khb-motion #intro .funnel .lvl:nth-child(2) .bar{ transition-delay: 80ms }
+html.khb-motion #intro .funnel .lvl:nth-child(3) .bar{ transition-delay: 160ms }
+html.khb-motion #intro .funnel .lvl:nth-child(4) .bar{ transition-delay: 240ms }
+html.khb-motion #intro .funnel .lvl:nth-child(5) .bar{ transition-delay: 320ms }
+html.khb-motion #intro .funnel .lvl:nth-child(6) .bar{ transition-delay: 400ms }
+
+/* ---------- 动效⑥ · 数字卡对比条：¥44,628 → ¥28,536 ----------
+   全页唯一的「收缩」动效（其余都是生长），表达「干预把期望赔付压下来了」。
+   终值 28,536 ÷ 44,628 = .6394，静态样式里已经写好；
+   khb-motion 下先从满宽 1 起，进入视口再收到 .6394 —— 这样才有「被压下来」的观感。 */
+html.khb-motion #home .num-card .nc-bar i{
+  transform: scaleX(1);
+  transition: transform var(--dur-grow-lg) var(--ease-out);
+}
+html.khb-motion #home .num-card .nc-bar.grow i{ transform: scaleX(.6394) }
+
+/* ---------- 动效⑦ · 闭环路径流光（全页最花预算的一处） ----------
+   两个部件：
+   · .loop::before 是一条静态渐变虚线，作为「闭环轨道」的视觉底 ——
+     它在动效关闭时**依然保留**（规格 4.1 明确要求降级后保留虚线）。
+   · .glow 是一道横扫的光带，用 translate3d 从 -100% 走到 +100%，
+     百分比是相对自身宽度（= .loop 宽），所以不需要 JS 量宽度，也不怕换行。
+   只用 transform + opacity；间隔 1.2s 让「循环」有呼吸，而不是不停歇地扫。 */
+#intro .loop{ position: relative }
+#intro .loop::before{
+  content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+  border-radius: 2px; pointer-events: none;
+  background: repeating-linear-gradient(90deg,
+    rgba(20,160,133,.45) 0 10px, rgba(20,160,133,0) 10px 22px);
+}
+#intro .loop .glow{
+  position: absolute; inset: -6px; border-radius: 14px; pointer-events: none;
+  opacity: 0; transform: translate3d(-100%, 0, 0);
+  background: linear-gradient(105deg,
+    rgba(20,160,133,0) 32%, rgba(20,160,133,.30) 50%, rgba(20,160,133,0) 68%);
+  animation: khbFlow var(--dur-flow) var(--ease-inout) 1.2s infinite;
+}
+@keyframes khbFlow{
+  0%   { opacity: 0; transform: translate3d(-100%, 0, 0) }
+  6%   { opacity: 1 }
+  94%  { opacity: 1 }
+  100% { opacity: 0; transform: translate3d(100%, 0, 0) }
+}
+/* html.shot / reduce 下 animation:none → 光带回落到静态的 opacity:0，
+   也就是「停在第 1 帧」（不可见），虚线仍在。 */
+
+/* ---------- 动效⑧ · 步骤条当前项指示器 ----------
+   go() 切换时，当前项下方展开一条下划线（scaleX 0 → 1，200ms）。
+   用 transition 而不是 animation：切换是离散事件，transition 天然「从当前状态出发」，
+   来回切换不会出现动画重播的闪断。
+   position: relative 与原 ::after 的绝对定位都不改变布局尺寸 ——
+   这一点由 check_inner_unchanged.py 的逐像素比对来保证。 */
+.stepbtn{ position: relative }
+.stepbtn::after{
+  content: ''; position: absolute; left: 14px; right: 14px; bottom: 5px; height: 2px;
+  border-radius: 2px; background: currentColor; opacity: .9;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 200ms var(--ease-out);
+}
+.stepbtn.on::after{ transform: scaleX(1) }
+
+/* ---------- 玻璃降级：不支持 backdrop-filter 时回退到半透明实色 ----------
+   降级必须落在「终态」（可见），不能落成隐藏态。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  body[data-page="home"] .top{background:rgba(8,19,15,.92)}
+  #home .num-card{background:rgba(16,32,27,.88)}
+  #home .hero .btn.hero-main{background:rgba(255,255,255,.16)}
+}
+
+/* ---------- 窄屏：分栏塌成单列（答辩用宽屏投屏，这里是可接受降级） ---------- */
+@media(max-width:1000px){
+  #home .hero{grid-template-columns:1fr; gap:var(--sp-32); padding:var(--sp-48) 0}
+  #home .hero h1{font-size:32px}
+  #home .num-card .nc-v{font-size:34px}
+  #home .hero .acts{flex-direction:column; align-items:stretch}
+  #home .kgrid{grid-template-columns:1fr 1fr; gap:0 var(--sp-24)}
+}
+
+/* 有氧：一张卡把「多久 / 什么时候做 / 一周几次」一次讲清。
+   ⚠️ **必须写在 ≤640px 块之前**：窄屏那条 `.cardio{grid-template-columns:1fr}` 在块里，
+   而块是所有基准规则之后的收尾段。若把本段挪到块后面，源序会把窄屏覆盖**悄悄顶掉**
+   —— 表现是手机上这张卡仍是两栏，320px 下说明文字被挤成一条竖缝。
+   断言「手机端块必须是样式表里最后一个块」已守住这条（2026-10-11 实测踩过）。 */
+.cardio{display:grid; grid-template-columns:auto 1fr; gap:var(--sp-20); align-items:center;
+  border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--r-btn);
+  padding:var(--sp-16) var(--sp-20); background:#FBFDFC}
+.cardio .big2{font-size:38px; font-weight:700; line-height:1.1; letter-spacing:-.5px;
+  color:var(--accent-d); font-variant-numeric:tabular-nums; white-space:nowrap}
+.cardio .big2 small{font-size:var(--fs-14); font-weight:400; color:var(--ink3); margin-left:4px}
+.cardio .meta{font-size:var(--fs-14); line-height:1.75; color:var(--ink2)}
+.cardio .meta b{color:var(--ink)}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   内页视觉协同（v3.0 · S6）
+   六条手段一律从**共享令牌**出发：顶栏延续 / 极光余韵 / 卡片语言 /
+   按钮控件 / 动效节奏。对齐的是几何与层级，不是颜色 ——
+   绝不把展示层的深色底、玻璃、整幅极光搬进操作层。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- 极光余韵（规格 6.3） ----------
+   只在 app 页出现：页面最顶部 200px 的一条青绿渐变，从 8% 淡到全透明。
+   它是「首页那道光顺着转场流进来」的一点残留，不是又一幅极光。
+   ⚠️ 参数取规格上限（8% / 200px），不是区间中部 —— 见下方 S7 收口说明。
+   ⚠️ z-index 取 -1（规格原文写 0，这里按**意图**改）：
+      非定位的 block 在层叠顺序上位于定位元素**之下**，取 0 会盖住
+      .card / table / 表单这些实色块 —— 那样数据区就不是「天然被挡住」，
+      而是被蒙上一层青绿。取 -1 后它落在 body 底色之上、所有内容之下，
+      只在没被实色块盖住的浅色缝隙里可见，正是规格 6.3 描述的效果。
+   ⚠️ 起始不透明度就是 --tint-top 的 alpha（.08 = 8%），不再叠一层 opacity ——
+      两者相乘会掉到 0.3%，等于没做；这里直接用满规格上限的单个 alpha。 */
+
+/* ---------- S7 收口：为什么参数取上限而不是区间中部 ----------
+   S6 一度按 5.5% / 160px 落值（都合规），但实测真正的可见区只有 y 125–154 这 30px：
+      顶栏 0–79 实色 → 步骤条 80–124 实底 → panel 内边距 125–154 浅底 → 卡片 155 起实底
+   而这段恰好落在 180deg 渐变的**尾端**，alpha 只剩约 1%，最大色差仅 2/255 —— 等于没做。
+   落差不在「参数超规格」，而在「参数落在区间中部时够不到可见区」。
+   所以 S7 把两个参数都推到规格上限（8% / 200px），可见区：
+      y=125 → 8% ×(1−125/200) = 3.00%   （底色 R 通道 243 → 约 236，色差 ≈7）
+      y=154 → 8% ×(1−154/200) = 1.84%   （色差 ≈4）
+   这样「余韵」才真的是余韵，而不是一条量不出来的声明。
+   数据区不受影响：z-index:-1 不动，cards 的实色底仍把它挡在下面。 */
+.tint-top{position:absolute; left:0; right:0; top:0; height:200px; z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(180deg,var(--tint-top) 0%,var(--tint-0) 100%)}
+body[data-page="home"] .tint-top{display:none}
+
+/* ---------- 内页页面转场（规格 6.6） ----------
+   go() 切换步骤时的一次淡入：300ms，opacity 0→1、同时从下方 8px 归位。
+   内页**不做**滚动揭示 —— 点进某一步就是要立刻看到表和数据，
+   滚动揭示会让人以为页面还没加载完。
+   ⚠️ display:none → block 会让动画自然启动；同一 panel 重复 go() 时
+      classList.toggle(name,true) 不改变 class，所以不会重播。
+   降级：html.shot 与 prefers-reduced-motion: reduce 下 animation 一律置 none →
+      元素回落到无 opacity / transform 声明的静态值（即终态），见动效总开关。 */
+@keyframes khbPanelIn{
+  from { opacity: 0; transform: translate3d(0, 8px, 0) }
+  to   { opacity: 1; transform: none }
+}
+.panel.on{ animation: khbPanelIn var(--dur-trans) var(--ease-out) both }
+/* 产品介绍页复用同一条转场（它不是 .panel，所以单独挂一次） */
+body[data-page="intro"] #intro{ animation: khbPanelIn var(--dur-trans) var(--ease-out) both }
+
+/* ---------- 第 2 步「AI 每日方案」：身体数据输入 + 一日饮食 / 一日锻炼 ----------
+   组长 2026-10-11 意见：把身高体重这些数据输进去，AI 给出每天怎么吃、怎么练
+   （有氧多久、力量什么动作、几组）。所以这一段是**结构化处方**而不是对话气泡 ——
+   处方天生用客观陈述，也就不出现「你 / 我」这类口吻。
+   表格一律走 .tscroll + data-cols，窄屏横滑规则与全站一致。 */
+.bodyIn{margin-top:var(--sp-4)}
+.bodyIn .bmi{
+  margin-top:var(--sp-12); padding:var(--sp-11) var(--sp-14); border-radius:var(--r-btn);
+  background:var(--accent-l); border:1px solid var(--line);
+  font-size:var(--fs-14); line-height:1.7; color:var(--ink2);
+}
+.bodyIn .bmi b{color:var(--accent-d); font-size:var(--fs-17); font-variant-numeric:tabular-nums}
+
+/* ---------- 第 2 步插画横幅（2026-10-11）：浅底条承载内联 SVG ---------- */
+.illu{background:#F2F8F5; border:1px solid #DCEAE4; border-radius:var(--r-14);
+  padding:var(--sp-12) var(--sp-16); margin-bottom:var(--sp-14)}
+.illu svg{display:block; width:100%; height:auto}
+
+/* ---------- 手机端（≤640px）----------
+   本机无头浏览器有 534px 最小窗口宽（布局视口 489），489 以下测不到，
+   所以这一段的形态是「规则推理 + iframe 承载实测」，见 验证脚本/mobile.py。
+   只改几何与尺寸：颜色、层级、玻璃、极光**在视觉上**保留；
+   v3.1 复核后额外对**动效强度**做了降级（极光停漂移、模糊半径下调），
+   理由与取舍写在块末「手机端动效降级」那段。 */
+@media(max-width:640px){
+  .wrap{padding:0 var(--sp-14)}
+
+  /* 顶栏：品牌与入口同行，副标题换到第二行（原来会挤成两行并顶掉按钮） */
+  .top{padding:var(--sp-12) 0}
+  .top .wrap{gap:10px; align-items:center}
+  .brand{font-size:var(--fs-17); letter-spacing:1px}
+  .brand small{display:block; flex-basis:100%; margin-left:0; margin-top:3px; font-size:var(--fs-11-5)}
+  #btnEnter{font-size:var(--fs-13); line-height:1.5; padding:var(--sp-11) var(--sp-14)}
+
+  /* 步骤条：收紧尺寸，窄屏继续横向滑动（不折成两行，避免占掉首屏） */
+  .steps .wrap{gap:5px; padding-top:6px; padding-bottom:6px}
+  .stepbtn{padding:var(--sp-11) var(--sp-12); font-size:var(--fs-13); line-height:1.5}
+
+  /* 首页 */
+  #home .hero{padding:var(--sp-32) 0; margin-bottom:var(--sp-28); gap:var(--sp-24)}
+  #home .hero h1{font-size:var(--fs-24); line-height:1.34}
+  #home .hero .eyebrow{letter-spacing:1px; margin-bottom:var(--sp-10)}
+  #home .hero .sub{font-size:var(--fs-14); line-height:1.7; margin-top:var(--sp-12)}
+  #home .hero .acts{margin-top:var(--sp-20); gap:10px}
+  #home .num-card{padding:var(--sp-20) var(--sp-18)}
+  #home .num-card .nc-v{font-size:var(--fs-28)}
+  #home .num-card .nc-arrow{padding-top:14px; font-size:var(--fs-16)}
+  #home .num-card .nc-fv{font-size:var(--fs-21)}
+
+  /* 关键词带：两列起步；分隔线、字级同步收紧 */
+  #home .kgrid{grid-template-columns:1fr 1fr; gap:0 var(--sp-16)}
+  #home .ki{padding:var(--sp-12) 0 var(--sp-10)}
+  #home .ki .kh{font-size:var(--fs-17)}
+  #home .ki .kt{font-size:var(--fs-13)}
+  #home .knav{margin-top:var(--sp-18); gap:var(--sp-10)}
+  #home .krow{margin-top:var(--sp-24); padding-top:var(--sp-18)}
+
+  /* 三列数字块 / 四列案例卡 → 单列（原来都无断点，会横向溢出） */
+  .num3,.grid4{grid-template-columns:1fr; gap:10px}
+
+  /* 漏斗：标签不再固定 300px，移到条的上方独占一行 */
+  .funnel .lvl{flex-wrap:wrap; gap:6px; margin-bottom:var(--sp-10)}
+  .funnel .lb{flex:1 1 100%; font-size:var(--fs-14)}
+  .funnel .track{flex:1 1 auto}
+  .funnel .vl{flex:0 0 auto; min-width:58px; font-size:var(--fs-14)}
+
+  /* 五维打卡矩阵：8 列在手机上按「收紧」而不是「滑」处理，保证一屏看全一周 */
+  .daygrid{grid-template-columns:minmax(78px,84px) repeat(7,minmax(0,1fr)); gap:3px}
+  .dayhd{font-size:var(--fs-11-5)}
+  .dimlb{font-size:var(--fs-11-5); padding-right:var(--sp-3)}
+  .dimlb span{font-size:var(--fs-11-5)}
+  .chk{min-height:40px; font-size:var(--fs-12-5)}
+
+  /* 表格：窄屏**横向滑动**，不再压缩换行。
+     ⚠️ 第一版把 table 直接设成 overflow-x:auto 是无效的 —— 没有外侧滚动容器时，
+        表格只会把自己缩到容器宽、每格换成 4~8 行。滑动必须由外层 .tscroll 负责。 */
+  /* 表格最小宽度按**列数**分档（data-cols 由补丁 3 生成）。
+     ⚠️ 不要一刀切：首页 5 列品类表本来 <400px 就够，统一 560 反而让它白滑一条。 */
+  /* 出血到卡片边缘：抵消卡片自身的横向内边距，表格可视宽 308 -> 约 360px。
+     贴着边缘被切断，本身就是「还能往右滑」的提示。 */
+  .tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch;
+    margin-left:calc(-1 * var(--sp-pad-card-x)); margin-right:calc(-1 * var(--sp-pad-card-x))}
+  .tscroll table{width:100%}
+  .tscroll table[data-cols="3"]{min-width:420px}
+  .tscroll table[data-cols="4"]{min-width:560px}
+  .tscroll table[data-cols="5"]{min-width:640px}
+  .tscroll table[data-cols="6"],
+  .tscroll table[data-cols="7"],
+  .tscroll table[data-cols="8"]{min-width:720px}
+  .tscroll table[data-cols="9"],
+  .tscroll table[data-cols="10"],
+  .tscroll table[data-cols="11"]{min-width:900px}
+  th,td{padding:var(--sp-8) var(--sp-9); font-size:var(--fs-13)}
+  thead th{font-size:var(--fs-12-5); white-space:nowrap}
+  td.num,th.num,td.mono{white-space:nowrap}
+
+  /* AI 输入区 */
+  #aiInput{min-width:0}
+  .bub{max-width:88%}
+  .aiBar .hint{margin-left:0; text-align:left}
+
+  /* 表单与卡片内边距 */
+  .frm{grid-template-columns:repeat(2,1fr); gap:var(--sp-10)}
+  .kpis{gap:var(--sp-8)}
+  .kpi{padding:var(--sp-12) var(--sp-12)}
+
+  /* ── 手机端动效降级（v3.1 复核补）───────────────────────────────
+     为什么手机上要降级：链接是要在手机上打开的（README 明写「发布到沙箱后
+     链接要在手机上打开」），手机不是假想路径而是真实路径。而下面三项是全页最贵的：
+       · 极光 = 3 层百像素模糊的 900 / 760 / 680px 色块 + position:fixed + 无限漂移
+       · 顶栏 / 数字卡 / 主 CTA 的 backdrop-filter（而且背后还有极光在动）
+     1400px 投屏上没事，中低端手机逐帧重算模糊 = 掉帧。
+     ⚠️ 降的是**动效强度**，不是视觉风格 —— 极光还在、玻璃还在，
+        只是不动了、模糊弱了。静态截图上看几乎没差别。
+     ⚠️ 这几条**必须留在媒体查询里**。任何一条写成全局规则都会连带改掉桌面渲染
+        （S8 已栽过一次：全局给 .tscroll 加 overflow-x 形成新 BFC，
+         内部表格的 margin-top 行为随之改变，桌面 s4 / s11 / s18 / s19 立刻不符）。
+     ⚠️ 滚动揭示 / 数字计数 / 漏斗生长**保留**：三项都只动 transform / opacity。
+        数字计数走 textContent 是规格 4.3 明示的唯一例外，且数字是
+        tabular-nums 等宽 —— 改值不改宽度，只触发重绘不触发布局重排。 */
+  .aurora .b1,.aurora .b2,.aurora .b3{animation:none}
+  .aurora .b1{width:450px; height:450px; filter:blur(48px)}
+  .aurora .b2{width:380px; height:380px; filter:blur(56px)}
+  .aurora .b3{width:340px; height:340px; filter:blur(64px)}
+  /* 深色玻璃：提高不透明度 + 模糊下调。底色更接近实色 → 浅色文字对比度只升不降。 */
+  body[data-page="home"] .top{
+    background:rgba(11,31,26,.72);
+    -webkit-backdrop-filter:blur(10px) saturate(120%);
+    backdrop-filter:blur(10px) saturate(120%)}
+  #home .num-card{
+    background:rgba(9,22,17,.74);
+    -webkit-backdrop-filter:blur(10px) saturate(120%);
+    backdrop-filter:blur(10px) saturate(120%)}
+  /* 主 CTA 是**白玻璃**：抬白色不透明度会压掉白字对比度，所以这里只去模糊、
+     不动底色 —— 它背后本来就是大面积模糊色块，视觉差异趋近于零。 */
+  #home .hero .btn.hero-main{
+    -webkit-backdrop-filter:none; backdrop-filter:none}
+  /* 第 2 步「每天怎么练」的有氧卡：宽屏是「大数字 + 说明」两栏，窄屏塌成一栏 */
+  .cardio{grid-template-columns:1fr; gap:var(--sp-10)}
+}
+/* ---------- 手机端结束 ---------- */
+
+</style>
+</head>
+<body data-page="home">
+
+<!-- 极光背景层（首页专属）
+     z-index:-1 → 位于所有内容之下、页面底色之上；进 app 页即隐藏。
+     配色只用产品色系：青绿（主）+ 琥珀 + 暖白高光，深墨绿底。禁止紫色 / 蓝紫渐变。 -->
+<div class="aurora" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+
+<!-- 极光余韵（内页专属）：只在 app 页可见。
+     层叠取 z-index:-1，落在 body 底色之上、所有实色内容块之下 ——
+     所以它只在顶栏与第一个卡片之间的浅色缝隙里透出来，数据区一律被实底挡住。 -->
+<div class="tint-top" aria-hidden="true"></div>
+
+<div class="top">
+  <div class="wrap">
+    <div class="brand" id="brandName">代谢健康守护<small id="brandSub"></small></div>
+    <button class="btn enter" id="btnEnter" type="button">进入产品</button>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="wrap" id="stepbar"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ 总览（首页 · 独立于 .panel 体系）============ -->
+  <div id="home">
+
+    <div class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">代谢健康守护 · 代谢综合征专属健康保险</div>
+        <h1>核保挡住的代谢综合征人群，<br><b>现在进得来、买得起、赔得到。</b></h1>
+        <p class="sub">五项指标判定入场 → AI 教练带着降指标 → 改善达标次年保费降 20% → 重症 100% 保额给付</p>
+        <div class="acts">
+          <button class="btn hero-main" data-go="0">开始核保</button>
+          <button class="btn ghost hero-alt" data-go="1">看 AI 健康计划</button>
+        </div>
+      </div>
+
+      <!-- 首屏三要素之「数字」：液态玻璃数字卡（首页仅有的三处玻璃之一） -->
+      <!-- 2026-10-12 数据换系：按新版《代谢健康守护———代谢综合征（MetS）特定疾病保险》三责口径。
+          赔付率（EPV÷10 年保费）是派生值，首屏直接用方案原文的期望赔付金额对，比派生比率更硬。 -->
+      <div class="num-card">
+        <div class="nc-lb">10 年期望赔付（现值）</div>
+        <div class="nc-row">
+          <div class="nc-item bad"><div class="nc-t">不做干预</div><div class="nc-v">¥44,628</div></div>
+          <div class="nc-arrow" aria-hidden="true">→</div>
+          <div class="nc-item good"><div class="nc-t">做了干预</div><div class="nc-v">¥28,536</div></div>
+        </div>
+        <div class="nc-bar" aria-hidden="true"><i></i></div>
+        <div class="nc-foot"><span class="nc-flb">10 年死差益</span><b class="nc-fv">¥16,092</b><span class="nc-fu">/ 人</span></div>
+      </div>
+    </div>
+    <!-- /hero -->
+
+    <!-- 关键词带（2026-10-11 第二轮瘦身）：负责人要求首页最多两屏截图，
+         Hero 之后只留关键词，长句细节全部移入「产品介绍」。 -->
+    <div class="kband">
+      <div class="kgrid">
+        <div class="ki"><div class="kh">分级定价</div>
+          <div class="kt">五项指标判定 · A / B / C 三档独立费率</div></div>
+        <div class="ki"><div class="kh">AI 代谢管理教练</div>
+          <div class="kt">每天怎么吃、怎么练 · 五维打卡可验证</div></div>
+        <div class="ki"><div class="kh">死差由负转正</div>
+          <div class="kt">10 年期望赔付 44,628 → 28,536 元（降 36.1%）</div></div>
+        <div class="ki"><div class="kh">三责给付</div>
+          <div class="kt">重症 100% · 中症 20% · 疾病相关身故 20%</div></div>
+        <div class="ki"><div class="kh">年度重评降费</div>
+          <div class="kt">指标降到 2 项以内，次年保费直降 20%</div></div>
+        <div class="ki"><div class="kh">保证续保</div>
+          <div class="kt">一年一期 · 保证续保期累计最长 10 年</div></div>
+      </div>
+      <div class="knav">
+        <button class="btn ghost" data-go="0">01 核保分级</button>
+        <button class="btn ghost" data-go="1">02 五维健康计划</button>
+        <button class="btn ghost" data-go="2">03 打卡闭环</button>
+        <button class="btn ghost" data-go="3">04 给付与重评</button>
+      </div>
+      <div class="krow">
+        <button class="btn hero-main" data-intro="1">进入产品介绍</button>
+        <button class="btn ghost" data-go="0">直接开始核保</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ 产品介绍（进入产品后的第一页 · 独立于 .panel 体系）============
+       组长 2026-10-11：首页要简洁、突出 AI 与死差；产品介绍与背景移到进入产品之后。
+       页首两块是新写的「产品定位与责任边界」，其余四张卡是从首页原样搬过来的。
+       ⚠️ 2026-10-12 起按团队新版方案改写：保险责任 = 重症（三项特定疾病 100%）+
+          中症（MetS 严重进展 20%）+ 疾病相关身故（20%），另有 5,000 元病后医疗照护服务权益。 -->
+  <div id="intro">
+
+    <div class="card">
+      <h3 class="sec">产品介绍</h3>
+      <p class="pitch">代谢健康守护是一款面向 <b>45–65 周岁代谢综合征人群</b>的特定疾病保险：保险期间为一年、含保证续保条款，
+        保证续保期累计最长 10 年。产品把 MetS 本身作为承保入口 —— 用<b>分级定价</b>给这群人一张入场券，
+        用<b>AI 代谢管理教练</b>把风险压到可定价的水平，再通过<b>年度重评降费</b>把改善的结果还给参保人。
+        AI 教练给的不是通用建议：每天的饮食与运动按<b>本人五项指标现算</b>，做了多少、指标怎么动，全部留痕可查 ——
+        <b>保费敢跟着指标降，靠的就是这份可验证的干预记录</b>。</p>
+      <div class="kick">
+        <span class="flag mid">45–65 周岁</span>
+        <span class="flag mid">MetS 五项达标 ≥3 项</span>
+        <span class="flag mid">一年一期 · 保证续保累计最长 10 年</span>
+      </div>
+    </div>
+
+    <!-- 组长意见①：产品简介与创新点放最前面（2026-10-13）——
+         「与现有品类的差异」「保险与干预，缺一不可」两张创新点卡前移到「责任与准入边界」之前，
+         阅读顺序 = 产品介绍 → 创新点 ×2 → AI 闭环 → 责任边界 → 规模/漏斗/测算 → 接下来。 -->
+    <div class="card">
+      <h3 class="sec">与现有品类的差异</h3>
+      <div style="overflow-x:auto">
+        <div class="tscroll"><table data-cols="4">
+          <thead><tr><th style="width:18%">品类</th><th style="width:26%">接受代谢综合征人群吗</th><th style="width:28%">干预和费率有关系吗</th><th style="width:28%">给付含服务吗</th></tr></thead>
+          <tbody>
+            <tr><td>传统重疾险</td><td>不接受，或大幅加费</td><td>没有</td><td>没有，全是现金</td></tr>
+            <tr><td>纯健康管理服务</td><td>不承保，只做管理</td><td>没有</td><td>不涉及</td></tr>
+            <tr><td>税优健康险</td><td>有限接受</td><td>没有</td><td>部分产品有</td></tr>
+            <tr class="hl"><td><b>代谢健康守护</b></td><td><b>接受</b>，按风险梯度分档定价</td>
+              <td><b>有</b>：指标改善并达标可降档，费率随之下调；积分本身不换保费</td>
+              <td><b>有</b>：现金解决收入中断，服务解决真正花钱的地方</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="sec">保险与干预，缺一不可</h3>
+      <div class="grid2">
+        <div class="leg"><div class="lh">保险</div>
+          <div class="lt">五项指标判定 → 分级定价 → 现金给付 + 非现金服务</div>
+          <div class="ld">让这群人有得买、买得起。</div></div>
+        <div class="leg"><div class="lh">干预</div>
+          <div class="lt">AI 生成计划 → 五维日常打卡 → 打卡闭环 → 指标改善</div>
+          <div class="ld">让风险真的降下来，筛选只是第一步。</div></div>
+      </div>
+      <p class="hint" style="margin-top:16px">干预是定价成立的前提 —— 只有坚持真的能把赔付率压下来，才敢给出比传统产品更宽的准入线。</p>
+    </div>
+
+    <!-- 2026-10-11 第二轮瘦身：这张卡从首页搬入（首页只留关键词），
+         顺手修掉指代不明与否定句式的界面文案（对齐目录第四、六章的语体）。 -->
+    <div class="card">
+      <h3 class="sec">AI 在闭环之内</h3>
+      <div class="loop">
+        <span class="nd">健康档案</span><span class="ar">→</span>
+        <span class="nd">AI 生成计划</span><span class="ar">→</span>
+        <span class="nd">每天打卡</span><span class="ar">→</span>
+        <span class="nd">指标变化</span><span class="ar">→</span>
+        <span class="nd">年度重评</span><span class="ar">→</span>
+        <span class="nd hi">回到档案</span>
+        <span class="glow" aria-hidden="true"></span>
+      </div>
+      <p class="hint" style="margin-top:14px">档案记录参保人本人的数据；AI 据此生成计划；打卡记录实际做到多少；指标随之变化；重评时等级可能下调；<b>新的数值再回到档案里，下一轮计划据此调整</b>。</p>
+      <p class="hint">普通健康 App 说的是「要多运动」。这里给到的是「好胆固醇 0.96，要抬到 1.10，靠每周 5 天快走 30 分钟」。</p>
+    </div>
+
+    <div class="card">
+      <h3 class="sec">责任与准入边界</h3>
+      <div class="grid3">
+        <div class="leg"><div class="lh">保什么</div>
+          <div class="lt">重症（三项特定疾病）给付基本保额 ×100%，三项合计给付一次；中症（MetS 严重进展，等级 A→B 或 B→C）给付基本保额 ×20%；疾病相关身故给付基本保额 ×20%，不含全因身故</div>
+          <div class="ld">首次达到重症给付条件后，另取得一次总额 5,000 元、有效期 12 个月的病后医疗照护服务权益。</div></div>
+        <div class="leg"><div class="lh">怎么保</div>
+          <div class="lt">按 MetS 五项指标的达标项数与偏离程度划分 A / B / C 三个健康等级，每级对应一个已列示的独立费率档次</div>
+          <div class="ld">不再走「大幅加费或直接拒保」这条二元处理的老路。</div></div>
+        <div class="leg"><div class="lh">不保什么</div>
+          <div class="lt">已确诊 2 型糖尿病、既往急性心肌梗死或脑卒中、恶性肿瘤、严重肝肾疾病、NYHA Ⅲ—Ⅳ 级心力衰竭或 BMI ≥40.0 者不予承保；血糖达到糖尿病诊断阈值但诊断未明确、血压持续 ≥180/110、甘油三酯 ≥5.6 者暂缓承保</div>
+          <div class="ld">承保的是「尚未发生」的那一段转化风险。</div></div>
+      </div>
+      <p class="hint" style="margin-top:16px">健康管理服务与年度重评降费属非给付层：不计入保险责任，不折现、不转让、不抵减现金保险金。等待期：2 型糖尿病责任 180 日，急性心肌梗死与脑卒中责任 90 日；连续续保不重算已完成的等待期。</p>
+    </div>
+
+
+    <div class="card">
+      <h3 class="sec">患病人群规模</h3>
+      <div class="num3">
+        <div class="n"><div class="v stat-mets">31.1%</div>
+          <div class="t">20 岁及以上人群中，符合代谢综合征判定的比例</div>
+          <div class="s">《代谢综合征病证结合诊疗指南》2023</div></div>
+        <div class="n"><div class="v stat-mets">约 3.6 亿</div>
+          <div class="t">按上述比例换算的患病人数（20 岁以上人口约 11.5 亿）</div>
+          <div class="s">同上，换算值</div></div>
+        <div class="n"><div class="v stat-mets">33.9%</div>
+          <div class="t">另一份权威报告的成人患病率（切点口径不同，数量级一致）</div>
+          <div class="s">《中国心血管健康与疾病报告 2023》</div></div>
+      </div>
+      <p class="hint" style="margin-top:16px">不同报告用的判定切点不完全一样，数字有出入，但结论一致：患病基数以亿计。<b>本产品的准入规则比这些口径更严，能进来的只是其中一部分</b>（见下方）。</p>
+    </div>
+
+    <div class="card">
+      <h3 class="sec">准入漏斗：能承保的是其中一部分</h3>
+      <div class="funnel">
+        <div class="lvl"><div class="lb">全国人口</div><div class="track"><div class="bar" style="width:100%"></div></div><div class="vl">基准</div></div>
+        <div class="lvl"><div class="lb">20 岁及以上人群中的代谢综合征人群</div><div class="track"><div class="bar" style="width:25.3%"></div></div><div class="vl">31.1%</div></div>
+        <div class="lvl"><div class="lb">其中，45–65 岁</div><div class="track"><div class="bar" style="width:11.9%"></div></div><div class="vl">47%</div></div>
+        <div class="lvl"><div class="lb">其中，五项指标达标 3 项及以上（按本产品判定标准重判）</div><div class="track"><div class="bar" style="width:8.7%"></div></div><div class="vl">73%</div></div>
+        <div class="lvl"><div class="lb">其中，未触及拒保线</div><div class="track"><div class="bar" style="width:7.0%"></div></div><div class="vl">80%</div></div>
+        <div class="lvl"><div class="lb"><b>可承保人群</b></div><div class="track"><div class="bar top" style="width:7.0%"></div></div><div class="vl">进入核保</div></div>
+      </div>
+      <p class="hint" style="margin-top:14px">条形长度＝该级累计占全国人口的比例；右侧百分数＝该级占上一级的比例。<br>
+        第 3 级按第七次全国人口普查的年龄结构折算；第 4 级按本产品的判定标准重判（同一批人里，较宽的流行病学口径 34.77% 收窄到 25.55%）；第 5 级按拒保线三项（空腹血糖 ≥7.0、血压 ≥180/110、体重指数 ≥40）的患病率测算。<b>按此口径，能进核保的约 1.0 亿人</b>。</p>
+    </div>
+
+    <div class="card">
+      <h3 class="sec">可保性测算</h3>
+      <p class="lead">代谢综合征人群过去卡在三道墙上 —— 核保进不来、定价算不出、干预做不起。这群人在传统定价里算不过来，除非干预真的能把风险压下去。</p>
+      <div class="grid2">
+        <div class="comp bad"><div class="ttl">不做干预</div><div class="big">¥44,628</div>
+          <div class="ds">10 年期望赔付现值 · 三责合计 · 加上费用率与安全边际即承保亏损</div></div>
+        <div class="comp good"><div class="ttl">做了干预</div><div class="big">¥28,536</div>
+          <div class="ds">10 年期望赔付现值 · 压降 36.1% · 落进可承保区间</div></div>
+      </div>
+      <div class="verdict" style="margin-top:16px">10 年期望死差 <b>¥16,092 / 人</b>
+        （基本保额 15 万、A 级年交纯保费 ¥5,229）。</div>
+      <p class="hint" style="margin-top:12px">测算的死亡基数<b>只取「因承保疾病身故」</b>（代谢综合征及约定并发症）；其他原因身故不在保障范围，也不进入测算。</p>
+      <p class="hint">上述测算中的干预效果，采用公开文献的保守取值，属<b>学术建模与情景模拟</b>。</p>
+    </div>
+
+    <div class="card">      <h3 class="sec">接下来</h3>
+      <p class="hint">产品介绍到这里。下面四步可以一路走完：核保分级 → 五维健康计划 → 打卡闭环 → 给付与重评。</p>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" data-go="0">开始核保</button>
+        <button class="btn ghost" data-go="1">看 AI 健康计划</button>
+        <button class="btn ghost" data-intro="home">返回总览</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ 1 核保分级 ============ -->
+  <section class="panel" id="p1">
+    <div class="card">
+      <h2><span class="num">01</span>核保分级：MetS 五项判定 → A / B / C 三级定价</h2>
+      <p class="lead">传统核保以「已确诊疾病」为门槛，MetS 作为亚健康状态落不进任何定价模型。这里把五项判定做成一个可计算的入口：逐项判定，按达标项数与偏离度定级。</p>
+      <div class="grid3" id="caseGrid"></div>
+
+      <h3 class="sec">或者，自己填一组指标</h3>
+      <div class="frm" id="formGrid"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn ghost" id="btnCustom">用这组数据核保</button>
+        <button class="btn ghost" id="btnFill">填入示例值</button>
+      </div>
+    </div>
+
+    <div class="card" id="assessCard" style="display:none">
+      <h3 class="sec">五项指标逐项判定</h3>
+      <p class="hint" id="critNote"></p>
+      <div class="tscroll"><table data-cols="4">
+        <thead><tr><th style="width:24%">判定项</th><th style="width:20%">标准</th><th class="num" style="width:16%">本次取值</th><th style="width:40%">结果</th></tr></thead>
+        <tbody id="itemBody"></tbody>
+      </table></div>
+
+      <div class="verdict" id="verdict"></div>
+
+      <h3 class="sec">定价结果</h3>
+      <div class="kpis" id="kpis"></div>
+      <p class="hint" id="priceNote"></p>
+    </div>
+  </section>
+
+  <!-- ============ 2 健康计划 ============ -->
+  <section class="panel" id="p2">
+    <div class="card" id="p2empty">
+      <h2><span class="num">02</span>五维健康计划</h2>
+      <p class="lead">先回到第一步选一个投保人。</p>
+    </div>
+
+    <div class="card" id="p2body" style="display:none">
+      <h2><span class="num">02</span>五维健康计划</h2>
+      <p class="lead"><b>健康计划的定位：为代谢综合征参保人群制定一份详细的、以五维为指向的健康计划</b>——
+        所谓「五维」，就是 MetS 的五项判定指标（腰围 / 空腹血糖 / 血压 / 甘油三酯 / HDL-C）；
+        落到参保人手上就是每天要做的五件事：练腿劲、主食换粗粮、少放盐、戒酒和甜饮料、每天快走。
+        每一项都给到「当前值 → 一年目标 → 每天具体做什么」的完整落点，再按主导表型决定优先投入哪一维。
+        计划里的动作全部写成参保人看得懂的话：不说「低 GI」，说「主食换粗粮」；不说「中等强度有氧」，
+        说「每天快走 30 分钟」。差别就在这里：普通健康 App 说的是「要多运动」，
+        AI 给到的是「好胆固醇 0.96，要抬到 1.10，靠每周 5 天快走 30 分钟」。</p>
+
+      <h3 class="sec">身体数据</h3>
+      <p class="hint">身高、体重、年龄是这份方案的输入 —— AI 据此算出体重指数，
+        再决定一天该吃多少、动多久。改完点「重新生成方案」，下面的一日饮食与一日锻炼会跟着重算。</p>
+      <div id="bodyIn"></div>
+
+      <div id="algoWarn"></div>
+
+      <h3 class="sec">① 主导表型判定</h3>
+      <p class="hint">先把五维指标各自换算成「归一化偏离度」（偏离量 ÷ 阈值），再按四个生理轴归并取最大值，最高的那一轴决定表型归属。表型共 <b>四类</b>：血糖型 / 血压型 / 血脂型 / 肥胖型。
+        表型分类与<b>定价等级（A / B / C 三档）</b>是两套并行口径：前者决定干预往哪一维使劲，后者按 MetS 达标项数与严重度定，决定保费与保额系数。</p>
+      <div id="phenoBox"></div>
+
+      <h3 class="sec">② 五维健康计划</h3>
+      <div id="dimWarn"></div>
+      <div id="planBox"></div>
+
+      <h3 class="sec">③ 每天怎么吃</h3>
+      <p class="hint" id="mealHint"></p>
+      <div id="mealBox"></div>
+
+      <h3 class="sec">④ 每天怎么练</h3>
+      <p class="hint" id="sportHint"></p>
+      <div id="sportBox"></div>
+
+      <h3 class="sec">⑤ 配套支撑</h3>
+      <div class="grid2" id="dimBox"></div>
+
+      <h3 class="sec">⑥ 与 AI 对话</h3>
+      <p class="hint" id="chatHint">这里展示每天实际推送给参保人的内容形态：按五个方面逐项报账，并说明每一项当周的处理方式。</p>
+
+      <div class="aiBar">
+        <button class="btn sm" id="btnLive">接入真实模型</button>
+        <button class="btn ghost sm" id="btnBackSample" style="display:none">回到示例</button>
+        <span class="hint" id="aiStatus"></span>
+      </div>
+
+      <details class="aiKey" id="aiBrief">
+        <summary>AI 这次参考了什么</summary>
+        <div id="aiBriefBody" style="margin-top:10px"></div>
+      </details>
+
+      <div class="chat" id="chatBox"></div>
+
+      <div class="aiCtl" id="aiCtl" style="display:none">
+        <div class="row">
+          <input id="aiInput" type="text" placeholder="问它点什么，例如：我晚上应酬多，该怎么改？">
+          <button class="btn" id="btnAsk">发送</button>
+        </div>
+        <details class="aiKey">
+          <summary>模型设置</summary>
+          <div class="row" style="margin-top:10px">
+            <input id="aiModel" type="text" list="aiModelList" placeholder="模型名">
+            <datalist id="aiModelList">
+              <option value="glm-4-flash"></option>
+              <option value="glm-4-flashx"></option>
+              <option value="glm-4-air"></option>
+              <option value="glm-4-plus"></option>
+              <option value="glm-4-long"></option>
+            </datalist>
+            <button class="btn ghost sm" id="btnModelSave">用这个模型</button>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <input id="aiKey" type="password" autocomplete="off" placeholder="API Key">
+            <button class="btn ghost sm" id="btnKeySave">保存</button>
+            <button class="btn ghost sm" id="btnKeyClear">清除</button>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3 打卡闭环 ============ -->
+  <section class="panel" id="p3">
+    <div class="card" id="p3empty">
+      <h2><span class="num">03</span>打卡闭环：依从 → 指标 → 等级</h2>
+      <p class="lead">先回到第一步选一个投保人。</p>
+    </div>
+
+    <div class="card" id="p3body" style="display:none">
+      <h2><span class="num">03</span>打卡闭环：五项日常打卡 → 积分 / 干预强度 → 指标 → 等级</h2>
+      <p class="lead">健康管理的死结是「坚持」。这里把坚持变成可计量的东西：<b>五个方面各自的打卡天数 → 干预强度 → 五项指标改善 → 达标项数 → 健康等级</b>。
+        同时，打卡攒下的积分可以在<b>积分商城</b>兑换实物与服务。点格子模拟一周，看这两条链子怎么跑。</p>
+
+      <h3 class="sec">本周打卡：五个方面逐项</h3>
+      <p class="hint"><b>打卡覆盖五个方面，不只是运动和吃饭。</b>每一格都是一件今天就能做的事，
+        各管一项体检指标：<b>练腿劲</b>→腰围、<b>主食换粗粮</b>→血糖、<b>少放盐</b>→血压、
+        <b>戒酒和甜饮料</b>→甘油三酯、<b>每天快走</b>→好胆固醇（HDL-C）。
+        每做一项记 3 分，一天全做满 15 分；每一格独立开关，可以跳着选，也可以只做其中一两项。</p>
+      <div class="daygrid" id="dayBox"></div>
+      <p class="hint" id="dayHint"></p>
+      <div class="row" style="margin-top:14px">
+        <div class="wk" id="wkLabel"></div>
+        <div style="margin-left:auto" class="row">
+          <button class="btn" id="btnWeek">推进一周</button>
+          <button class="btn ghost" id="btn12">一键 12 周</button>
+          <button class="btn ghost" id="btn52">一键年度重评</button>
+          <button class="btn ghost" id="btnReset">重置</button>
+        </div>
+      </div>
+      <div id="cycleHint"></div>
+
+      <h3 class="sec">实测数据回传</h3>
+      <p class="hint"><b>下面那条曲线是模型预测，不是真实数据。</b>真实产品里，用户每季度到社区卫生中心复查五项指标，
+        或用蓝牙设备自动回传，<b>实测值会覆盖当周的预测值，之后的轨迹从实测点重新起算</b>——这也是次年重评的证据链。
+        填一组实测数据试试，提交后下面的曲线会从实测点重新长出来。</p>
+      <p class="hint" style="color:#8A5A00"><b>数据真实性要求：</b>实测数据必须提交
+        <b>加盖医院公章的体检单</b>，由保险公司核验真实性，<b>不接受用户自行填报</b>。</p>
+      <div class="frm" id="realGrid"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="btnReal">回传实测数据，覆盖本周</button>
+        <button class="btn ghost" id="btnRealReset">恢复预测值</button>
+        <span class="hint" id="realMsg" style="margin-left:12px"></span>
+      </div>
+    </div>
+
+    <!-- ============ 3b 参保人端：我的积分 + 积分商城 ============ -->
+    <div class="card" id="p3mall" style="display:none">
+      <h3 class="sec">我的积分 · 积分商城</h3>
+      <p class="hint">参保人在手机端看到的就是这一屏。<b>积分按实际打卡累计</b>：每推进一周，
+        把当周真实勾选的格子折算入库，计划预测值不计分。攒够积分即可在商城兑换实物与服务，换完即扣。</p>
+      <div id="walletBox"></div>
+      <h4 class="sub">可兑换物品</h4>
+      <div class="goodsgrid" id="mallGrid"></div>
+      <div id="mallLog"></div>
+    </div>
+
+    <div class="card" id="p3chart" style="display:none">
+      <h3 class="sec">达标项数轨迹（模型预测）</h3>
+      <p class="hint">纵轴是 MetS 五项里达标几项，落在哪条色带就对应哪一档等级。<b>整条曲线是模型预测</b>——回传一次实测数据后，该周节点会变成实心方块，之后的轨迹从实测点重新起算。</p>
+      <div id="chart1"></div>
+      <div class="legend">
+        <span><i class="sw" style="background:#F1F5F4;border:1px solid #DDE5E3"></i>≤2 项 · 逆转出 MetS</span>
+        <span><i class="sw" style="background:#E9F5EF"></i>3 项 · A 级</span>
+        <span><i class="sw" style="background:#FDF4E3"></i>4 项 · B 级</span>
+        <span><i class="sw" style="background:#FBE9E7"></i>5 项 · C 级</span>
+        <span><i class="sw" style="background:#0A5E4E;border-radius:2px"></i>■ 实测数据点（其余为预测）</span>
+      </div>
+
+      <h3 class="sec">五项指标明细</h3>
+      <div class="tscroll"><table data-cols="6">
+        <thead><tr><th style="width:22%">指标</th><th style="width:18%">标准</th><th class="num" style="width:14%">初始</th><th class="num" style="width:14%">当前</th><th class="num" style="width:14%">变化</th><th style="width:18%">状态</th></tr></thead>
+        <tbody id="trendBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ 4 给付与重评 ============ -->
+  <section class="panel" id="p4">
+    <div class="card" id="p4empty">
+      <h2><span class="num">04</span>给付与重评</h2>
+      <p class="lead">先回到第一步选一个投保人。</p>
+    </div>
+
+    <div class="card" id="p4body" style="display:none">
+      <h2><span class="num">04</span>理赔设计：现金给付 + 非现金服务</h2>
+      <p class="lead">保险责任是三项现金给付：重症（三项特定疾病）给付、中症（MetS 严重进展）给付、因该疾病身故给付。现金之外另有一条服务线 —— 首次达到三项特定疾病任一给付条件后取得一次总额 5,000 元、有效期 12 个月的病后医疗照护服务权益，覆盖血糖管理支持、门诊绿色通道、住院生活看护与康复评估指导；细目以保单附具的服务清单为准。</p>
+      <div id="benefitBox"></div>
+
+      <h3 class="sec">年度重评</h3>
+      <div id="reviewBox"></div>
+
+      <h3 class="sec">死差益测算</h3>
+      <p class="hint">不干预时赔付率逼近甚至超过 100%，干预后才落进可承保区间 —— 这是「可保化」的来源。
+        死亡口径只限<b>因承保疾病身故</b>（MetS 及约定并发症）；其他原因身故不在保障范围，也不进入死差测算。</p>
+      <div id="marginBox"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   【CONFIG —— 内容层】
+   ─────────────────────────────────────────────────────────────────────────
+   本段集中放品牌信息、准入规则、精算与干预参数、案例、食谱、话术。
+   判定与计算逻辑在下面的「引擎」区。改内容只改本段。
+   标注为待定值的参数，最终由精算与医学口径替换。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const BRAND = {
+  name: '代谢健康守护',
+  sub: '代谢综合征（MetS）特定疾病保险 · AI 代谢管理教练',
+};
+
+// 可保人群：45–65 岁、MetS 达标 ≥3 项。不满足准入的直接拒保。
+const ELIGIBLE = { ageLo: 45, ageHi: 65, minItems: 3 };
+
+/* ── 1. 精算与干预参数 ───────────────────────────────────────────────
+   ⚠️ 以下均为待替换的暂定参数，第四章精算模型定稿后整体替换。
+   ──────────────────────────────────────────────────────────────────── */
+const PARAMS = {
+  // MetS 判定标准：《中国糖尿病防治指南（2024 版）》（中华医学会糖尿病学分会 CDS 于 2025 年发布），5 项取 3。
+  // （2026-10-12 按团队新版方案定档，替代原先的 CDS 2017 表述。）
+  // 若要临时切回 IDF 2005 / NCEP-ATP III 口径做对照，只改下面三处即可（thresholds() 已兼容两种写法）：
+  //   hdl → { M: 1.03, F: 1.29 }、fbg → 5.6、waist.F → 80。
+  metS: {
+    waist: { M: 90, F: 85 },     // cm，五项中唯一分性别的一项
+    tg: 1.7,                      // mmol/L
+    hdl: 1.0,                     // mmol/L，中国指南不分性别（IDF 为男 <1.03 / 女 <1.29）
+    sbp: 130, dbp: 85,            // mmHg
+    fbg: 6.1,                     // mmol/L，中国指南（IDF 为 ≥5.6）
+  },
+  // 拒保线
+  exclude: { fbg: 7.0, sbp: 180, dbp: 110, bmi: 40.0 },
+  // 严重度阈值
+  sev: {
+    high: { sbp: 150, dbp: 95, fbg: 6.5, tg: 5.6, waistPlus: 20, hdlMinus: 0.25 },
+    mid:  { sbpLo: 140, sbpHi: 149, dbpLo: 90, dbpHi: 94, fbgLo: 6.1, fbgHi: 6.4,
+            tgLo: 2.3, tgHi: 3.9, waistPlus: 10, hdlMinus: 0.15 },
+  },
+  // 等级 → 保费系数 / 保额系数 / 年交纯保费（元/年，取自新版方案表 6-3，15 万元保额三责口径）
+  // 保费系数由表 6-3 的绝对纯保费反推：5,229 / 5,093 / 6,589 → ×1.000 / ×0.974 / ×1.260。
+  // ⚠️ B 级基准纯保费略低于 A 级：中症 A→B 年均发生率（3.3%）高于 B→C（1.9%），
+  //    A 级的中症额外成本部分抵消了其重症风险较低的优势 —— 这是新版方案的原文解释，不是算错。
+  // ⚠️ 保额系数 ×1.00 / ×0.90 / ×0.80 仍是产品设计取值 —— 新版方案未给分级保额，界面照旧。
+  level: {
+    A: { p: 1.0000, s: 1.0, premBase: 5229, premAI: 3383, premDisc: 2707 },
+    B: { p: 0.9740, s: 0.9, premBase: 5093, premAI: 3166, premDisc: 2533 },
+    C: { p: 1.2601, s: 0.8, premBase: 6589, premAI: 3680, premDisc: 2944 },
+  },
+  // 基准：A 级、基本保额 15 万 —— 取自新版方案表 6-3。
+  // 产品形态：保险期间为一年、含保证续保条款，保证续保期累计最长 10 年。
+  //   ⚠️ 不是「10 年期长期险」。下面 base.payYears=10 与 actuarial.term=10
+  //      都指**精算投影期 = 保证续保期长度**，不是「保险期间」。
+  base: { sumInsured: 150000, premium: 5229, payYears: 10 },
+  // 奖励机制
+  // 「健康逆转保证金」不在本产品条款内，因此不保留任何对应参数。
+  // 激励只保留与定价脱钩的正向项（群体挑战赛 / 积分兑换 / 社交排行榜）。
+  // 不设 reward 配置项：积分与定价无关，没有可调参数。
+  // 干预效果模型：每周向「个体可达目标」趋近的比例
+  // ⚠️ k 与三档系数均为待定值。AI 干预相对幅度无直接实测数据，
+  //    统一取公开文献值 —— 需要精算 / 建模确定。
+  effect: { k: 0.05, full: 5, half: 3, low: 0.15 },
+  // 12 周健康挑战：把五维打卡行为量化成积分。
+  //   积分用途 = 在积分商城兑换实物 / 服务（非现金权益）
+  //   五维等权：每维每天 3 分 → 单日满分 15 分；周期满分 = 15 × 7 × 12 = 1260 分
+  //   达标线 800 分 ≈ 平均每周 4.4 天做满五维（占周期满分 1260 的约 63%）
+  //   ⚠️ 分值、达标线、周期长度、维度权重均为暂定值 —— 需要精算确定
+  points: { perDim: 3, dims: 5, cycleWeeks: 12, pass: 800 },
+  // ── 精算定稿数据（2026-10-12 换系：团队新版《代谢健康守护———代谢综合征（MetS）
+  //    特定疾病保险》第六章表 6-1～6-5，替代原《费率表_精算结果_v4》两责口径）──
+  // 数据基础：CHARLS 2011 / 2015 两波血检波（2013 年缺血检数据，不能并入）；
+  //           面板匹配 6,743 人，可投保队列 758 人，平均 55.2 岁。
+  // 口径：保额 15 万 · 保证续保期 10 年（精算投影期，**非保险期间**）·
+  //       贴现率 3% · AI 干预效果假设 40% · 保险责任三责（重症 100% / 中症 20% / 身故 20%）。
+  // ⚠️ 10 年投影是**组合口径**（A/B/C 加权）；分级数据新版方案只给到纯保费（表 6-3），
+  //    死差按责任维度给（表 6-4：重症 13,312 / 中症 2,549 / 身故 231）——
+  //    所以第 4 步的分级表只列保费三列，死差改按责任维度出表。
+  // ⚠️ 「死差」的口径是「基准期望赔付 − AI 干预后期望赔付」，**不是**「保费 − 赔付」。
+  //    前者衡量干预压下来的风险价值，后者是承保盈余（另一个口径，别混用）。
+  actuarial: {
+    sumInsured: 150000,
+    term: 10,
+    discount: 0.03,
+    aiEffect: 0.40,
+    // 10 年投影（第 10 年末，组合口径，新版方案表 6-4）
+    tenYear: {
+      cumDMBase: 0.1945, cumCVDBase: 0.0853, cumAllBase: 0.2798,
+      cumDMAI:   0.1233, cumCVDAI:   0.0552, cumAllAI:   0.1785,
+      epvBase: 44628, epvAI: 28536,
+      mortalityGain: 16092,      // = epvBase − epvAI
+      payoutCut: 0.361,          // 赔付降幅
+    },
+    // 加权平均纯保费（元/年，表 6-3 加权行）
+    premBaseWeighted: 5232,
+    premAIWeighted: 3345,
+    // 敏感性分析（表 6-5）：AI 干预效果 → 期望赔付 / 死差 / 赔付降幅。
+    // ⚠️ 新版方案未给各档的累积出险率，故不再展示 cum 列。
+    sensitivity: [
+      { cut: 0.20, epv: 36852, gain: 7776,  drop: 0.174 },
+      { cut: 0.30, epv: 32764, gain: 11865, drop: 0.266 },
+      { cut: 0.40, epv: 28536, gain: 16092, drop: 0.361 },
+      { cut: 0.50, epv: 24165, gain: 20463, drop: 0.459 },
+      { cut: 0.58, epv: 20563, gain: 24066, drop: 0.539 },
+    ],
+    // Bootstrap（N = 1,000）：死差均值 16,050，95% 置信区间 [14,830, 17,208]，全部为正
+    boot: { mean: 16050, lo: 14830, hi: 17208 },
+    // ── ① 分级口径（表 6-3）：达标项数 / 投保人占比 / 年发生率 / 三档纯保费。
+    //    新版方案未给分级「风险系数」，不再展示 beta 列。
+    levels: [
+      { lv: 'A', items: 3, share: 0.562, dm: 0.0231, cvd: 0.0132, premBase: 5229, premAI: 3383, premDisc: 2707 },
+      { lv: 'B', items: 4, share: 0.327, dm: 0.0262, cvd: 0.0113, premBase: 5093, premAI: 3166, premDisc: 2533 },
+      { lv: 'C', items: 5, share: 0.111, dm: 0.0480, cvd: 0.0121, premBase: 6589, premAI: 3680, premDisc: 2944 },
+    ],
+    // 10 年年金现值系数 ä₁₀|₃% = Σ_{t=1..10} 1.03^-t（定价公式 EPV ÷ ä 的分母）。
+    // 校验：加权平均纯保费 5,232 × 8.530203 ≈ 44,628 = 表 6-4 的 EPV 基准（四舍五入内一致）。
+    // ⚠️ 分级 EPV 不再由纯保费 × ä 还原展示（新版方案死差按责任维度给，见 resp）。
+    annuity: 8.530203,
+    // ①′ 三责 EPV 对比（表 6-4）：分责任的基准 / AI 干预 / 死差与 EPV 占比（AI 情景）
+    resp: [
+      { name: '重症（三项特定疾病 · 100% 保额）', epvBase: 36514, epvAI: 23202, gain: 13312, share: 0.813 },
+      { name: '中症（MetS 严重进展 · 20% 保额）', epvBase: 7503,  epvAI: 4954,  gain: 2549,  share: 0.174 },
+      { name: '疾病相关身故（20% 保额）',          epvBase: 612,   epvAI: 381,    gain: 231,   share: 0.013 },
+    ],
+    // ② 10 年逐年投影：新版方案只给第 10 年末的端点（表 6-4），未给年度明细。
+    //    下表按原投影曲线的逐年形状重标定端点（cum ×0.2798/0.2558、cum1 ×0.1785/0.1627、
+    //    epv ×44628/33454、epv1 ×28536/21209），仅作演示逐年走势用；第 10 年与方案完全一致。
+    projection: [
+      { y: 1,  cum0: 0.0430, cum1: 0.0259, epv0: 7636,  epv1: 4620,  gain: 3016 },
+      { y: 2,  cum0: 0.0806, cum1: 0.0489, epv0: 14117, epv1: 8615,  gain: 5502 },
+      { y: 3,  cum0: 0.1139, cum1: 0.0697, epv0: 19693, epv1: 12112, gain: 7581 },
+      { y: 4,  cum0: 0.1438, cum1: 0.0886, epv0: 24554, epv1: 15207, gain: 9347 },
+      { y: 5,  cum0: 0.1710, cum1: 0.1061, epv0: 28840, epv1: 17976, gain: 10864 },
+      { y: 6,  cum0: 0.1959, cum1: 0.1223, epv0: 32658, epv1: 20476, gain: 12182 },
+      { y: 7,  cum0: 0.2191, cum1: 0.1375, epv0: 36091, epv1: 22751, gain: 13340 },
+      { y: 8,  cum0: 0.2404, cum1: 0.1518, epv0: 39198, epv1: 24835, gain: 14363 },
+      { y: 9,  cum0: 0.2607, cum1: 0.1654, epv0: 42031, epv1: 26756, gain: 15275 },
+      { y: 10, cum0: 0.2798, cum1: 0.1785, epv0: 44628, epv1: 28536, gain: 16092 },
+    ],
+    // ③ 转移概率矩阵（表 6-1，AI 干预情景 · 40% 效果）：行 = 期初状态，列 = 期末状态。
+    //    DM / CVD 为半吸收态：进入后持续停留，年内仍可死亡并触发疾病相关身故给付。
+    transitions: {
+      states: ['A', 'B', 'C', 'DM', 'CVD', 'Death', 'Reverse'],
+      rows: [
+        { from: 'A',       v: [0.917, 0.033, 0.000, 0.014, 0.008, 0.008, 0.021] },
+        { from: 'B',       v: [0.023, 0.896, 0.019, 0.016, 0.007, 0.008, 0.031] },
+        { from: 'C',       v: [0.012, 0.012, 0.877, 0.029, 0.007, 0.008, 0.054] },
+        { from: 'DM',      v: [0.000, 0.000, 0.000, 0.986, 0.000, 0.014, 0.000] },
+        { from: 'CVD',     v: [0.000, 0.000, 0.000, 0.000, 0.976, 0.024, 0.000] },
+        { from: 'Death',   v: [0.000, 0.000, 0.000, 0.000, 0.000, 1.000, 0.000] },
+        { from: 'Reverse', v: [0.050, 0.000, 0.000, 0.007, 0.004, 0.008, 0.931] },
+      ],
+    },
+    // ④ 建模样本与口径（新版方案第六章（一））
+    sample: { panel: 6743, insurable: 758, meanAge: 55.2, maleShare: 0.303, waves: '2011 / 2015' },
+  },
+};
+
+/* ── 1b. 五维定义 ─────────────────────────────────────────────────────
+   「五维」= MetS 五项判定指标，一维一个日常干预动作，**不按运动 / 饮食二分**。
+   所以打卡是五列不是两列：一维没做，那一维的指标就没有当周的干预输入。
+   表型分类（四类）由四个生理轴归并五维得到，不是另一套指标。
+
+   ★ 命名分两层（v0.6）：
+     · tag / lb / act / why —— 给**参保人**看的：动作名是他能照着做的事，
+       指标名用体检单上的俗名（血糖 / 血压 / 甘油三酯 / 好胆固醇）。
+       目标人群 45–65 岁，「低 GI」「抗阻」这类词他们不知道要干啥，必须换成生活词。
+     · pro —— 专业口径，给机制说明 / 正文 / 答辩用。不要在面向参保人的界面里显示它。
+   ⚠️ 每维的分值（等权 3 分）与动作内容为暂定值，需要精算 / 医学确定。
+   ──────────────────────────────────────────────────────────────────── */
+const DIM_DEFS = [
+  // 腰围这一维的医学机制是「下肢抗阻 → 保肌肉 → 抬高基础代谢」。
+  // 但不写成「练肌肉 / 举哑铃」—— 目标人群 45–65 岁，听到健身房式的动作会直接不打。
+  // 换成三个零器械、在家就能做、又确实练到腿的动作（坐站、靠墙静蹲、踮脚），
+  // 对中老年人安全，还能顺带降低跌倒风险。
+  { tag: '练腿劲', lb: '腰围', pro: '下肢自重抗阻 / 中心性肥胖',
+    act: '从椅子上坐下起立 15 次、扶墙静蹲 30 秒、踮脚尖 20 次（不用器械，在家就能做）', via: '运动',
+    why: '腿上有劲，人就愿意多走多动，热量消耗上去，腰围才压得下来；也不容易摔跤' },
+  { tag: '主食换粗粮', lb: '血糖', pro: '低 GI / 空腹血糖',
+    act: '白米白面减一半，换糙米、玉米、红薯；先吃菜、后吃饭', via: '饮食',
+    why: '饭后血糖升得慢，血糖这一项就稳' },
+  { tag: '少放盐', lb: '血压', pro: '限盐 / 血压',
+    act: '一天用盐不超过一啤酒瓶盖（约 5 克），少吃咸菜、腊肉、酱料', via: '饮食',
+    why: '盐吃多了血压就高，这一条最容易改' },
+  { tag: '戒酒和甜饮料', lb: '甘油三酯', pro: '戒甜酒 / 甘油三酯',
+    act: '白酒、啤酒都不喝；可乐、果汁、奶茶也不喝', via: '饮食',
+    why: '酒精和甜饮料是甘油三酯升得最快的两个原因' },
+  { tag: '每天快走', lb: '好胆固醇', pro: '有氧 / HDL-C',
+    act: '快走 30 分钟（约 4000 步）；骑车、游泳、广场舞也算', via: '运动',
+    why: '快走能把「好胆固醇」提上来' },
+];
+
+/* ── 2. 三个预置案例 ─────────────────────────────────────────────────
+   cur  = 投保时五项指标；goal = 依从率 100% 时的个体可达临床目标值。
+   goal 是「一年内可达的临床目标」，不一定是正常值：重症案例的腰围、TG、HDL
+   一年后往往仍在异常区间 —— 这符合临床现实，也是「降级而非治愈」的临床依据。
+   cur / goal 必须成对改动，否则重评结果会跑偏。
+   三条路径已按「满依从降一级 / 低依从（每周 3 天）不降级」校准（判定口径：《中国糖尿病防治指南（2024 版）》），
+   并让三种主导表型各占一个：
+   A 案例 血压型 → 满依从逆转出 MetS；B 案例 血脂型 → 满依从降 A、低依从停在 B；
+   C 案例 血糖型 → 满依从降 B、低依从停在 C。
+   每个案例的 cur / goal 数值是被「跨阈值的那一项」卡出来的：
+   例如 B 案例靠腰围（94 → 89.2）在满依从时跌破 90、低依从时停在 90.5，
+   这一进一出就是干预有效的证据。
+   ──────────────────────────────────────────────────────────────────── */
+const CASES = [
+  {
+    id: 'A', name: '李静', sex: 'F', age: 46, height: 162, weight: 72,
+    cur:  { waist: 88.0, tg: 1.65, hdl: 0.96, sbp: 139, dbp: 88, fbg: 5.80 },
+    goal: { waist: 83.0, tg: 1.55, hdl: 1.10, sbp: 132, dbp: 82, fbg: 5.40 },
+    goalW: 66.0,
+    cmt: '达标 3 项，血压 139/88 是主导异常（已到正常高值上限），MetS 里风险最低的一档。',
+  },
+  {
+    id: 'B', name: '张建国', sex: 'M', age: 52, height: 175, weight: 82,
+    cur:  { waist: 94.0, tg: 2.60, hdl: 0.95, sbp: 146, dbp: 90, fbg: 5.60 },
+    goal: { waist: 89.2, tg: 1.80, hdl: 0.98, sbp: 136, dbp: 82, fbg: 5.20 },
+    goalW: 77.0,
+    cmt: '达标 4 项，TG 2.60 主导风险，但血压 146/90 也已进 1 级高血压——典型的「体检不给开药、核保却要加费」人群。',
+  },
+  {
+    id: 'C', name: '王德明', sex: 'M', age: 58, height: 172, weight: 96,
+    cur:  { waist: 96.0, tg: 1.80, hdl: 0.95, sbp: 138, dbp: 86, fbg: 6.90 },
+    goal: { waist: 88.5, tg: 1.75, hdl: 0.98, sbp: 134, dbp: 84, fbg: 6.30 },
+    goalW: 85.0,
+    cmt: '达标 5 项，空腹血糖 6.90 已逼近糖尿病诊断线（7.0），传统核保的典型拒保件。',
+  },
+];
+
+/* ── 2b. 各表型的饮食禁忌 ─────────────────────────────────────────────
+   只约束「怎么说」还不够 —— 不同表型「该说什么」并不一样：
+   同一句「吃点水果」，血压型尚可，血糖型就不合适。
+   所以按主导表型追加一段「不要建议什么 → 改成建议什么」，成对给出。
+   ──────────────────────────────────────────────────────────────────── */
+const PHENO_TABOO = {
+  '血糖型': {
+    no: '水果、果汁、含糖饮品、精制主食（白米白面）、各种粥（白粥 / 小米粥）',
+    yes: '主食减半、换成粗杂粮；先吃菜、后吃饭',
+    scene: '应酬场合：主食只吃半碗，羹汤和甜饮都不碰',
+  },
+  '血脂型': {
+    no: '坚果、油炸、动物内脏，以及任何酒类（白酒、啤酒、红酒都算）',
+    yes: '酒一口不喝、甜饮料不喝，菜以蒸煮炖为主',
+    scene: '应酬场合：酒一口不喝、甜饮料不喝，先涮一筷子青菜垫底',
+  },
+  '血压型': {
+    no: '腌制、卤味、咸菜、加工肉、火锅汤底、各种蘸料；也不要说「改喝低度酒」',
+    yes: '菜涮一下水再吃、汤少喝，用醋和葱姜蒜提味代替盐；酒不喝',
+    scene: '应酬场合：菜涮一下水再吃、汤只喝一小勺，蘸料蘸一点点，酒不喝',
+  },
+  '肥胖型': {
+    no: '代餐、断食、减肥药这类极端做法',
+    yes: '先夹菜后夹肉、主食放最后，吃到七分饱就停',
+    scene: '应酬场合：先夹菜后夹肉、主食放最后',
+  },
+};
+
+/* ── 3. 食谱样例库 ───────────────────────────────────────────────────
+   键名与表型四分类一一对应（血糖型 / 血压型 / 血脂型 / 肥胖型）。
+   每型给出早午晚三餐样例，按该型的主导生理轴设计营养策略。
+   ──────────────────────────────────────────────────────────────────── */
+const MEALS = {
+  '血糖型': [
+    { m: '早餐', t: '燕麦 40g + 水煮蛋 1 个 + 无糖豆浆 250ml', tag: '升糖慢 · 顶饱' },
+    { m: '午餐', t: '杂粮饭 75g（生重） + 清蒸鱼 120g + 焯青菜 200g', tag: '先吃菜、再吃饭' },
+    { m: '晚餐', t: '荞麦面 50g + 豆腐 100g + 凉拌木耳', tag: '主食减半' },
+  ],
+  '血压型': [
+    { m: '早餐', t: '全麦馒头 1 个 + 低脂奶 250ml + 香蕉半根', tag: '补钾、少盐' },
+    { m: '午餐', t: '杂粮饭 75g + 鸡胸 100g + 芹菜香干（少盐）', tag: '少放盐（每天 <5g）' },
+    { m: '晚餐', t: '红薯 100g + 虾仁 80g + 菠菜（开水焯）', tag: '补钾、少油炸' },
+  ],
+  '血脂型': [
+    { m: '早餐', t: '燕麦 40g + 核桃 10g + 无糖酸奶 150g', tag: '膳食纤维、少油' },
+    { m: '午餐', t: '糙米饭 75g + 深海鱼 120g + 西兰花', tag: '深海鱼替代红肉' },
+    { m: '晚餐', t: '糙米饭 50g + 豆腐 120g + 凉拌菠菜', tag: '少油、少肥肉' },
+  ],
+  '肥胖型': [
+    { m: '早餐', t: '鸡蛋 2 个 + 番茄 1 个 + 黑咖啡', tag: '蛋白质足、顶饿' },
+    { m: '午餐', t: '鸡胸 150g + 大份蔬菜 + 杂粮饭 50g', tag: '少吃约 500 大卡' },
+    { m: '晚餐', t: '清蒸鱼 100g + 菌菇汤 + 少量薯类', tag: '晚餐主食减量' },
+  ],
+};
+
+/* ── 3b. 加餐（第 2 步「每天怎么吃」用） ─────────────────────────────
+   三餐沿用 MEALS，这里只补两餐之间的两次加餐。
+   选的都是「不含糖、不额外加盐加油」的项，且按表型各有侧重。
+   ──────────────────────────────────────────────────────────────── */
+const SNACKS = {
+  '血糖型': [
+    { m: '上午加餐', t: '无糖酸奶 100g 或水煮蛋 1 个', tag: '两餐之间垫一下，避免到点过饿、下一顿吃多' },
+    { m: '下午加餐', t: '黄瓜 / 小番茄一份（约 200g）', tag: '不含糖，血糖曲线不会被抬起来' },
+  ],
+  '血压型': [
+    { m: '上午加餐', t: '低脂牛奶 200ml', tag: '补钾补钙，不再另外吃咸味零食' },
+    { m: '下午加餐', t: '橙子 1 个，或原味坚果一小把（约 10g）', tag: '不选咸味或裹糖的坚果' },
+  ],
+  '血脂型': [
+    { m: '上午加餐', t: '苹果 1 个', tag: '膳食纤维，替代饼干点心' },
+    { m: '下午加餐', t: '无糖豆浆 200ml', tag: '替代含糖饮料与奶茶' },
+  ],
+  '肥胖型': [
+    { m: '上午加餐', t: '无糖黑咖啡 或 无糖茶', tag: '不加糖、不加奶精' },
+    { m: '下午加餐', t: '水煮蛋 1 个，或黄瓜一份', tag: '顶饿、热量低，晚餐前先垫住' },
+  ],
+};
+
+/* ── 3c. 运动处方（第 2 步「每天怎么练」用） ─────────────────────────
+   分「有氧」与「力量」两段，按主导表型给四套：
+     · 有氧写清 项目 / 单次时长（min）/ 什么时候做（when）/ 一周几次（freq）/ 为什么这么定；
+     · 力量写清 动作 / 组数（sets）× 每组次数（reps）/ 具体做法（how）。
+   三个动作全部是零器械、在家能做的下肢自重练习（坐站 / 静蹲 / 踮脚），
+   不用「抗阻训练」「中等强度有氧」这类术语；对 45–65 岁人群安全，也顺带降低跌倒风险。
+   ⚠️ 组数与时长会被体重指数微调（见 renderStep2 的 applyBody 规则），
+      所以这里给的是**基础量**，界面上显示的是调整后的量。
+   ──────────────────────────────────────────────────────────────── */
+const SPORT_PLAN = {
+  '血糖型': {
+    cardio: { act: '快走（骑车、游泳也行）', min: 30, when: '晚饭后 1 小时左右', freq: '每周 5 天',
+              why: '这一型主要盯饭后两小时，饭后走一走能把血糖高峰削下去。' },
+    strength: [
+      { act: '从椅子上坐下起立', sets: 2, reps: '15 次', how: '椅面与膝盖同高；站起时不用手撑，坐下时慢慢落，约 3 秒起、3 秒落' },
+      { act: '扶墙静蹲', sets: 2, reps: '30 秒', how: '背靠墙慢慢屈膝，膝盖不超过脚尖，保持能正常说话的力度' },
+      { act: '踮脚尖', sets: 2, reps: '20 次', how: '扶住桌沿或椅背，踮起停 1 秒再落下，慢起慢落' },
+    ],
+    rest: '力量练习隔天做一次，不连着两天做；与快走排在同一天，先有氧、后力量；两个动作之间歇 1—2 分钟。',
+    caution: '正在用降糖药或胰岛素的人，随身带一点饼干；出现心慌、出汗、手抖先停下来测血糖。',
+  },
+  '血压型': {
+    cardio: { act: '快走（或平地骑车）', min: 30, when: '傍晚，睡前三小时以前', freq: '每周 5 天',
+              why: '规律有氧对血压最直接；强度以「能说话、唱不了歌」为准，不求快。' },
+    strength: [
+      { act: '从椅子上坐下起立', sets: 2, reps: '12 次', how: '全程不憋气，起身时呼气；节奏放慢，不用手撑' },
+      { act: '扶墙静蹲', sets: 2, reps: '25 秒', how: '不憋气、不追求蹲得深；感到头晕立刻站起靠墙休息' },
+      { act: '踮脚尖', sets: 2, reps: '20 次', how: '扶稳桌沿，慢起慢落，配合自然呼吸' },
+    ],
+    rest: '力量练习隔天做一次；与快走排在同一天，先有氧、后力量；全程注意呼吸，不憋气。',
+    caution: '血压高于 180/110 mmHg 时先以快走为主，暂不做力量练习；起床、起身都要放慢。',
+  },
+  '血脂型': {
+    cardio: { act: '快走（游泳、骑车也行）', min: 40, when: '早晨或傍晚，固定一个时间', freq: '每周 5 天',
+              why: '这一型靠有氧的总时长把甘油三酯压下来，单次时间长一点比强度高更有效。' },
+    strength: [
+      { act: '从椅子上坐下起立', sets: 2, reps: '15 次', how: '不用手撑，3 秒起、3 秒落；做的过程中正常呼吸' },
+      { act: '扶墙静蹲', sets: 2, reps: '30 秒', how: '背靠墙屈膝，膝盖不超过脚尖，保持均匀呼吸' },
+      { act: '踮脚尖', sets: 2, reps: '25 次', how: '扶稳后踮起停 1 秒再落下，配合呼吸不憋气' },
+    ],
+    rest: '力量练习隔天做一次；有氧可以每天做，单次时间长比强度高更重要；两个动作之间歇 1—2 分钟。',
+    caution: '膝踝不适时把快走换成游泳或骑车；不靠一次大运动量补欠账，按天做。',
+  },
+  '肥胖型': {
+    cardio: { act: '快走', min: 40, when: '早晨或晚饭后，可以拆成两次各 20 分钟', freq: '每周 6 天',
+              why: '这一型要把热量缺口做出来，有氧总量与每周天数都要比其余三型更足。' },
+    strength: [
+      { act: '从椅子上坐下起立', sets: 3, reps: '15 次', how: '不用手撑；起落各 3 秒，做得慢比做得多更重要' },
+      { act: '扶墙静蹲', sets: 3, reps: '30 秒', how: '背靠墙屈膝，膝盖不超过脚尖，不憋气' },
+      { act: '踮脚尖', sets: 3, reps: '20 次', how: '扶稳桌沿或椅背，踮起停 1 秒再落下' },
+    ],
+    rest: '力量练习隔天做一次；与有氧排在同一天，先有氧、后力量；两个动作之间歇 1—2 分钟。',
+    caution: '从低强度起步，膝踝不适时把快走换成游泳或骑车；先保证每周天数，不追求单次练到位。',
+  },
+};
+
+/* ── 3d. 插画横幅（第 2 步「每天怎么吃 / 每天怎么练」用，2026-10-11）────
+   负责人要求给每日健康方案加配图。纯内联 SVG、零外部依赖；
+   餐盘结构是通用配餐原则，运动横幅的「有氧分钟数」随体重指数由 JS 传入重画。
+   视觉沿用产品色系：翡翠绿 #0E7C66 / 鎏金 #C98A2E / 浅底 #F2F8F5。 */
+function mealIllu() {
+  return `<svg viewBox="0 0 680 100" preserveAspectRatio="xMidYMid meet" role="img"
+    aria-label="餐盘结构示意：半盘蔬菜、一份粗粮主食、一份优质蛋白">
+    <circle cx="58" cy="50" r="38" fill="#FFFFFF"/>
+    <path d="M20 50 A38 38 0 0 1 96 50 Z" fill="#7FBF9E"/>
+    <path d="M20 50 A38 38 0 0 0 58 88 L58 50 Z" fill="#E4C37C"/>
+    <path d="M58 88 A38 38 0 0 0 96 50 L58 50 Z" fill="#D98E6A"/>
+    <circle cx="58" cy="50" r="38" fill="none" stroke="#C3DBEF" stroke-width="2"/>
+    <circle cx="122" cy="26" r="7" fill="#7FBF9E"/>
+    <text x="138" y="31" font-size="14.5" fill="#1F3A33">半盘蔬菜</text>
+    <circle cx="122" cy="50" r="7" fill="#E4C37C"/>
+    <text x="138" y="55" font-size="14.5" fill="#1F3A33">一份粗粮主食</text>
+    <circle cx="122" cy="74" r="7" fill="#D98E6A"/>
+    <text x="138" y="79" font-size="14.5" fill="#1F3A33">一份优质蛋白</text>
+    <line x1="268" y1="18" x2="268" y2="82" stroke="#DCEAE4" stroke-width="1.5"/>
+    <text x="290" y="42" font-size="14" fill="#40614F">配餐原则：餐盘一半是蔬菜，主食以粗粮为主，蛋白不油炸</text>
+    <text x="290" y="66" font-size="14" fill="#40614F">每一餐的具体内容按主导表型给出，见下表</text>
+  </svg>`;
+}
+function sportIllu(min) {
+  return `<svg viewBox="0 0 680 100" preserveAspectRatio="xMidYMid meet" role="img"
+    aria-label="先有氧后力量示意">
+    <rect x="16" y="22" width="150" height="56" rx="12" fill="#FFFFFF" stroke="#DCEAE4" stroke-width="1.5"/>
+    <polyline points="34,44 54,44 62,30 74,58 82,44 104,44" fill="none" stroke="#0E7C66"
+      stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="91" y="70" font-size="13" fill="#40614F" text-anchor="middle">有氧 · ${min} 分钟</text>
+    <path d="M186 50 h30 m-9 -8 l9 8 l-9 8" stroke="#8AA29C" stroke-width="2.5" fill="none"
+      stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="236" y="22" width="150" height="56" rx="12" fill="#FFFFFF" stroke="#DCEAE4" stroke-width="1.5"/>
+    <rect x="258" y="46" width="106" height="8" rx="4" fill="#0E7C66"/>
+    <rect x="250" y="32" width="14" height="36" rx="5" fill="#C98A2E"/>
+    <rect x="358" y="32" width="14" height="36" rx="5" fill="#C98A2E"/>
+    <text x="311" y="70" font-size="13" fill="#40614F" text-anchor="middle">力量 · 3 个动作</text>
+    <text x="410" y="42" font-size="14" fill="#40614F">先有氧、后力量；力量练习隔天做一次</text>
+    <text x="410" y="66" font-size="14" fill="#40614F">体重指数偏高时，时长与组数相应上调</text>
+  </svg>`;
+}
+
+/* ── 4. 教练话术模板 ─────────────────────────────────────────────────
+   每条话术面向一个推送场景，{v} 会被替换成该用户当次的真实指标值，
+   {p} 为积分目标值。食谱与话术均为示例。
+   ──────────────────────────────────────────────────────────────────── */
+const SCRIPTS = {
+  diet: '你今天上传的午餐我算了一下，碳水大约 {v}g，比你今天的预算高出 30% 左右。不用整份减掉——把米饭换成半碗，再加一份绿叶菜，这一餐就回来了。',
+  sport: '你本周的活动量还差 {v} 分钟。今天晚饭后走 25 分钟就够了，不用一次做完。',
+  med: '到了服药时间。顺手记一下今天早上的血压，我想看看这周的趋势。',
+  check: '三个月到了。去社区卫生中心做一次腰围、血压、空腹血糖。这次的数据会直接决定你下一年属于哪一档。',
+  challenge: '你本周期已经攒了 {v} 积分。攒到 {p} 分，季度加项体检我就给你申请下来。',
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   以下为引擎与渲染，一般不用改
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const $ = s => document.querySelector(s);
+const fmt = (n, d = 1) => Number(n).toFixed(d);
+const money = n => Math.round(n).toLocaleString('zh-CN');
+const wan = n => fmt(n / 10000, 2);
+
+const newWeekDims = (n = 5) =>
+  Array.from({ length: 7 }, () => DIM_DEFS.map((_, k) => k < n));
+
+const S = {
+  person: null,     // 当前投保人（含逐步变化的 cur）
+  base: null,       // 初始核保结果
+  init: null,       // 初始指标快照
+  weeks: [],        // [{w, dimDays, pts, eff, count, level, cur, weight, real}]
+  // 本周五维打卡：7 天 × 5 维布尔矩阵。dimDays[i][k] = 第 i 天第 k 维是否完成。
+  // 维度顺序与 DIM_DEFS 一致：练腿劲 / 主食换粗粮 / 少放盐 / 戒酒和甜饮料 / 每天快走
+  // 2026-10-11 负责人要求：打卡格子默认全部空白（原来默认全勾，演示感太重）
+  dimDays: newWeekDims(0),
+  active: -1,       // 选中的案例序号
+  realOwner: '',    // 实测表单当前预填的归属（换投保人时必须重建，否则残留上一个人的默认值）
+  realTouched: false, // 用户是否手动改过实测输入框（改过就不再覆盖，避免清掉输入）
+  realSnap: '',     // 上次预填所依据的预测值快照，用于判断是否需要刷新
+  gen: 0,           // 投保人世代号：start() 每执行一次 +1，用作表单重建的可靠触发键
+  // 参保人端积分账户。可用积分 = 实际打卡累计 − 已兑换。换投保人时清空。
+  wallet: { log: [] },   // log: [{id, name, cost, week}]
+  // AI 健康助手：示例模式（离线硬编码）/ 真实模型模式（GLM-4-Flash 现场生成）
+  aiLive: false,    // true = 已切到真实模型
+  aiBusy: false,    // 是否正在等模型返回
+  chat: [],         // 真实模式的消息列表 [{role, content, streaming?, err?}]
+};
+
+/* ---------- 核保引擎 ---------- */
+function thresholds(sex) {
+  const P = PARAMS.metS;
+  // HDL-C 允许写成不分性别的数值（中国指南口径）或 {M,F} 对象（IDF 口径）
+  const hdl = typeof P.hdl === 'object' ? (sex === 'M' ? P.hdl.M : P.hdl.F) : P.hdl;
+  return { waist: sex === 'M' ? P.waist.M : P.waist.F, tg: P.tg,
+           hdl, sbp: P.sbp, dbp: P.dbp, fbg: P.fbg };
+}
+
+function checkItems(sex, cur) {
+  const t = thresholds(sex), sv = PARAMS.sev, out = [];
+  const wPlus = cur.waist - t.waist;
+
+  out.push({
+    key: 'waist', name: '中心性肥胖',
+    std: `${sex === 'M' ? '男' : '女'} 腰围 ≥ ${t.waist} cm`,
+    show: `${fmt(cur.waist)} cm`, ok: cur.waist >= t.waist,
+    hi: cur.waist >= t.waist + sv.high.waistPlus,
+    mid: wPlus >= sv.mid.waistPlus,
+  });
+  out.push({
+    key: 'tg', name: '甘油三酯升高', std: `TG ≥ ${t.tg} mmol/L`,
+    show: `${fmt(cur.tg, 2)} mmol/L`, ok: cur.tg >= t.tg,
+    hi: cur.tg >= sv.high.tg, mid: cur.tg >= sv.mid.tgLo,
+  });
+  out.push({
+    key: 'hdl', name: '高密度脂蛋白偏低',
+    std: `HDL-C < ${t.hdl} mmol/L（${typeof PARAMS.metS.hdl === 'object' ? (sex === 'M' ? '男' : '女') : '不分性别'}）`,
+    show: `${fmt(cur.hdl, 2)} mmol/L`, ok: cur.hdl < t.hdl,
+    hi: cur.hdl < t.hdl - sv.high.hdlMinus, mid: cur.hdl < t.hdl - sv.mid.hdlMinus,
+  });
+  out.push({
+    key: 'bp', name: '血压升高', std: `SBP ≥ ${t.sbp} 或 DBP ≥ ${t.dbp} mmHg`,
+    show: `${Math.round(cur.sbp)}/${Math.round(cur.dbp)} mmHg`,
+    ok: cur.sbp >= t.sbp || cur.dbp >= t.dbp,
+    hi: cur.sbp >= sv.high.sbp || cur.dbp >= sv.high.dbp,
+    mid: (cur.sbp >= sv.mid.sbpLo && cur.sbp <= sv.mid.sbpHi) ||
+         (cur.dbp >= sv.mid.dbpLo && cur.dbp <= sv.mid.dbpHi),
+  });
+  out.push({
+    key: 'fbg', name: '空腹血糖升高', std: `FBG ≥ ${t.fbg} mmol/L`,
+    show: `${fmt(cur.fbg, 2)} mmol/L`, ok: cur.fbg >= t.fbg,
+    hi: cur.fbg >= sv.high.fbg,
+    mid: cur.fbg >= sv.mid.fbgLo && cur.fbg <= sv.mid.fbgHi,
+  });
+  return out;
+}
+
+function assess(p) {
+  const items = checkItems(p.sex, p.cur);
+  const n = items.filter(i => i.ok).length;
+  const hasHi = items.some(i => i.ok && i.hi);
+  const hasMid = items.some(i => i.ok && i.mid);
+  const bmi = p.weight / Math.pow(p.height / 100, 2);
+
+  const ex = [];
+  if (p.cur.fbg >= PARAMS.exclude.fbg) ex.push(`空腹血糖 ${fmt(p.cur.fbg, 2)} ≥ 7.0 mmol/L，已达 2 型糖尿病诊断线`);
+  if (p.cur.sbp >= PARAMS.exclude.sbp || p.cur.dbp >= PARAMS.exclude.dbp) ex.push(`血压 ${Math.round(p.cur.sbp)}/${Math.round(p.cur.dbp)}，达 3 级高血压`);
+  if (bmi >= PARAMS.exclude.bmi) ex.push(`BMI ${fmt(bmi)} ≥ 40.0，极重度肥胖`);
+
+  let level = null, reason = '';
+  if (ex.length) { reason = '触发拒保条款'; }
+  else if (n <= 2) { reason = `仅达标 ${n} 项，未达 MetS 诊断线（≥3 项），不在本产品承保范围`; }
+  else {
+    level = n === 3 ? 'A' : n === 4 ? 'B' : 'C';
+    reason = `达标 ${n} 项 → ${level} 级`;
+    if (hasHi) { level = 'C'; reason = `达标 ${n} 项，但存在已达临床临界值的指标 → 上调至 C 级`; }
+    else if (hasMid && level === 'A') { level = 'B'; reason = `达标 ${n} 项，存在中度偏离指标 → 上调至 B 级`; }
+  }
+
+  const L = level ? PARAMS.level[level] : null;
+  return {
+    items, n, hasHi, hasMid, bmi, ex, level, reason,
+    coefP: L ? L.p : null, coefS: L ? L.s : null,
+    premium: L ? PARAMS.base.premium * L.p : null,
+    sum: L ? PARAMS.base.sumInsured * L.s : null,
+  };
+}
+
+/* ---------- 表型 ----------
+   表型分类按四个生理轴输出四类：血糖型 / 血压型 / 血脂型 / 肥胖型。
+   做法：先把五维指标各自换算成归一化偏离度，再按四个生理轴归并取最大值，
+        偏离度最高的那一轴即为主型（无任何轴超阈时返回「—」）。
+   ⚠️ 表型分类与定价等级是两套并行口径，不要混用：
+       · 表型分类（四类）回答「干预该往哪一维使劲」；
+       · 定价等级（A / B / C 三档）按 MetS 达标项数 + 严重度定，决定保费与保额系数。
+   ──────────────────────────────────────────────────────────────────── */
+function phenotype(p) {
+  const t = thresholds(p.sex), c = p.cur;
+  const axes = {
+    '血糖': Math.max(0, (c.fbg - t.fbg) / t.fbg),
+    '血压': Math.max((c.sbp - t.sbp) / t.sbp, (c.dbp - t.dbp) / t.dbp),
+    '血脂': Math.max((c.tg - t.tg) / t.tg, (t.hdl - c.hdl) / t.hdl),
+    '肥胖': Math.max(0, (c.waist - t.waist) / t.waist),
+  };
+  const arr = Object.entries(axes).map(([k, v]) => ({ k, v: Math.max(0, v) }))
+    .sort((a, b) => b.v - a.v);
+  const top = arr[0], sec = arr[1];
+  const primary = top.v > 0 ? top.k + '型' : '—';
+  return { primary, topAxis: top.k, topDev: top.v, secondAxis: sec.k, secondDev: sec.v,
+           dominant: top.v > 0 && top.v >= sec.v * 1.5, all: arr };
+}
+
+/* ---------- 12 周健康挑战：五维行为 → 积分 ----------
+   积分是「兑换实物 / 服务」的凭据，参保人端在「我的积分」里查看与兑换。
+   积分按实际打卡累计（每推进一周入账），计划预测值不产生积分。
+   ────────────────────────────────────────────────────────── */
+function perDayPts() { const P = PARAMS.points; return P.perDim * P.dims; }
+function weekPoints(w) { return w.pts || 0; }
+function cycleFullPoints() { return perDayPts() * 7 * PARAMS.points.cycleWeeks; }
+function cyclePoints(seg) { return seg.reduce((s, w) => s + weekPoints(w), 0); }
+
+/* ---------- 参保人端：积分账户 + 积分商城 ----------
+   积分规则 = 按「实际打卡」累计，不做任何预测式发分：
+     · 每推进一周，把当周真实勾选的格子折算成积分入账（S.weeks[].pts）；
+     · 本周已勾选、尚未推进的，单列为「待入账」，不计入可用余额；
+     · 计划里的目标值、预测曲线都不产生积分。
+   可用积分 = 实际打卡累计 − 已兑换。积分只用于在商城兑换实物与服务。
+   ─────────────────────────────────────────────────────────────── */
+const MALL = [
+  { id: 'bp',     name: '电子血压计',        tag: '实物', spec: '上臂式 · 家用，支持数据回传',        cost: 600 },
+  { id: 'strip',  name: '血糖试纸',          tag: '耗材', spec: '50 条 / 盒，配套血糖仪使用',          cost: 400 },
+  { id: 'scale',  name: '体脂秤',            tag: '实物', spec: '含体脂率 / 内脏脂肪估算',             cost: 500 },
+  { id: 'band',   name: '运动手环',          tag: '实物', spec: '计步 · 心率 · 睡眠监测',              cost: 900 },
+  { id: 'meal',   name: '营养代餐',          tag: '食品', spec: '粗粮配方，1 盒 7 餐',               cost: 300 },
+  { id: 'aiplan', name: 'AI 计划一对一调整', tag: '服务', spec: '健康助手 + 健管师共同复核 1 次',      cost: 1200 },
+  { id: 'diet',   name: '注册营养师复核',    tag: '服务', spec: '营养师 1 对 1 复核膳食方案',          cost: 1500 },
+];
+
+/* 积分账户现状：全部来自实际打卡，不含预测值 */
+function walletState() {
+  const settled = S.weeks.reduce((s, w) => s + weekPoints(w), 0);   // 已入账（实际打卡累计）
+  const pending = S.weeks.length >= 52 ? 0 : currentWeek().pts;     // 本周已勾选、待推进入账
+  const used = S.wallet.log.reduce((s, x) => s + x.cost, 0);        // 已兑换消耗
+  return { settled, pending, used, bal: settled - used, log: S.wallet.log };
+}
+
+/* 兑换：余额够就扣分并记账（按钮不足时会置灰，这里是兜底判断） */
+function redeem(id) {
+  const g = MALL.find(x => x.id === id);
+  if (!g) return false;
+  if (walletState().bal < g.cost) return false;
+  S.wallet.log.unshift({ id: g.id, name: g.name, cost: g.cost, week: S.weeks.length });
+  renderMall();
+  return true;
+}
+
+/* 撤销兑换：把积分退回（演示用，真实产品按退换货流程走） */
+function undoRedeem(i) {
+  if (i >= 0 && i < S.wallet.log.length) { S.wallet.log.splice(i, 1); renderMall(); }
+}
+
+function renderMall() {
+  if (!S.person || !S.base || !S.base.level) { $('#p3mall').style.display = 'none'; return; }
+  $('#p3mall').style.display = 'block';
+  const w = walletState();
+  const afford = MALL.filter(g => g.cost <= w.bal).length;
+
+  $('#walletBox').innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><div class="lb">可用积分</div>
+        <div class="vl">${w.bal}<small>分</small></div>
+        <div class="dlt">当前可兑换 ${afford} 件</div></div>
+      <div class="kpi"><div class="lb">累计获得（实际打卡）</div>
+        <div class="vl">${w.settled}<small>分</small></div>
+        <div class="dlt">已入账 ${S.weeks.length} 周</div></div>
+      <div class="kpi"><div class="lb">已兑换</div>
+        <div class="vl">${w.used}<small>分</small></div>
+        <div class="dlt">${w.log.length} 件</div></div>
+      <div class="kpi"><div class="lb">本周待入账</div>
+        <div class="vl">${w.pending}<small>分</small></div>
+        <div class="dlt">${S.weeks.length >= 52 ? '52 周已结束' : '推进一周后入账'}</div></div>
+    </div>
+    ${w.bal === 0 ? '<p class="hint">还没有可用积分 —— 先在上面打卡，点「推进一周」，当周实际得分即刻入账。</p>' : ''}`;
+
+  $('#mallGrid').innerHTML = MALL.map(g => {
+    const ok = w.bal >= g.cost;
+    return `<div class="goods${ok ? ' enough' : ''}">
+      <div class="gd-hd">${g.name}<span class="gd-tag">${g.tag}</span></div>
+      <div class="gd-spec">${g.spec}</div>
+      <div class="gd-ft">
+        <div class="gd-cost">${g.cost}<small>分</small></div>
+        <button class="btn sm${ok ? '' : ' ghost'}" data-redeem="${g.id}"${ok ? '' : ' disabled'}>${
+          ok ? '立即兑换' : `还差 ${g.cost - w.bal} 分`}</button>
+      </div>
+    </div>`;
+  }).join('') + `<p class="hint" style="grid-column:1/-1;margin:2px 0 0">积分单价按 <b>1 积分 ≈ ¥0.20</b> 的采购 / 履约成本折算</p>`;
+
+  $('#mallLog').innerHTML = w.log.length ? `
+    <h4 class="sub">兑换记录</h4>
+    <div class="tscroll"><table data-cols="4">
+      <thead><tr><th style="width:40%">物品</th><th class="num" style="width:18%">消耗积分</th>
+        <th style="width:26%">兑换时点</th><th style="width:16%"></th></tr></thead>
+      <tbody>${w.log.map((x, i) => `<tr>
+        <td>${x.name}</td><td class="num mono">−${x.cost}</td>
+        <td class="hint">第 ${x.week} 周</td>
+        <td><button class="btn sm ghost" data-undo="${i}">撤销</button></td></tr>`).join('')}</tbody>
+    </table></div>`
+    : '<p class="hint" style="margin-top:14px">还没有兑换记录。</p>';
+
+  document.querySelectorAll('[data-redeem]').forEach(b => b.onclick = () => redeem(b.dataset.redeem));
+  document.querySelectorAll('[data-undo]').forEach(b => b.onclick = () => undoRedeem(+b.dataset.undo));
+}
+
+/* ══ AI 健康助手：接入真实大模型（默认智谱 GLM-4-Flash）════════════════
+   两种模式：
+     · 示例模式（默认）—— chatBox 里的硬编码对话，离线可看，断网也能演示；
+     · 实时模式 —— 用**当前参保人的真实档案**组装提示词，流式调用大模型，
+       逐字打出来。所以内容是现场生成的，不是固定文案。
+
+   模型可换：默认 glm-4-flash，设置区可以填任意智谱模型名（glm-4-plus / glm-4-long …），
+             存在 localStorage 的 khb_glm_model。
+
+   为什么本地 file:// 打开也能直连：
+     实测智谱该接口会「回显」请求方的 Origin（Access-Control-Allow-Origin 跟着 Origin 走），
+     并放行 authorization / content-type 两个头，预检直接 200。
+     file:// 页面发出的 Origin 是 null，同样被回显，因此浏览器不拦 —— 不需要任何代理服务器。
+
+   ⚠️ 被嵌在 iframe / 预览面板里会失败：宿主的 connect-src 白名单不含 open.bigmodel.cn，
+      fetch 被拦成「Failed to fetch」。不是 Key 的问题，本地双击打开即可（errHint() 负责说清楚）。
+
+   ⚠️ 凭据：与玄机阁同款「base64 存放 + 透明解码」（见 GLM.apiKeyB64 / builtinKey()）。
+      界面上不显示、输入框不回填。前端拿得到的东西毕竟保不了密，上线前须移到服务端。
+   ─────────────────────────────────────────────────────────────────────── */
+const GLM = {
+  url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+  model: 'glm-4-flash',        // 默认模型
+  models: ['glm-4-flash', 'glm-4-flashx', 'glm-4-air', 'glm-4-plus', 'glm-4-long'],
+  temperature: 0.6,
+  maxTokens: 800,
+  /* 凭据：与玄机阁同一套做法（llm.py / auth.py 的 _B64 透明解码）——
+       凭据以 base64 编码存放；若另填了明文，则明文优先。
+       好处：源码里扫不到明文 key，但替换/排障时直接写明文即可，不用重新编码。 */
+  apiKey: '',                  // 明文（一般留空）
+  apiKeyB64: '',               // 发布版：内置 key 不随源码公开（玄机阁同款纪律），请在「模型设置」自填
+};
+
+/* 解出项目内置的 Key：有明文用明文，否则解 base64（透明解码，参照玄机阁） */
+function builtinKey() {
+  if (GLM.apiKey) return GLM.apiKey;
+  try { return atob(GLM.apiKeyB64); }
+  catch (e) { return ''; }
+}
+
+/* 取当前生效的 Key。
+   注意：localStorage 里存了空串 '' 也视为「没设置」，必须回退到内置 Key ——
+   否则点过「清除」之后 getItem 返回 ''（而不是 null），会一直报「没有可用 Key」。 */
+function glmKey() {
+  try {
+    const k = localStorage.getItem('khb_glm_key');
+    return (k === null || k === '') ? builtinKey() : k;
+  } catch (e) { return builtinKey(); }   // 无 localStorage（或隐私模式）→ 用内置 Key
+}
+function setGlmKey(k) { try { localStorage.setItem('khb_glm_key', k || ''); } catch (e) {} }
+function usingCustomKey() {
+  try { const k = localStorage.getItem('khb_glm_key'); return !!(k && k !== ''); }
+  catch (e) { return false; }
+}
+
+/* 模型也可换：默认 GLM.model，设置区填自己的 */
+function glmModel() {
+  try { const m = localStorage.getItem('khb_glm_model'); return (m && m.trim()) || GLM.model; }
+  catch (e) { return GLM.model; }
+}
+function setGlmModel(m) {
+  try { localStorage.setItem('khb_glm_model', (m || '').trim()); } catch (e) {}
+}
+
+/* 把调用失败翻译成能照着做的提示。
+   「Failed to fetch」最容易被误判成"Key 错了" —— 其实多半是环境拦的。 */
+function errHint(e) {
+  // 注意把 e.name 也算进来：CSP 拦截时 XHR 抛的是
+  //   NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load '...'
+  // 光看 message 会漏判，用户就会收到一串英文。
+  const name = String((e && e.name) || '');
+  const msg = String((e && e.message) || e);
+  const all = name + ' ' + msg;
+  if (/Failed to fetch|NetworkError|Failed to load|Failed to execute 'send'|Network request failed|Load failed|Content Security Policy|Refused to connect|blocked/i.test(all))
+    return '请求发不出去（不是 Key 的问题）：当前环境不允许访问外部接口。'
+      + '把文件保存到本地，<b>双击用浏览器打开</b>就能用。';
+  if (/401/.test(all)) return 'API Key 无效或已过期。请在「模型设置」里填自己的 Key。';
+  if (/429/.test(all)) return '调用太频繁或额度用尽，稍等再试，或在「模型设置」里换自己的 Key。';
+  if (/没有可用的 API Key/.test(all)) return '没有可用的 API Key。'请展开第 2 步的「模型设置」，填入自己的智谱 API Key（open.bigmodel.cn 可免费申请）；不填也不影响其余演示步骤。';
+  return msg;
+}
+
+/* 按钮上跟着显示当前模型名 */
+function syncModelLabel() {
+  const b = $('#btnLive');
+  if (b) b.textContent = '接入真实模型';   // 2026-10-12：按钮不再标模型名 —— 模型名只在「模型设置」里出现
+}
+
+const escHtml = s => String(s).replace(/[&<>"]/g,
+  c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mdLite = s => escHtml(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+
+/* 把当前参保人组装成模型上下文。
+   关键：把「专业口径 → 参保人说法」的对照也写进去，让模型自己就说人话。 */
+/* 上周执行情况 —— 全部用现有 S 状态算，不新开数据源。
+   有了它，AI 才知道这个人实际做了多少，而不是永远从零开始提建议。 */
+const fmtDelta = v => (v === null || v === undefined || isNaN(v)) ? '—'
+  : (v > 0 ? '+' : '') + Number(v).toFixed(2);
+
+function lastWeekInfo() {
+  const w = S.weeks.length ? S.weeks[S.weeks.length - 1] : null;
+  if (!w) return null;
+  const init = S.init || {};
+  const d = k => (typeof init[k] === 'number' && typeof w.cur[k] === 'number') ? w.cur[k] - init[k] : null;
+  return {
+    w: w.w, fullDays: w.fullDays, pts: w.pts, dimCount: w.dimCount,
+    bal: walletState().bal,
+    delta: { waist: d('waist'), tg: d('tg'), hdl: d('hdl'), sbp: d('sbp'), fbg: d('fbg') },
+  };
+}
+
+/* 按完成度给三档不同的开口方向（不是新算法，是提示词里的一句话） */
+function toneLine(fullDays, dimCount) {
+  if (fullDays >= 5) return '先肯定他上周做得好的地方，再给一个下一步的小调整，不要重排整套计划。';
+  if (fullDays >= 1) {
+    const worst = DIM_DEFS[dimCount.indexOf(Math.min.apply(null, dimCount))];
+    return `不要指责。指出最容易补上的那一项（这一维完成最少：${worst.tag}），只补这一项。`;
+  }
+  return '不要说教、不要重复整套计划。把要求降到最小：今天只做一件最容易的（例如踮脚尖 20 次），先让他动起来。';
+}
+
+/* 拼成提示词里的一段 */
+function execLines() {
+  const lw = lastWeekInfo();
+  if (!lw) {
+    return ['【他上周的执行情况】还没有开始打卡，这是首次计划 —— 从「第一次」说起，不要提上周做了多少。'];
+  }
+  const dims = DIM_DEFS.map((d, k) => `${d.tag} ${lw.dimCount[k]}/7`).join(' · ');
+  return [
+    '【他上周的执行情况】',
+    `第 ${lw.w} 周：满分日 ${lw.fullDays} 天；${dims}；当周积分 ${lw.pts} 分。`,
+    `相对投保时的变化：腰围 ${fmtDelta(lw.delta.waist)} cm、甘油三酯 ${fmtDelta(lw.delta.tg)}、`
+      + `好胆固醇 ${fmtDelta(lw.delta.hdl)}、收缩压 ${fmtDelta(lw.delta.sbp)}、空腹血糖 ${fmtDelta(lw.delta.fbg)}。`,
+    `【这一轮怎么开口】${toneLine(lw.fullDays, lw.dimCount)}`,
+  ];
+}
+
+/* 按主导表型拼出禁忌段（「不要建议什么 → 要建议什么」，成对给出） */
+function tabooLines(primary) {
+  const t = PHENO_TABOO[primary];
+  if (!t) return [];
+  return [
+    `【本型禁忌 · 他是${primary}，下面这几类不要提】`,
+    `不要建议：${t.no}。`,
+    `要建议：${t.yes}。`,
+    t.scene + '。',
+    '上面「不要建议」里的东西，一句都不要往回退 —— 不要出现「实在推不掉就少喝一点」',
+    '「象征性来一点」这类折中说法。推不掉就给一句现成的婉拒说法，不要说「少来点也行」。',
+  ];
+}
+
+function buildCoachSystem() {
+  const p = S.person, a = assess(p), t = thresholds(p.sex), ph = phenotype(p);
+  const last = S.weeks.length ? S.weeks[S.weeks.length - 1] : null;
+  const cur = last ? last.cur : p.cur;
+  const bad = [cur.waist >= t.waist, cur.tg >= t.tg, cur.hdl < t.hdl,
+               cur.sbp >= t.sbp || cur.dbp >= t.dbp, cur.fbg >= t.fbg];
+  const plan = DIM_DEFS.map((d, k) =>
+    `- ${d.tag}（管${d.lb}；专业口径 ${d.pro}）：当前${bad[k] ? '异常' : '正常'}；做法：${d.act}`).join('\n');
+  return [
+    '你是「代谢健康守护」的健康助手，服务对象是 45–65 岁的代谢综合征参保人。',
+    '',
+    '【说话方式，必须遵守】',
+    '1. 用家常话。不要出现「低GI」「抗阻」「中等强度有氧」「依从性」这类词，',
+    '   要说「主食换粗粮」「练腿劲」「每天快走」。',
+    '2. 先给结论，再给 2–4 件今天就能做的事；每件都要有具体数字或参照物，',
+    '   例如「一天用盐不超过一啤酒瓶盖」「快走 30 分钟（约 4000 步）」，不要只说「少吃盐」。',
+    '3. 语气像一位有耐心的社区医生，别喊口号、别堆感叹号。',
+    '4. 整段回答控制在 200 字以内。',
+    '5. 不给用药建议；涉及药物一律让他去问医生。',
+    '6. 不要编造档案里没有的检查结果或数字。',
+    '7. 积分与保费无关，但不要在对话里主动提这一点。',
+    '8. 只要说了某样东西「不能碰」，就不要在后面留口子 —— 不要出现「实在推不掉就少喝一点」',
+    '   「象征性喝一点」「如果实在忍不住就少吃一点」这类折中说法。要么直接说不碰，要么给一句',
+    '   现成的婉拒说法（例如「我最近在吃药，今天就不喝了」）。',
+    '',
+    '【参保人档案】',
+    (() => {
+      const nm = (p.alias || '').trim();
+      if (nm) return `称呼 ${nm}（参保人自填，对话中一律以此称呼），${p.sex === 'M' ? '男' : '女'} ${p.age} 岁，BMI ${fmt(a.bmi)}。`;
+      if (p.name && p.name !== '自定义') return `姓名 ${p.name}，${p.sex === 'M' ? '男' : '女'} ${p.age} 岁，BMI ${fmt(a.bmi)}。`;
+      return `参保人未提供称呼 —— 对话中不要为参保人编造姓名或称呼，${p.sex === 'M' ? '男' : '女'} ${p.age} 岁，BMI ${fmt(a.bmi)}。`;
+    })(),
+    '判定口径：《中国糖尿病防治指南（2024 版）》，五项取 3（腰围男≥90 / 女≥85、甘油三酯≥1.7、',
+    'HDL-C<1.0、血压≥130/85、空腹血糖≥6.1）。',
+    `五项当前值：腰围 ${fmt(cur.waist)} cm ｜ 甘油三酯 ${fmt(cur.tg, 2)} ｜ HDL-C ${fmt(cur.hdl, 2)}`
+      + ` ｜ 血压 ${Math.round(cur.sbp)}/${Math.round(cur.dbp)} ｜ 空腹血糖 ${fmt(cur.fbg, 2)}`,
+    `其中 ${a.n} 项达标 → 健康等级 ${a.level} 级；主导表型：${ph.primary}。`,
+    `五个方面里当前偏离最大的是：${ph.primary.replace('型', '')}相关的那一项。`,
+    '',
+    '【他每天要做的事（五个方面，只能用这些说法）】',
+    plan,
+    '',
+    ...tabooLines(ph.primary),
+    '',
+    ...execLines(),
+    '',
+    `【积分】打卡攒积分，在积分商城兑换实物或服务；当前可用 ${walletState().bal} 分。`,
+  ].join('\n');
+}
+
+/* 流式调用：逐块回吐，onDelta(累计全文) 用来做打字机效果 */
+async function callGLM(messages, onDelta) {
+  const key = glmKey();
+  if (!key) throw new Error('没有可用的 API Key');
+  const res = await fetch(GLM.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({
+      model: glmModel(), messages, stream: true,
+      temperature: GLM.temperature, max_tokens: GLM.maxTokens,
+    }),
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error('HTTP ' + res.status + ' ' + txt.slice(0, 180));
+  }
+  const reader = res.body.getReader();
+  const dec = new TextDecoder('utf-8');
+  let buf = '', full = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const raw of lines) {
+      const ln = raw.trim();
+      if (!ln.startsWith('data:')) continue;
+      const d = ln.slice(5).trim();
+      if (!d || d === '[DONE]') continue;
+      let j; try { j = JSON.parse(d); } catch (e) { continue; }
+      const c = j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content;
+      if (c) { full += c; if (onDelta) onDelta(full); }
+    }
+  }
+  return full;
+}
+
+/* AI 这次参考了什么 —— 把「喂给 AI 的档案」摆到界面上，让人看得见个性化发生在哪 */
+function renderAiBrief() {
+  const el = $('#aiBriefBody'); if (!el) return;
+  if (!S.person) { el.innerHTML = ''; return; }
+  const p = S.person, a = assess(p), t = thresholds(p.sex), ph = phenotype(p);
+  const last = S.weeks.length ? S.weeks[S.weeks.length - 1] : null;
+  const cur = last ? last.cur : p.cur;
+  const bad = [cur.waist >= t.waist, cur.tg >= t.tg, cur.hdl < t.hdl,
+               cur.sbp >= t.sbp || cur.dbp >= t.dbp, cur.fbg >= t.fbg];
+  const lw = lastWeekInfo();
+  el.innerHTML = `
+    <div class="briefTop">
+      <span><b>${escHtml(personAlias(p) || '自定义投保人')}</b> · ${p.sex === 'M' ? '男' : '女'} ${p.age} 岁 · BMI ${fmt(a.bmi)}</span>
+      <span>达标 <b>${a.n}</b> 项 · 健康等级 <b>${a.level}</b> 级 · 主导表型 <b>${ph.primary}</b></span>
+    </div>
+    <p class="hint">五项当前值：腰围 ${fmt(cur.waist)} cm ｜ 甘油三酯 ${fmt(cur.tg, 2)} ｜ 好胆固醇 ${fmt(cur.hdl, 2)}
+      ｜ 血压 ${Math.round(cur.sbp)}/${Math.round(cur.dbp)} ｜ 空腹血糖 ${fmt(cur.fbg, 2)}</p>
+    <div class="tscroll"><table data-cols="3" style="margin-top:8px">
+      <thead><tr><th style="width:20%">方面</th><th style="width:14%">当前</th><th>今天做什么</th></tr></thead>
+      <tbody>${DIM_DEFS.map((d, k) => `<tr>
+        <td><b>${d.tag}</b></td>
+        <td>${bad[k] ? '<span class="flag hi">偏离</span>' : '<span class="flag mid">正常</span>'}</td>
+        <td class="hint">${d.act}</td></tr>`).join('')}</tbody>
+    </table></div>
+    ${lw ? `<div class="briefTop" style="margin-top:10px">
+      <span>上周执行：<b>${lw.fullDays} 个满分日</b> · 当前积分 <b>${lw.bal}</b> 分</span>
+      <span>${DIM_DEFS.map((d, k) => d.tag + ' ' + lw.dimCount[k] + '/7').join(' · ')}</span>
+      <span>相对投保时：腰围 ${fmtDelta(lw.delta.waist)} · 空腹血糖 ${fmtDelta(lw.delta.fbg)}</span>
+    </div>` : `<div class="briefTop" style="margin-top:10px"><span>本周还没开始</span></div>`}
+    <p class="hint" style="margin-top:8px">以上是回答时引用的全部内容；换一个投保人，这一块会跟着变。</p>`;
+}
+
+/* 按钮 / 提示语随模式切换 */
+function syncAiUi() {
+  $('#btnLive').style.display = S.aiLive ? 'none' : '';
+  $('#btnBackSample').style.display = S.aiLive ? '' : 'none';
+  $('#aiCtl').style.display = S.aiLive ? '' : 'none';
+  syncModelLabel();
+  renderAiBrief();
+  if (S.aiLive) {
+    $('#chatHint').innerHTML = '已接入真实模型：下面的内容由当前参保人的真实档案'
+      + '（五项指标 / 等级 / 主导表型 / 五个方面）现场生成，<b>不是固定文案</b>。';
+  } else {
+    $('#chatHint').innerHTML = '这里展示每天实际推送给参保人的内容形态：'
+      + '按五个方面逐项报账，并说明每一项当周的处理方式。';
+    $('#aiStatus').innerHTML = '';
+  }
+}
+
+function renderChatLive() {
+  $('#chatBox').innerHTML = S.chat.filter(m => m.role !== 'system').map(m =>
+    m.role === 'user'
+      ? `<div class="msg"><div class="av us">用户</div><div class="bub us">${escHtml(m.content)}</div></div>`
+      : `<div class="msg"><div class="av ai">AI</div><div class="bub ai${m.err ? ' err' : ''}">`
+        + `${mdLite(m.content)}${m.streaming ? '<span class="cur"></span>' : ''}</div></div>`
+  ).join('') || '<p class="hint">正在生成…</p>';
+}
+
+/* 进入实时模式：立刻用当前档案生成「今天的一条推送」 */
+async function runLiveToday() {
+  if (!S.person || !S.base.level) return;
+  S.aiLive = true;
+  syncAiUi();
+  S.chat = [
+    { role: 'system', content: buildCoachSystem() },
+    { role: 'user', content: '请按上面的要求，给他写今天早上的一条健康推送。' },
+    { role: 'assistant', content: '', streaming: true },
+  ];
+  renderChatLive();
+  S.aiBusy = true;
+  $('#aiStatus').innerHTML = `正在调用 <b>${glmModel()}</b> …`;
+  const t0 = Date.now();
+  const ai = S.chat[2];
+  try {
+    await callGLM(S.chat.slice(0, 2), full => { ai.content = full; renderChatLive(); });
+    ai.streaming = false;
+    $('#aiStatus').innerHTML = `已由 <b>${glmModel()}</b> 现场生成 · 全程 ${((Date.now() - t0) / 1000).toFixed(1)} 秒`;
+  } catch (e) {
+    ai.streaming = false; ai.err = true;
+    ai.content = '（调用失败）' + errHint(e).replace(/<[^>]+>/g, '');
+    $('#aiStatus').innerHTML = '<b style="color:#B03A2E">调用失败：</b>' + errHint(e);
+  }
+  renderChatLive();
+  S.aiBusy = false;
+}
+
+/* 追问：带上下文继续对话 */
+async function askCoach(q) {
+  q = (q || '').trim();
+  if (!q || S.aiBusy || !S.person) return;
+  if (!S.aiLive) {
+    S.aiLive = true; syncAiUi();
+    S.chat = [{ role: 'system', content: buildCoachSystem() }];
+  }
+  S.chat.push({ role: 'user', content: q });
+  const req = S.chat.map(m => ({ role: m.role, content: m.content }));
+  const ai = { role: 'assistant', content: '', streaming: true };
+  S.chat.push(ai);
+  renderChatLive();
+  S.aiBusy = true;
+  $('#aiStatus').innerHTML = `正在调用 <b>${glmModel()}</b> …`;
+  try {
+    await callGLM(req, full => { ai.content = full; renderChatLive(); });
+    ai.streaming = false;
+    $('#aiStatus').innerHTML = `已由 <b>${glmModel()}</b> 现场生成`;
+  } catch (e) {
+    ai.streaming = false; ai.err = true;
+    ai.content = '（调用失败）' + errHint(e).replace(/<[^>]+>/g, '');
+    $('#aiStatus').innerHTML = '<b style="color:#B03A2E">调用失败：</b>' + errHint(e);
+  }
+  renderChatLive();
+  S.aiBusy = false;
+}
+
+function backToSample() {
+  S.aiLive = false; S.aiBusy = false; S.chat = [];
+  renderStep2();   // 重渲染 → syncAiUi 会把按钮和示例对话一起还原
+}
+
+
+
+/* 把一周的五维勾选折算成积分与覆盖统计 */
+function weekStat(dimDays) {
+  const P = PARAMS.points;
+  const perDay = [];
+  const dimCount = DIM_DEFS.map(() => 0);
+  let fullDays = 0, pts = 0;
+  dimDays.forEach(day => {
+    const n = day.filter(Boolean).length;
+    perDay.push(n);
+    day.forEach((v, k) => { if (v) dimCount[k]++; });
+    if (n === DIM_DEFS.length) fullDays++;
+    pts += n * P.perDim;
+  });
+  return {
+    pts, fullDays, dimCount, perDay,
+    dayScores: perDay.map(n => n * P.perDim),
+    // 五维里至少做过一次的有几维 —— 用来看「有没有整维被落下」
+    covered: dimCount.filter(c => c > 0).length,
+  };
+}
+
+/* ---------- 干预推进 ----------
+   干预强度只看「本周攒到多少积分」，不区分积分来自哪一维。
+   ────────────────────────────────────────────────────────── */
+function stepWeek(p, pts) {
+  const E = PARAMS.effect;
+  const perDay = perDayPts();
+  const eff = pts >= E.full * perDay ? 1.0
+            : pts >= E.half * perDay ? 0.5
+            : pts > 0 ? E.low : 0;
+  const k = E.k * eff;
+  const keys = ['waist', 'tg', 'hdl', 'sbp', 'dbp', 'fbg'];
+  keys.forEach(key => { p.cur[key] = p.cur[key] + (p.goal[key] - p.cur[key]) * k; });
+  p.weight = p.weight + (p.goalW - p.weight) * k;
+  return eff;
+}
+
+/* 本周五维勾选 → 统计 */
+function currentWeek() { return weekStat(S.dimDays); }
+
+function pushWeeks(n) {
+  for (let i = 0; i < n; i++) {
+    const w = S.weeks.length + 1;
+    if (w > 52) break;
+    const cw = currentWeek();
+    const eff = stepWeek(S.person, cw.pts);
+    const a = assess(S.person);
+    S.weeks.push({
+      w, pts: cw.pts, eff, fullDays: cw.fullDays, dimCount: cw.dimCount,
+      covered: cw.covered, dimDays: S.dimDays.map(d => d.slice()),
+      count: a.n, level: a.level, real: false,
+      cur: Object.assign({}, S.person.cur), weight: S.person.weight,
+    });
+  }
+  render();
+}
+
+/* 回传实测数据：先按本周依从推进一周，再用实测值覆盖这一周。
+   之后的预测自然从实测点重新起算（真实产品里数据来自季度快检 / 蓝牙设备回传）。 */
+function pushReal() {
+  const g = id => { const el = $('#' + id); return el && el.value !== '' ? +el.value : null; };
+  const vals = { waist: g('r_waist'), tg: g('r_tg'), hdl: g('r_hdl'),
+                 sbp: g('r_sbp'), dbp: g('r_dbp'), fbg: g('r_fbg') };
+  if (Object.values(vals).some(v => v === null || isNaN(v))) {
+    $('#realMsg').innerHTML = '请把六个实测值都填上再回传。'; return;
+  }
+  if (S.weeks.length >= 52) {
+    $('#realMsg').innerHTML = '已满 52 周。点「重置」回到投保时再试。'; return;
+  }
+  pushWeeks(1);
+  const last = S.weeks[S.weeks.length - 1];
+  if (!last) return;
+  ['waist', 'tg', 'hdl', 'sbp', 'dbp', 'fbg'].forEach(k => { S.person.cur[k] = vals[k]; });
+  const a = assess(S.person);
+  last.cur = Object.assign({}, S.person.cur);
+  last.count = a.n; last.level = a.level; last.real = true;
+  const delta = a.n - S.base.n;
+  S.realTouched = false;   // 回传后重新按新的实测值预填
+  $('#realMsg').innerHTML = `第 ${last.w} 周写入实测数据：五项中 ${a.n} 项达标，较投保时 ${delta >= 0 ? '+' : ''}${delta} 项。` +
+    `<b>后续预测轨迹已从该实测点重新起算。</b>`;
+  render();
+}
+
+/* ---------- 10 年死差：直接引用精算 v4 ----------
+   口径（与《费率表_精算结果_v4》《作品目录 6.4》一致）：
+     死差 = 基准期望赔付现值 − AI 干预后期望赔付现值
+   注意这**不是**「保费 − 赔付」：
+     · 死差     衡量 AI 干预压下来的风险价值，是「可保化」论证的核心数字；
+     · 承保盈余 = 保费 − 赔付，衡量产品本身赚不赚钱，是另一个口径。
+   两个数都由本函数一并返回，界面上分列写，不要并成一列。
+
+   ⚠️ v4 的 10 年投影只有**组合口径**（A / B / C 加权），没有分级数据 ——
+      所以本函数不再接收等级参数。分级口径等精算补数后再接。
+
+   死因口径（关键，别写错）：
+     死亡基数只取「因承保疾病身故」——MetS 及约定并发症（2 型糖尿病、心梗、脑卒中）
+     本身就是主要致死病因，这部分死亡属于本产品的承保风险；其他原因的身故不在保障范围，
+     也不进入测算。即死亡率基础是「承保疾病对应的死亡率」，不是全因死亡率。
+   ────────────────────────────────────────────────────────── */
+function mortalityGain() {
+  const A = PARAMS.actuarial, t = A.tenYear;
+  const prem10 = PARAMS.base.premium * A.term;   // 固定口径：10 年按同一费率缴
+  return {
+    sum: A.sumInsured, prem: PARAMS.base.premium, prem10,
+    dm0: t.cumDMBase,  dm1: t.cumDMAI,
+    cvd0: t.cumCVDBase, cvd1: t.cumCVDAI,
+    cum0: t.cumAllBase, cum1: t.cumAllAI,
+    pay0: t.epvBase, pay1: t.epvAI,
+    ratio0: t.epvBase / prem10, ratio1: t.epvAI / prem10,
+    gain0: prem10 - t.epvBase, gain1: prem10 - t.epvAI,   // 承保盈余（保费 − 赔付）
+    gain: t.epvBase - t.epvAI,                            // 死差益 = 赔付下降
+    cut: t.payoutCut,
+  };
+}
+
+/* ---------- 图表 ---------- */
+function countChart(recs) {
+  /* 2026-10-11 排版修正：原 PB=34 时轴题 baseline 压在 y=H-1 上被底边裁掉一半，
+     且 X 轴刻度（y=H-12）与轴题几乎贴死。PB 放宽到 48：
+     绘图区底 → 刻度行（H-30）→ 轴题（H-10），三层各留 8px 以上呼吸空间。 */
+  const W = 700, H = 250, PL = 46, PR = 52, PT = 16, PB = 48;
+  const iw = W - PL - PR, ih = H - PT - PB, ymax = 5.6;
+  const X = w => PL + iw * (w / 52);
+  const Y = v => PT + ih * (1 - v / ymax);
+  let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+  // 色带
+  [[0, 2.5, '#F1F5F4', '逆转'], [2.5, 3.5, '#E9F5EF', 'A'], [3.5, 4.5, '#FDF4E3', 'B'], [4.5, 5.55, '#FBE9E7', 'C']]
+    .forEach(([lo, hi, c, t]) => {
+      s += `<rect x="${PL}" y="${Y(hi)}" width="${iw}" height="${Y(lo) - Y(hi)}" fill="${c}"/>`;
+      s += `<text x="${PL + iw + 9}" y="${(Y(lo) + Y(hi)) / 2 + 4}" font-size="11" fill="#8AA29C">${t}</text>`;
+    });
+  // 网格与刻度
+  for (let v = 0; v <= 5; v++) {
+    s += `<line x1="${PL}" y1="${Y(v)}" x2="${PL + iw}" y2="${Y(v)}" stroke="#E7EDEB" stroke-width="1"/>`;
+    s += `<text x="${PL - 10}" y="${Y(v) + 4}" font-size="12" fill="#7B918C" text-anchor="end">${v}</text>`;
+  }
+  // X 轴基线 + 刻度（0/13/26/39/52 周）
+  s += `<line x1="${PL}" y1="${PT + ih}" x2="${PL + iw}" y2="${PT + ih}" stroke="#C9D6D2" stroke-width="1.5"/>`;
+  for (let w = 0; w <= 52; w += 13) {
+    s += `<line x1="${X(w)}" y1="${PT}" x2="${X(w)}" y2="${PT + ih}" stroke="#EDF2F0" stroke-width="1"/>`;
+    s += `<line x1="${X(w)}" y1="${PT + ih}" x2="${X(w)}" y2="${PT + ih + 5}" stroke="#C9D6D2" stroke-width="1.5"/>`;
+    s += `<text x="${X(w)}" y="${H - 30}" font-size="12" fill="#7B918C" text-anchor="middle">${w}</text>`;
+  }
+  s += `<text x="${PL + iw / 2}" y="${H - 10}" font-size="12.5" fill="#5B7A70" text-anchor="middle" letter-spacing="1">干预周数（周）</text>`;
+  // 折线
+  if (recs.length) {
+    const pts = [[0, S.base.n]].concat(recs.map(r => [r.w, r.count]));
+    s += `<polyline fill="none" stroke="#0E7C66" stroke-width="2.5" stroke-linejoin="round" points="${
+      pts.map(([w, v]) => `${X(w)},${Y(v)}`).join(' ')}"/>`;
+    recs.forEach((r, i) => {
+      if (r.real) {
+        // 实测数据点：实心方块，与模型预测的空心圆点区分
+        s += `<rect x="${X(r.w) - 5}" y="${Y(r.count) - 5}" width="10" height="10" rx="2"
+                fill="#0A5E4E" stroke="#fff" stroke-width="2"/>`;
+      } else if (i % 4 === 0 || i === recs.length - 1) {
+        s += `<circle cx="${X(r.w)}" cy="${Y(r.count)}" r="${i === recs.length - 1 ? 4.5 : 3}"
+                fill="#fff" stroke="#0E7C66" stroke-width="2"/>`;
+      }
+    });
+    const last = pts[pts.length - 1];
+    s += `<text x="${X(last[0]) - 6}" y="${Y(last[1]) - 12}" font-size="13" font-weight="700" fill="#0A5E4E" text-anchor="end">${last[1]} 项</text>`;
+  }
+  s += '</svg>';
+  return s;
+}
+
+/* ---------- 截图模式开关 ----------
+   无头截图脚本在页面加载后第一时间调用 window.__shotMode(true)。
+   为什么必须有它 —— 三条都会把截图搞坏：
+   ① 滚动揭示动画会把「还没进入视口」的元素留在初始隐藏态，而整页截图并不进入视口，
+      于是截出来的下半部分会整块空白；
+   ② 数字计数动画会被 --virtual-time-budget 截在中途，截出 17.4% 这种错数；
+   ③ 极光慢循环会让每次截图的相位都不同，21 张之间没法逐张比对。
+   所以这个模式下所有动效一律直接呈现终态，页面转场取消、滚动改瞬时。
+   它只影响截图，正常浏览时一行都不生效。
+   ---------------------------------------------------------------- */
+function _docEl() { return (typeof document !== 'undefined' && document.documentElement) || null; }
+function _docBody() { return (typeof document !== 'undefined' && document.body) || null; }
+
+let SHOT = false;
+try {
+  SHOT = !!(_docEl() && _docEl().classList && _docEl().classList.contains('shot'))
+      || (typeof location !== 'undefined' && /[?&]shot=1/.test(location.search || ''));
+} catch (e) { SHOT = false; }
+
+window.__shotMode = function (on) {
+  SHOT = (on === undefined) ? true : !!on;
+  const r = _docEl();
+  if (r && r.classList) r.classList.toggle('shot', SHOT);
+  // 截图模式必须把 JS 驱动的动效一并退回终态：
+  // 页面加载时可能已经打过 khb-motion（那一刻还不知道接下来要截图），这里重算一次。
+  if (typeof khbApplyMotion === 'function') khbApplyMotion();
+  return SHOT;
+};
+
+/* 动效总开关：截图模式或系统「减少动态效果」时不给 html 打 khb-motion。
+   这个 class 是 JS 驱动动效（④计数 / ⑤⑥生长）的唯一门闸 ——
+   没它就没有初始态，元素直接呈现各自的静态值，也就是终态。 */
+function khbApplyMotion() {
+  const r = _docEl();
+  if (!r || !r.classList) return false;
+  const off = motionOff();
+  r.classList.toggle('khb-motion', !off);
+  return !off;
+}
+
+/* 动效是否应当关闭：截图模式，或系统开了「减少动态效果」 */
+function motionOff() {
+  if (SHOT) return true;
+  try {
+    return !!(typeof window !== 'undefined' && window.matchMedia &&
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (e) { return false; }
+}
+
+/* ---------- 动效④ · 三处患病率数字计数上涨 ----------
+   这是规格 4.3 明示的**唯一属性例外** —— 改的是 textContent，不是 transform / opacity。
+   允许的理由：数字容器带 font-variant-numeric: tabular-nums（等宽数字），
+   宽度不随取值变化，所以改文本**不会引起任何布局抖动**。
+   三个数字按 0 / 100 / 200ms 错峰，进入视口只触发一次。
+   截图模式与「减少动态效果」下不启用（khbApplyMotion 没打 khb-motion），直接是终值。 */
+function khbCountUp(el, delay) {
+  const raw = el.textContent;
+  const m = raw.match(/^([^\d]*)(\d+(?:\.\d+)?)([\s\S]*)$/);
+  if (!m) return;
+  const pre = m[1], numStr = m[2], post = m[3];
+  const to = parseFloat(numStr);
+  const dec = (numStr.split('.')[1] || '').length;
+  let t0 = null;
+  function frame(ts) {
+    if (t0 === null) t0 = ts;
+    const k = Math.min(1, (ts - t0) / 800);          // --dur-count 800ms
+    const e = 1 - Math.pow(1 - k, 3);                // ease-out 近似
+    el.textContent = pre + (to * e).toFixed(dec) + post;
+    if (k < 1) requestAnimationFrame(frame);
+    else el.textContent = raw;                       // 收尾精确落回原文本，不留浮点尾巴
+  }
+  setTimeout(() => requestAnimationFrame(frame), delay || 0);
+}
+function khbCountInit() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const nodes = document.querySelectorAll('#home .num3 .n .v');
+  if (!nodes || !nodes.length) return;
+  const io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);                        // once 语义：揭示过的不重播
+      // ⚠️ 必须在回调触发这一刻再判一次，不能只在注册时判：
+      //    观察器是在主脚本末尾注册的，而截图注入脚本排在主脚本之后 ——
+      //    注册时还不知道要截图，等 __shotMode(true) 到达时观察器已经挂上了。
+      //    少了这一句，s20 会截到计数中途的错数（实测 11.7% / 约 1.4 亿 / 12.8%）。
+      if (motionOff()) return;
+      const i = Array.prototype.indexOf.call(nodes, e.target);
+      khbCountUp(e.target, (i < 0 ? 0 : i) * 100);
+    });
+  }, { threshold: .35 });
+  Array.prototype.forEach.call(nodes, function (n) { io.observe(n); });
+}
+
+/* ---------- ③ 滚动揭示的保险丝 ----------
+   animation-timeline 滚动时间线在桌面 Chromium 上很可靠，但它一旦没被驱动
+   （旧内核 / 特殊滚动容器 / 无头环境），卡片会永远停在 opacity:0 ——
+   CSS 没法自救，因为动画的填充值压着静态值。所以留一道 JS 巡检：
+   进入过视口、且过了揭示时长仍然透明的卡片，直接摘掉动画、补成终态。
+   正常浏览时这段代码不会产生任何可见效果（那时 opacity 早就到 1 了）。 */
+function khbRevealFuse() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const cards = document.querySelectorAll('#home .card');
+  if (!cards || !cards.length) return;
+  const io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      setTimeout(function () {
+        if (!window.getComputedStyle) return;
+        const op = parseFloat(window.getComputedStyle(e.target).opacity || '1');
+        if (op >= 0.95) return;                 // 时间线工作正常，什么都不用做
+        e.target.style.animation = 'none';      // 必须先摘动画：填充值优先级高于 inline style
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'none';
+      }, 700);                                  // > --dur-reveal 350ms，避开「正在揭示中」的误判
+    });
+  }, { threshold: .05 });
+  Array.prototype.forEach.call(cards, function (c) { io.observe(c); });
+}
+
+/* ---------- 动效⑤⑥ 的触发：漏斗条与对比条进入视口时生长 ---------- */
+function khbGrowInit() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      if (motionOff()) return;      // 同上：回调时才作准
+      e.target.classList.add('grow');
+    });
+  }, { threshold: .25 });
+  const f = document.querySelector('#intro .funnel');
+  if (f) io.observe(f);
+  const b = document.querySelector('#home .num-card .nc-bar');
+  if (b) io.observe(b);
+}
+
+/* ---------- 两页状态机 ----------
+   一个文件里三「页」：home（首页 · 展示层）/ intro（产品介绍 · 阅读层）/ app（四步主流程 · 操作层）。
+   intro 不是 .panel（.panel 的 DOM 顺序就是 go(0~3) 的编号索引，插页会全部错位），
+   它在 DOM 里与 #home 平级，显隐完全交给 body[data-page] 的 CSS。
+   用 body[data-page] 驱动，CSS 只管显隐与顶栏形态；
+   go(0)~go(3) 的语义完全不变，所以 shoot.py 里既有的 go() 调用一处都不用改。
+   ---------------------------------------------------------------- */
+let PAGE = 'home';
+function goPage(page) {
+  // 三态：home（首页）/ intro（产品介绍）/ app（四步主流程）
+  PAGE = (page === 'app' || page === 'intro') ? page : 'home';
+  const b = _docBody();
+  if (b) {
+    if (b.dataset) b.dataset.page = PAGE;
+    else if (b.setAttribute) b.setAttribute('data-page', PAGE);
+  }
+  return PAGE;
+}
+function currentPage() { return PAGE; }
+
+/* 产品介绍页：不参与 go(0~3) 的编号索引，单独一个入口。
+   关掉所有 .panel、只高亮步骤条上的「产品介绍」，其余与 go() 一致。 */
+function goIntro() {
+  goPage('intro');
+  document.querySelectorAll('.stepbtn').forEach(b => b.classList.toggle('on', b.dataset.i === 'intro'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', false));
+  window.scrollTo({ top: 0, behavior: motionOff() ? 'auto' : 'smooth' });
+}
+
+/* ---------- 渲染：步骤条 ---------- */
+const STEP_NAMES = ['核保分级', '五维健康计划', '打卡闭环', '给付与重评'];
+function renderSteps() {
+  // 「返回总览」是回首页页，不参与 go(0)~go(3) 的编号索引 ——
+  // 右侧四个编号按钮的索引因此与 v2.0 完全一致，一处都不用改。
+  $('#stepbar').innerHTML = `<button class="stepbtn back" data-back="1"><i>←</i>返回总览</button>`
+    + `<button class="stepbtn" data-i="intro">产品介绍</button>`
+    + STEP_NAMES.map((n, i) =>
+    `<button class="stepbtn" data-i="${i}"><i>${i + 1}</i>${n}</button>`).join('');
+  document.querySelectorAll('.stepbtn').forEach(b => {
+    b.onclick = () => (b.dataset.back ? go(-1)
+      : (b.dataset.i === 'intro' ? goIntro() : go(+b.dataset.i)));
+  });
+  go(-1);   // 默认打开就停在首页
+}
+function go(i) {
+  // i = -1：回首页页（不显示任何步骤）
+  // i = 0~3：进入主流程并定位到对应步骤，语义与 v2.0 完全一致
+  const scrollTop = { top: 0, behavior: motionOff() ? 'auto' : 'smooth' };
+
+  if (i < 0) {
+    goPage('home');
+    document.querySelectorAll('.stepbtn').forEach(b => b.classList.toggle('on', false));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', false));
+    window.scrollTo(scrollTop);
+    return;
+  }
+
+  goPage('app');
+  document.querySelectorAll('.stepbtn').forEach(b => {
+    // data-i="intro" 归一化后是 NaN，天然不会与 0~3 相等 —— 这里显式排掉，读起来更清楚
+    b.classList.toggle('on', b.dataset.i !== undefined && b.dataset.i !== 'intro' && +b.dataset.i === i);
+  });
+  document.querySelectorAll('.panel').forEach((p, k) => p.classList.toggle('on', k === i));
+  window.scrollTo(scrollTop);
+}
+
+/* ---------- 渲染：步骤 1 ---------- */
+function renderCases() {
+  $('#caseGrid').innerHTML = CASES.map((c, i) => {
+    const a = assess({ sex: c.sex, height: c.height, weight: c.weight, cur: c.cur });
+    return `<div class="case${S.active === i ? ' on' : ''}" data-i="${i}">
+      <div class="lv ${a.level || 'X'}" style="${a.level ? '' : 'background:#9AA9A6'}">${a.level || '—'}</div>
+      <div class="nm">${c.name}</div>
+      <div class="meta">${c.sex === 'M' ? '男' : '女'} · ${c.age} 岁 · BMI ${fmt(a.bmi)} · 达标 ${a.n} 项</div>
+      <div class="cmt">${c.cmt}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.case').forEach(el => el.onclick = () => {
+    S.active = +el.dataset.i;
+    start(CASES[S.active]);
+    renderCases();
+  });
+}
+
+function renderForm(v) {
+  const v0 = v || { sex: 'M', age: 52, height: 175, weight: 82, waist: 94, tg: 1.8, hdl: 0.99, sbp: 146, dbp: 90, fbg: 5.4 };
+  const F = [['sex', '性别', 'select'], ['age', '年龄', 'number'], ['height', '身高 cm', 'number'], ['weight', '体重 kg', 'number'],
+             ['waist', '腰围 cm', 'number'], ['tg', 'TG mmol/L', 'number'], ['hdl', 'HDL-C mmol/L', 'number'],
+             ['sbp', '收缩压', 'number'], ['dbp', '舒张压', 'number'], ['fbg', '空腹血糖', 'number']];
+  $('#formGrid').innerHTML = F.map(([k, lb, tp]) => `<div class="fld"><label>${lb}</label>${
+    tp === 'select'
+      ? `<select id="f_${k}"><option value="M"${v0[k] === 'M' ? ' selected' : ''}>男</option><option value="F"${v0[k] === 'F' ? ' selected' : ''}>女</option></select>`
+      : `<input type="number" step="any" id="f_${k}" value="${v0[k]}">`}</div>`).join('');
+}
+
+function readForm() {
+  const g = k => parseFloat($('#f_' + k).value);
+  const sex = $('#f_sex').value;
+  return {
+    name: '自定义', sex, age: g('age'), height: g('height'), weight: g('weight'), goalW: g('weight') * 0.92,
+    cur: { waist: g('waist'), tg: g('tg'), hdl: g('hdl'), sbp: g('sbp'), dbp: g('dbp'), fbg: g('fbg') },
+    goal: {}, custom: true,
+  };
+}
+
+/* 参保人称呼（2026-10-12 用户反馈：AI 回复别瞎套名字）：
+   第 2 步身体数据区自填的称呼优先；预置案例自带真实姓名，兜底用它；
+   自定义投保人没填称呼时返回空串 —— 台词与提示词一律不编造姓名。 */
+function personAlias(p) {
+  if (!p) return '';
+  const a = (p.alias || '').trim();
+  if (a) return a;
+  return (p.name && p.name !== '自定义') ? p.name : '';
+}
+
+function renderAssess() {
+  const p = S.person, a = S.base;
+  if (!p) return;
+  $('#assessCard').style.display = 'block';
+  $('#critNote').innerHTML = `判定口径：<b>《中国糖尿病防治指南（2024 版）》</b>（中华医学会糖尿病学分会 2025 年发布），
+    5 项取 3，满足 ≥3 项即达 MetS 诊断线。
+    <b>肥胖不是准入的必要条件</b>——腰围正常、但其余指标亮红灯的人同样可以进来。`;
+
+  $('#itemBody').innerHTML = a.items.map(i => {
+    const fl = i.ok && i.hi ? '<span class="flag hi">临床临界</span>'
+             : i.ok && i.mid ? '<span class="flag mid">中度偏离</span>' : '';
+    return `<tr>
+      <td>${i.name}</td><td class="hint">${i.std}</td>
+      <td class="num mono">${i.show}</td>
+      <td>${i.ok ? '<span class="ok">达标</span>' : '<span class="no">未达标</span>'}${fl}</td>
+    </tr>`;
+  }).join('');
+
+  const v = $('#verdict');
+  if (a.ex.length) {
+    v.className = 'verdict bad';
+    v.innerHTML = `<div class="big">不予承保</div><div>${a.ex.join('；')}。这类人群已越过本产品的可保边界——需先经临床治疗稳定后再议。</div>`;
+  } else if (!a.level) {
+    v.className = 'verdict bad';
+    v.innerHTML = `<div class="big">不在承保范围</div><div>${a.reason}。</div>`;
+  } else {
+    v.className = 'verdict';
+    v.innerHTML = `<div class="big">核保结论：${a.level} 级 —— ${a.reason}</div>
+      <div>这是传统核保会加费 50%–200% 或直接拒保的标的。本产品的处理是：<b>给他入场券，但按风险梯度定价，并且给他一条降费的路</b>。</div>`;
+  }
+
+  const ok = !!a.level;
+  $('#kpis').innerHTML = `
+    <div class="kpi"><div class="lb">健康等级</div><div class="vl">${a.level || '—'}</div><div class="dlt hint">达标 ${a.n} / 5 项</div></div>
+    <div class="kpi"><div class="lb">年缴保费</div><div class="vl">${ok ? '¥' + money(a.premium) : '—'}</div>
+      <div class="dlt hint">保费系数 ×${ok ? fmt(a.coefP, 3) : '—'}</div></div>
+    <div class="kpi"><div class="lb">基本保额</div><div class="vl">${ok ? (a.sum / 10000) : '—'}<small>万元</small></div>
+      <div class="dlt hint">保额系数 ×${ok ? fmt(a.coefS, 2) : '—'}</div></div>
+    <div class="kpi"><div class="lb">缴费期</div><div class="vl">${ok ? PARAMS.base.payYears : '—'}<small>年缴</small></div><div class="dlt hint">BMI ${fmt(a.bmi)}</div></div>`;
+
+  const V4LV = PARAMS.actuarial.levels, V4SMP = PARAMS.actuarial.sample;
+  $('#priceNote').innerHTML = `基准费率：A / B / C 三级年缴纯保费 ¥5,229 / ¥5,093 / ¥6,589，
+    基本保额 15 万。保险期间为一年、含保证续保条款，保证续保期累计最长 10 年。
+    三级保费系数由纯保费反推为 ×1.000 / ×0.974 / ×1.260（B 级略低于 A 级：中症 A→B 年均发生率
+    高于 B→C，A 级的中症额外成本部分抵消其重症风险较低的优势）。<br>
+    三档投保人占比 ${V4LV.map(x => `${x.lv} ${(x.share * 100).toFixed(1)}%`).join(' / ')}；
+    年糖尿病发生率 ${V4LV.map(x => `${(x.dm * 100).toFixed(2)}%`).join(' / ')}，
+    年心血管事件发生率 ${V4LV.map(x => `${(x.cvd * 100).toFixed(2)}%`).join(' / ')}。
+    保险责任共三项：<b>重症（三项特定疾病）给付</b> = 基本保额 ×100%（2 型糖尿病、急性心肌梗死、脑卒中，
+    三项合计给付一次，给付后该项责任终止、保证续保期内仍可续保）；
+    <b>中症（MetS 严重进展）给付</b> = 基本保额 ×20%（等级由 A 进展到 B 或由 B 进展到 C）；
+    <b>疾病相关身故给付</b> = 基本保额 ×20%，不含全因身故。
+    首次达到重症给付条件后，另取得一次总额 5,000 元、有效期 12 个月的病后医疗照护服务权益。<br>
+    可保人群：<b>${ELIGIBLE.ageLo}–${ELIGIBLE.ageHi} 岁</b>、MetS 达标 ≥${ELIGIBLE.minItems} 项，
+    不符合准入的直接拒保。
+    `;
+}
+
+/* ---------- 渲染：步骤 2 ---------- */
+function renderStep2() {
+  if (!S.person) return;
+  const a0 = S.base;
+  if (!a0.level) {
+    $('#p2body').style.display = 'none';
+    $('#p2empty').style.display = 'block';
+    $('#bodyIn').innerHTML = '';   // 换成不可承保标的后，不留上一个人的输入框
+    $('#p2empty').innerHTML = `<h2><span class="num">02</span>五维健康计划</h2>
+      <div class="verdict bad" style="margin-top:16px"><div class="big">当前标的不可承保</div>
+      <div>${a0.ex.length ? a0.ex.join('；') : a0.reason}。
+      回到第一步换一个投保人，或者把指标调整回可保区间。
+      这类人群正是本产品的<b>可保边界</b>——不是所有 MetS 都能进来，越过临床诊断线的必须先经治疗稳定。</div></div>`;
+    return;
+  }
+  $('#p2empty').style.display = 'none';
+  $('#p2body').style.display = 'block';
+  $('#algoWarn').innerHTML = `
+    <div class="verdict" style="margin:6px 0 16px;background:#F7FAF9">
+      <div class="big">AI 算法层</div>
+      <div>干预方案由两层模型现场算出，不是固定文案：
+        <br><b>① 主导表型识别</b> —— 五维指标 → 归一化偏离度 → 四个生理轴归并取最大 → 表型归属，
+        决定干预优先投入哪一维；
+        <br><b>② 五维干预权重分配</b> —— 按五维等权 20% 分配到各维，与打卡积分口径（每维 3 分）保持一致。</div>
+    </div>`;
+  const p = S.person, ph = phenotype(p), a = S.base;
+  const colors = { '血糖型': '#0E7C66', '血压型': '#B03A2E', '血脂型': '#5B6FB0', '肥胖型': '#A9610A', '—': '#6B7C79' };
+
+  $('#phenoBox').innerHTML = `
+    <div class="verdict" style="border-color:${colors[ph.primary]};background:#F7FAF9">
+      <div class="big">主导表型：${ph.primary}</div>
+      <div>最强异常轴为 <b>${ph.topAxis}轴</b>（偏离 ${(ph.topDev * 100).toFixed(1)}%），
+        次强 ${ph.secondAxis}轴（${(ph.secondDev * 100).toFixed(1)}%）。
+        ${ph.dominant
+          ? `${ph.topAxis}轴偏离达到次强轴的 1.5 倍以上，构成单一主导 → 判为 <b>${ph.primary}</b>。`
+          : `无单一压倒性主导轴，干预按多轴并重处理，仍以偏离度最高的 <b>${ph.topAxis}轴</b>为第一靶点。`}</div>
+    </div>
+    <div class="tscroll"><table data-cols="3" style="margin-top:14px">
+      <thead><tr><th style="width:24%">生理轴</th><th style="width:24%">归一化偏离度</th><th>说明</th></tr></thead>
+      <tbody>${ph.all.map(x => `<tr>
+        <td>${x.k}轴</td>
+        <td class="mono">${(x.v * 100).toFixed(1)}%</td>
+        <td class="hint">${x.k === ph.topAxis ? '← 干预靶点，优先投入'
+          : x.k === ph.secondAxis ? '← 次级靶点'
+          : x.v > 0 ? '← 伴随异常，纳入随访' : '← 未超阈值'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+
+  /* ── 五维健康计划：每一维给到「当前 → 一年目标 → 日常动作」的完整落点 ── */
+  const t = thresholds(p.sex);
+  const plan = [
+    { tag: '练腿劲', lb: '腰围', cur: `${fmt(p.cur.waist)} cm`, goal: `${fmt(p.goal.waist)} cm`,
+      bad: p.cur.waist >= t.waist, cross: p.cur.waist >= t.waist && p.goal.waist < t.waist,
+      act: '从椅子上坐下起立 15 次、扶墙静蹲 30 秒、踮脚尖 20 次，各 2 组',
+      why: '腿上有劲，人愿意多动，热量消耗上去，腰围才压得下来' },
+    { tag: '主食换粗粮', lb: '空腹血糖', cur: `${fmt(p.cur.fbg, 2)} mmol/L`, goal: `${fmt(p.goal.fbg, 2)} mmol/L`,
+      bad: p.cur.fbg >= t.fbg, cross: p.cur.fbg >= t.fbg && p.goal.fbg < t.fbg,
+      act: '白米白面减一半，换糙米、玉米、红薯；先吃菜、后吃饭', why: '饭后血糖升得慢，血糖就稳' },
+    { tag: '少放盐', lb: '血压', cur: `${Math.round(p.cur.sbp)}/${Math.round(p.cur.dbp)}`,
+      goal: `${Math.round(p.goal.sbp)}/${Math.round(p.goal.dbp)}`,
+      bad: p.cur.sbp >= t.sbp || p.cur.dbp >= t.dbp,
+      cross: (p.cur.sbp >= t.sbp || p.cur.dbp >= t.dbp) && p.goal.sbp < t.sbp && p.goal.dbp < t.dbp,
+      act: '一天用盐不超过一啤酒瓶盖（约 5 克），少吃咸菜、腊肉、酱料', why: '盐吃多了血压就高，最容易改' },
+    { tag: '戒酒和甜饮料', lb: '甘油三酯', cur: `${fmt(p.cur.tg, 2)} mmol/L`, goal: `${fmt(p.goal.tg, 2)} mmol/L`,
+      bad: p.cur.tg >= t.tg, cross: p.cur.tg >= t.tg && p.goal.tg < t.tg,
+      act: '白酒、啤酒都不喝；可乐、果汁、奶茶也不喝', why: '酒精和甜饮料最推高甘油三酯' },
+    { tag: '每天快走', lb: 'HDL-C（好胆固醇）', cur: `${fmt(p.cur.hdl, 2)} mmol/L`, goal: `${fmt(p.goal.hdl, 2)} mmol/L`,
+      bad: p.cur.hdl < t.hdl, cross: p.cur.hdl < t.hdl && p.goal.hdl >= t.hdl,
+      act: '快走 30 分钟（约 4000 步）；骑车、游泳、广场舞也算', why: '快走能直接抬高「好胆固醇」' },
+  ];
+  const nCross = plan.filter(x => x.cross).length;
+
+  $('#dimWarn').innerHTML = `
+    <div class="verdict" style="margin:6px 0 14px">
+      <div>本计划共五项，其中 <b>${plan.filter(x => x.bad).length}</b> 项当前异常
+        ${nCross ? `，其中 <b>${nCross}</b> 维的目标值设在「一年内能跨回阈值内」` : ''}。
+        目标值（${fmt(p.goal.waist)} / ${fmt(p.goal.tg, 2)} / ${fmt(p.goal.hdl, 2)} 等）是
+        <b>「一年内可达的临床目标」，不是正常值</b>：重症案例一年后仍在异常区间，符合临床现实。
+        </div>
+    </div>`;
+
+  $('#planBox').innerHTML = `
+    <div class="tscroll"><table data-cols="6">
+      <thead><tr><th style="width:13%">维度</th><th style="width:13%">对应指标</th><th class="num" style="width:15%">当前</th>
+        <th class="num" style="width:15%">一年目标</th><th style="width:29%">日常动作（打卡项）</th><th style="width:15%">干预权重</th></tr></thead>
+      <tbody>${plan.map(x => `<tr>
+        <td><b>${x.tag}</b><div class="hint" style="font-size:11.5px">${x.act.split('、')[0].split('/')[0].trim()}</div></td>
+        <td>${x.lb}${x.bad ? ' <span class="flag hi">异常</span>' : ''}${x.cross ? ' <span class="flag mid">目标跨线</span>' : ''}</td>
+        <td class="num mono">${x.cur}</td>
+        <td class="num mono">${x.goal}</td>
+        <td class="hint">${x.act}<div style="font-size:11.5px;margin-top:2px">${x.why}</div></td>
+        <td class="num mono">20%</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <p class="hint" style="margin-top:8px">表型口径说明：上表五项是<b>原始判定指标</b>；
+      第 ① 节的四类表型是把它们<b>归并</b>后的结果（腰围→肥胖轴，TG + HDL-C→血脂轴，血压→血压轴，血糖→血糖轴）。</p>`;
+
+  /* ── 身体数据：身高 / 体重 / 年龄可改，体重指数与下面的处方跟着重算 ── */
+  const bmi = p.weight / Math.pow(p.height / 100, 2);
+  const bmiWord = bmi < 24 ? '在正常范围内' : bmi < 28 ? '属于超重' : '属于肥胖';
+  $('#bodyIn').innerHTML = `
+    <div class="fld" style="margin-bottom:10px"><label>称呼（AI 对话里怎么叫参保人，可留空）</label>
+      <input type="text" id="b_alias" maxlength="12" value="${escHtml(p.alias || '')}"
+        placeholder="例如：李阿姨 / 张先生 —— 留空则 AI 不编造姓名"></div>
+    <div class="frm" style="grid-template-columns:repeat(3,1fr)">
+      <div class="fld"><label>身高 cm</label><input type="number" step="any" id="b_height" value="${p.height}"></div>
+      <div class="fld"><label>体重 kg</label><input type="number" step="any" id="b_weight" value="${p.weight}"></div>
+      <div class="fld"><label>年龄</label><input type="number" step="any" id="b_age" value="${p.age}"></div>
+    </div>
+    <div class="bmi">体重指数（BMI）<b>${fmt(bmi)}</b> —— ${bmiWord}；
+      腰围 ${fmt(p.cur.waist)} cm 取自体检值。${bmi >= 24
+        ? '体重指数偏高，有氧时间与力量组数已按此上调。' : '体重指数未偏高，按基础运动量执行即可。'}</div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn sm" id="btnBody">重新生成方案</button>
+      <span class="hint" id="bodyMsg"></span>
+    </div>`;
+  // 称呼失焦即存：台词区（⑥ 与 AI 对话）随 renderStep2 重建，称呼即时生效
+  $('#b_alias').onchange = () => { S.person.alias = $('#b_alias').value; renderStep2(); };
+  $('#btnBody').onclick = applyBody;
+
+  /* ── ③ 每天怎么吃：三餐 + 两次加餐，按主导表型换食谱 ── */
+  const snacks = SNACKS[ph.primary] || SNACKS['血糖型'];
+  const base3 = MEALS[ph.primary] || MEALS['血糖型'];
+  const mealRows = [base3[0], snacks[0], base3[1], snacks[1], base3[2]];
+  $('#mealHint').innerHTML = `按<b>${ph.primary}</b>的主导异常轴安排，一天三餐加两次加餐。
+    含糖饮料、酒精、油炸与腌制食品不在其中；外食时按每一餐右侧的要点取舍。`;
+  $('#mealBox').innerHTML = `
+    <div class="illu">${mealIllu()}</div>
+    <div class="tscroll"><table data-cols="3">
+      <thead><tr><th style="width:16%">餐次</th><th style="width:47%">内容</th><th>要点</th></tr></thead>
+      <tbody>${mealRows.map(x => `<tr>
+        <td><b>${x.m}</b></td><td>${x.t}</td><td class="hint">${x.tag}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+
+  /* ── ④ 每天怎么练：有氧（多久 / 何时 / 每周几次）+ 力量（动作 × 组数 × 次数） ── */
+  const sp = SPORT_PLAN[ph.primary] || SPORT_PLAN['血糖型'];
+  const addMin = bmi >= 28 ? 10 : bmi >= 24 ? 5 : 0;   // 体重指数越高，有氧时间越长
+  const addSet = bmi >= 28 ? 1 : 0;                    // 体重指数越高，力量多加一组
+  const cardioMin = sp.cardio.min + addMin;
+  $('#sportHint').innerHTML = `有氧与力量排在同一天做，先有氧、后力量。
+    当前体重指数 ${fmt(bmi)}${addMin ? `，有氧单次时长在基础量 ${sp.cardio.min} 分钟上增加 ${addMin} 分钟` : '，按基础量执行'}
+    ${addSet ? '；力量每个动作加 1 组' : ''}。`;
+  $('#sportBox').innerHTML = `
+    <div class="illu">${sportIllu(cardioMin)}</div>
+    <div class="cardio">
+      <div class="big2">${cardioMin}<small>分钟 / 次</small></div>
+      <div class="meta"><b>${sp.cardio.act}</b>　${sp.cardio.when}　<b>${sp.cardio.freq}</b><br>
+        ${sp.cardio.why}</div>
+    </div>
+    <div class="tscroll" style="margin-top:14px"><table data-cols="3">
+      <thead><tr><th style="width:32%">力量动作</th><th style="width:22%">组数 × 每组次数</th><th>做法</th></tr></thead>
+      <tbody>${sp.strength.map(x => `<tr>
+        <td><b>${x.act}</b></td>
+        <td class="mono">${x.sets + addSet} 组 × ${x.reps}</td>
+        <td class="hint">${x.how}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <p class="hint" style="margin-top:10px">${sp.rest}</p>
+    <p class="hint">${sp.caution}</p>`;
+
+  /* ── 配套支撑：不是五维之一，但计划落地要靠它们 ── */
+  const DIMS = [
+    ['服药提醒', '对已在服降压 / 降糖 / 降脂药的用户，每日定时推送并记录依从率。药物与生活方式干预并行，不互相替代。',
+      [p.cur.sbp >= 130 || p.cur.dbp >= 85 ? '降压药：每日 1 次' : '暂无降压用药',
+       p.cur.fbg >= PARAMS.metS.fbg ? '血糖监测：每周 3 次' : '血糖监测：每周 1 次',
+       '用药依从率可视化']],
+    ['季度五项快检回传', '每三个月到社区卫生中心复查五项指标，或用蓝牙设备自动回传，实时刷新健康等级。',
+      ['腰围 · 血压 · 血糖 · TG · HDL-C', '需加盖医院公章的体检单', '是次年重评的证据来源']],
+    ['积分商城', '打卡积分用来兑换实物与服务，攒够就能换。',
+      ['电子血压计 / 血糖试纸 / 体脂秤', '运动手环 / 营养代餐', 'AI 健康助手增值服务']],
+    ['主动随访', '按周跟踪打卡情况，发现掉队苗头即由健康助手主动联系，必要时转人工健管师。',
+      ['按周观察打卡连续性', '判断掉队倾向', '主动触达并调整计划']],
+  ];
+
+  $('#dimBox').innerHTML = DIMS.map(([nm, desc, li]) => `
+    <div class="kpi" style="padding:18px 20px">
+      <div style="font-size:16px;font-weight:700">${nm}</div>
+      <div class="hint" style="margin:6px 0 10px">${desc}</div>
+      <ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--ink2)">
+        ${li.map(x => `<li>${x}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+
+  const sc = (k, v, p) => SCRIPTS[k].replace('{v}', v).replace('{p}', p);
+  const cycIdx = Math.floor(S.weeks.length / PARAMS.points.cycleWeeks);
+  const ptsNow = cyclePoints(S.weeks.slice(cycIdx * PARAMS.points.cycleWeeks));
+  const mealList = MEALS[ph.primary] || MEALS['血糖型'];
+  const last = S.weeks.length ? S.weeks[S.weeks.length - 1] : null;
+  const cur = last ? last.cur : p.cur;
+
+  // 示例 / 真实模型：两种模式在这里分岔
+  syncAiUi();
+  if (S.aiLive) { renderChatLive(); return; }
+
+  $('#chatBox').innerHTML = `
+    <div class="msg"><div class="av ai">AI</div><div class="bub ai">
+      早上好${personAlias(p) ? '，' + escHtml(personAlias(p)) : ''}。你目前的健康等级是 <b>${a.level} 级</b>，主导表型是 <b>${ph.primary}</b>。
+      今天这份计划里，优先做三件事：<br>
+      1）<b>每天快走</b>（升好胆固醇）——${cur.hdl < t.hdl ? `你现在的好胆固醇（HDL-C）是 ${fmt(cur.hdl, 2)}，低于 ${fmt(t.hdl, 1)}，今天快走 30 分钟` : '今天的 30 分钟快走'}<br>
+      2）<b>主食换粗粮</b>（稳血糖）——${mealList[0].m}建议「${mealList[0].t}」（${mealList[0].tag}）<br>
+      3）<b>戒酒和甜饮料</b>（降甘油三酯）——今天不喝甜的、不喝酒。
+    </div></div>
+    <div class="msg"><div class="av us">用户</div><div class="bub us">今天中午应酬吃了不少，还喝了点酒。</div></div>
+    <div class="msg"><div class="av ai">AI</div><div class="bub ai">
+      这一顿我按「戒酒和甜饮料」和「主食换粗粮」两项分开记：<b>戒酒和甜饮料</b>今天算没做到，<b>主食换粗粮</b>我给你按 60% 折算，
+      另外三项（练腿劲 / 少放盐 / 每天快走）不受影响，晚上照做还能拿满。<br>
+      喝酒会让甘油三酯当天就往上走 —— 你现在的甘油三酯是 <b>${fmt(cur.tg, 2)} mmol/L</b>，${cur.tg >= t.tg ? '正好卡在线上' : `离 ${t.tg} 还有余量`}，所以这周我把「戒酒和甜饮料」列为第一优先。
+    </div></div>
+    <div class="msg"><div class="av ai">AI</div><div class="bub ai">
+      打个样：把要做的事拆成能打勾的格子，是这份计划能不能被执行的关键。${sc('sport', 70)}
+      另外提醒一句：${sc('check', '')}
+    </div></div>
+    <div class="msg"><div class="av ai">AI</div><div class="bub ai">${sc('challenge', ptsNow, PARAMS.points.pass)}<br>
+      补一句：积分攒够就能在<b>积分商城</b>换实物和服务，下面这一屏你随时都能看到余额。
+    </div></div>`;
+}
+
+/* ---------- 身体数据 → 重算方案 ----------
+   只改身高 / 体重 / 年龄三项：它们影响体重指数、进而影响有氧时长与力量组数。
+   五项判定指标（腰围 / 血糖 / 血压 / TG / HDL-C）不在这里改 —— 那是体检值，
+   改它等于换一个投保人，应当回第 1 步重填。
+   先做范围校验，再用 assess() 重算核保结论，最后整体重渲染。
+   ---------------------------------------------------------- */
+function applyBody() {
+  const g = k => { const el = $('#b_' + k); return el ? parseFloat(el.value) : NaN; };
+  const h = g('height'), w = g('weight'), ag = g('age');
+  const bad = !(h >= 120 && h <= 220) || !(w >= 35 && w <= 180) || !(ag >= 18 && ag <= 90);
+  if (bad) {
+    $('#bodyMsg').innerHTML = '身高 120–220 cm、体重 35–180 kg、年龄 18–90 岁是合理输入范围，请核对后重新生成。';
+    return;
+  }
+  if (w / Math.pow(h / 100, 2) >= 40) {
+    $('#bodyMsg').innerHTML = '按这组数据算出的体重指数已达 40 以上，超出本产品的承保范围（不予承保）。请确认体重是否填错。';
+    return;
+  }
+  S.person.height = h; S.person.weight = w; S.person.age = ag;
+  S.base = assess(S.person);
+  render();
+  const outAge = ag < ELIGIBLE.ageLo || ag > ELIGIBLE.ageHi;
+  $('#bodyMsg').innerHTML = '已按新数据重新生成。'
+    + (outAge ? '（注：' + ag + ' 周岁超出投保范围 ' + ELIGIBLE.ageLo + '–' + ELIGIBLE.ageHi + ' 周岁）' : '');
+}
+
+/* ---------- 渲染：步骤 3 ---------- */
+function renderStep3() {
+  if (!S.person) return;
+  if (!S.base.level) {
+    $('#p3body').style.display = 'none'; $('#p3chart').style.display = 'none';
+    $('#p3empty').style.display = 'block';
+    $('#p3empty').innerHTML = `<h2><span class="num">03</span>打卡闭环：五项日常打卡 → 干预强度 → 指标 → 等级</h2>
+      <p class="lead">当前标的不可承保，没有可模拟的干预闭环。回到第一步换一个投保人。</p>`;
+    return;
+  }
+  $('#p3empty').style.display = 'none';
+  $('#p3body').style.display = 'block';
+  const p = S.person;
+  const DAYS = ['一', '二', '三', '四', '五', '六', '日'];
+  const st = currentWeek();
+  // 矩阵布局：一维一行（对应一个 MetS 指标），一列一天。落下的维度一眼可见。
+  $('#dayBox').innerHTML =
+    `<div class="dayhd" style="text-align:left">做什么 \\ 星期</div>`
+    + DAYS.map(d => `<div class="dayhd">${d}</div>`).join('')
+    + DIM_DEFS.map((dd, k) =>
+        `<div class="dimlb${st.dimCount[k] === 0 ? ' zero' : ''}" title="${dd.why}">
+           <b>${dd.tag}</b><span>${dd.lb} · 本周 ${st.dimCount[k]}/7</span>
+         </div>`
+        + DAYS.map((_, i) => {
+            const on = S.dimDays[i][k];
+            return `<button class="chk d${k}${on ? ' on' : ''}" data-i="${i}" data-k="${k}"
+              title="周${DAYS[i]} · ${dd.lb}｜${dd.act}">${on ? '✓' : '·'}</button>`;
+          }).join('')
+      ).join('');
+  document.querySelectorAll('.chk').forEach(b => b.onclick = () => {
+    // 每一维、每一天都各自独立开关，不联动（可跳选、可只做某一维）
+    const i = +b.dataset.i, k = +b.dataset.k;
+    S.dimDays[i][k] = !S.dimDays[i][k];
+    renderStep3();
+  });
+
+  const P = PARAMS.points;
+  const perDay = perDayPts();
+  const cw = currentWeek();
+  const effNow = cw.pts >= PARAMS.effect.full * perDay ? 1.0
+               : cw.pts >= PARAMS.effect.half * perDay ? 0.5
+               : cw.pts > 0 ? PARAMS.effect.low : 0;
+  const zeroDims = DIM_DEFS.filter((_, k) => cw.dimCount[k] === 0);
+  $('#dayHint').innerHTML =
+    `本周得分 <b>${cw.pts}</b> 分（${perDay} 分 / 满分日 × ${cw.fullDays} 个满分日 + 零散日），`
+    + `干预强度系数 <b>${effNow}</b>。<br>`
+    + `覆盖情况：` + DIM_DEFS.map((d, k) =>
+        `<b style="${cw.dimCount[k] === 0 ? 'color:#A9610A' : ''}">${d.tag} ${cw.dimCount[k]}/7</b>`).join(' · ')
+    + `　（共覆盖 <b>${cw.covered} / 5</b> 项）`
+    + (zeroDims.length
+        ? `<br>其中 ${zeroDims.map(d => d.tag).join('、')} 本周 0 天，`
+          + `${zeroDims.map(d => d.lb).join('、')}这一周没有干预输入。`
+        : '')
+    + (cw.pts === 0 ? ` 本周没有任何记录，指标不会改善。` : '');
+
+  // 实测回传表单：默认预填「当前周的预测值」，用户手动改过就不覆盖，避免把已输入的值清掉。
+  // 换投保人必须强制重建，否则会残留上一个案例的默认值。
+  const keys6 = ['waist', 'tg', 'hdl', 'sbp', 'dbp', 'fbg'];
+  const ownerKey = 'g' + S.gen;   // 只看世代号：start() 一跑就必须重建，不依赖 S.active
+  const snap = keys6.map(k => Number(p.cur[k]).toFixed(2)).join(',');
+  if (S.realOwner !== ownerKey || (!S.realTouched && S.realSnap !== snap)) {
+    if (S.realOwner !== ownerKey) $('#realMsg').innerHTML = '';
+    const t0 = thresholds(p.sex);
+    const RF = [['r_waist', `腰围 cm（判定线 ${t0.waist}）`, p.cur.waist],
+                ['r_tg', `TG mmol/L（${t0.tg}）`, p.cur.tg],
+                ['r_hdl', `HDL-C mmol/L（${t0.hdl}）`, p.cur.hdl],
+                ['r_sbp', `收缩压 mmHg（${t0.sbp}）`, Math.round(p.cur.sbp)],
+                ['r_dbp', `舒张压 mmHg（${t0.dbp}）`, Math.round(p.cur.dbp)],
+                ['r_fbg', `空腹血糖 mmol/L（${t0.fbg}）`, p.cur.fbg]];
+    $('#realGrid').innerHTML = RF.map(([id, lb, v]) =>
+      `<div class="fld"><label>${lb}</label><input id="${id}" type="number" step="0.01" value="${Number(v).toFixed(2)}"></div>`).join('');
+    RF.forEach(([id]) => {
+      const el = $('#' + id);
+      if (el) el.addEventListener('input', () => { S.realTouched = true; });
+    });
+    S.realOwner = ownerKey; S.realTouched = false; S.realSnap = snap;
+  }
+
+  $('#btnReal').onclick = pushReal;
+  $('#btnRealReset').onclick = () => {
+    const l = S.weeks[S.weeks.length - 1];
+    if (!l || !l.real) { $('#realMsg').innerHTML = '还没有可恢复的实测覆盖 —— 先回传一次。'; return; }
+    l.real = false;
+    S.realTouched = false;      // 让表单重新按预测值预填
+    $('#realMsg').innerHTML = `第 ${l.w} 周已恢复为模型预测值（指标数值本身不回滚）。`;
+    renderStep3();
+  };
+
+  const last = S.weeks.length ? S.weeks[S.weeks.length - 1] : null;
+  const lvTxt = last && last.level ? last.level + ' 级' : (last ? '逆转出 MetS' : (S.base.level || '—'));
+  $('#wkLabel').innerHTML = `第 <span style="color:var(--accent)">${S.weeks.length}</span> / 52 周 &nbsp;·&nbsp; 当前达标 ${last ? last.count : S.base.n} 项 &nbsp;·&nbsp; ${lvTxt}`;
+
+  const done = S.weeks.length;
+  $('#btnWeek').disabled = done >= 52;
+  $('#btn12').disabled = done >= 52;
+  $('#btn52').disabled = done >= 52;
+
+  let cy = '';
+  const cyc = Math.floor(done / P.cycleWeeks);
+  const FULL = cycleFullPoints();
+  const curPts = cyclePoints(S.weeks.slice(cyc * P.cycleWeeks, done));
+  const inCycle = done - cyc * P.cycleWeeks;
+  const reach = curPts >= P.pass;
+  const needDays = Math.max(0, Math.ceil((P.pass - curPts) / perDay));
+  cy += `<div class="kpi" style="padding:16px 20px;margin-top:14px">
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+      <div style="font-size:16px;font-weight:700">第 ${cyc + 1} 个 ${P.cycleWeeks} 周周期 · 积分进度</div>
+      <div class="hint" style="margin-left:auto">${curPts} / ${FULL} 分　·　达标线 ${P.pass} 分</div>
+    </div>
+    <div style="height:10px;background:#EAEFED;border-radius:99px;margin:10px 0 8px">
+      <div style="height:10px;width:${Math.min(100, curPts / P.pass * 100).toFixed(1)}%;background:${reach ? '#0E7C66' : '#C9A227'};border-radius:99px"></div>
+    </div>
+    <div class="hint">已进行 ${inCycle} 周。${reach
+      ? '已越过达标线 —— 本周期结算时积分入账，可在积分商城兑换实物。'
+      : `距达标线还差 ${P.pass - curPts} 分，相当于 ${needDays} 个满分打卡日。`}<br>
+      <b>积分攒够即可在下方「我的积分」里直接兑换</b>。</div>
+  </div>`;
+
+  if (cyc > 0) {
+    const seg = S.weeks.slice(cyc * P.cycleWeeks - P.cycleWeeks, cyc * P.cycleWeeks);
+    const pts = cyclePoints(seg);
+    const pass = pts >= P.pass;
+    cy += `<div class="verdict" style="margin-top:14px;${pass ? '' : 'border-color:#A9610A;background:#FDF5E6'}">
+      <div class="big"${pass ? '' : ' style="color:#A9610A"'}>第 ${cyc} 个 ${P.cycleWeeks} 周周期结算：${pts} / ${FULL} 分 —— ${pass ? '达标' : '未达标'}</div>
+      <div>${pass
+        ? `积分越过 ${P.pass} 分达标线 → 积分入账，可在积分商城兑换：电子血压计 / 血糖试纸 / 体脂秤 / 运动手环 / 营养代餐，以及 AI 健康助手增值服务（一对一计划调整、营养师复核）。`
+        : `积分未达 ${P.pass} 分 → 本周期不发放兑换额度。<b>但已产生的指标改善全部保留</b>，下一周期积分从零重新累计。`}</div></div>`;
+  }
+  if (done >= 52) {
+    cy += `<div class="verdict" style="margin-top:14px;border-color:#A9610A;background:#FDF5E6">
+      <div class="big" style="color:#A9610A">已满 52 周，触发年度重评</div>
+      <div>去第 4 步看重评结论、次年保费，以及死差益测算。</div></div>`;
+  }
+  $('#cycleHint').innerHTML = cy;
+
+
+  $('#p3chart').style.display = done ? 'block' : 'none';
+  if (done) {
+    $('#chart1').innerHTML = countChart(S.weeks);
+
+    const ini = S.init, t = thresholds(p.sex);
+    const rows = [
+      ['腰围', `≥ ${t.waist} cm`, ini.waist, last.cur.waist, 1, false,
+        ini.waist >= t.waist, last.cur.waist >= t.waist],
+      ['甘油三酯', `≥ ${t.tg} mmol/L`, ini.tg, last.cur.tg, 2, false,
+        ini.tg >= t.tg, last.cur.tg >= t.tg],
+      ['HDL-C', `< ${t.hdl} mmol/L`, ini.hdl, last.cur.hdl, 2, true,
+        ini.hdl < t.hdl, last.cur.hdl < t.hdl],
+      ['空腹血糖', `≥ ${t.fbg} mmol/L`, ini.fbg, last.cur.fbg, 2, false,
+        ini.fbg >= t.fbg, last.cur.fbg >= t.fbg],
+    ];
+    $('#trendBody').innerHTML = rows.map(r => {
+      if (r[0] === '血压') {
+        const i0 = `${Math.round(ini.sbp)}/${Math.round(ini.dbp)}`, i1 = `${Math.round(last.cur.sbp)}/${Math.round(last.cur.dbp)}`;
+        const was = ini.sbp >= t.sbp || ini.dbp >= t.dbp;
+        const is = last.cur.sbp >= t.sbp || last.cur.dbp >= t.dbp;
+        return `<tr><td>血压</td><td class="hint">SBP ≥ ${t.sbp} 或 DBP ≥ ${t.dbp}</td>
+          <td class="num mono">${i0}</td><td class="num mono">${i1}</td>
+          <td class="num mono up">${(last.cur.sbp - ini.sbp).toFixed(0)} / ${(last.cur.dbp - ini.dbp).toFixed(0)}</td>
+          <td>${statusTag(was, is)}</td></tr>`;
+      }
+      const [nm, std, v0, v1, d, lowerBetter, was, is] = r;
+      const delta = v1 - v0;
+      const good = lowerBetter ? delta > 0 : delta < 0;
+      return `<tr><td>${nm}</td><td class="hint">${std}</td>
+        <td class="num mono">${fmt(v0, d)}</td><td class="num mono">${fmt(v1, d)}</td>
+        <td class="num mono ${good ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${fmt(delta, d)}</td>
+        <td>${statusTag(was, is)}</td></tr>`;
+    }).join('');
+  }
+}
+
+function statusTag(was, is) {
+  if (was && is) return '<span class="ok">仍达标</span>';
+  if (was && !is) return '<span class="ok">已回到标准内</span>';
+  if (!was && is) return '<span class="flag hi">本期新达标</span>';
+  return '<span class="no">正常范围内</span>';
+}
+
+/* ---------- 渲染：步骤 4 ---------- */
+function renderStep4() {
+  if (!S.person) return;
+  if (!S.base.level) {
+    $('#p4body').style.display = 'none';
+    $('#p4empty').style.display = 'block';
+    $('#p4empty').innerHTML = `<h2><span class="num">04</span>给付与重评</h2>
+      <p class="lead">当前标的不可承保，没有给付与重评可谈。回到第一步换一个投保人。</p>`;
+    return;
+  }
+  $('#p4empty').style.display = 'none';
+  $('#p4body').style.display = 'block';
+  const p = S.person, a = S.base, b = assess(p), done = S.weeks.length;
+  const last = done ? S.weeks[done - 1] : null;
+  const curLevel = last ? last.level : a.level;
+
+  // 给付结构
+  const sum = a.sum;
+  $('#benefitBox').innerHTML = `
+    <div class="tscroll"><table data-cols="4">
+      <thead><tr><th style="width:22%">给付项目</th><th style="width:30%">触发条件</th><th style="width:22%">给付形态</th><th>金额 / 内容</th></tr></thead>
+      <tbody>
+        <tr><td><b>责任一（重症）</b><br><span class="hint">三项特定疾病给付</span></td>
+          <td>确诊下列任一疾病：<br>
+            ① 2 型糖尿病（FPG ≥7.0 或 HbA1c ≥6.5% 或 OGTT 阳性）；<br>
+            ② 急性心肌梗死（按重疾险统一标准定义确诊）；<br>
+            ③ 脑卒中（脑梗死或脑出血，按重疾险统一标准定义确诊）</td>
+          <td><b>现金</b>一次性</td>
+          <td class="mono">基本保额 ×100% = ¥${money(sum)}<br>
+            <span class="hint">三项合计给付一次；给付后该项责任终止，保证续保期内仍可续保</span></td></tr>
+        <tr><td><b>责任二（中症）</b><br><span class="hint">MetS 严重进展给付</span></td>
+          <td>健康等级严重进展：<br>由 A 级进展到 B 级，或由 B 级进展到 C 级</td>
+          <td><b>现金</b>一次性</td>
+          <td class="mono">基本保额 ×20% = ¥${money(sum * 0.2)}</td></tr>
+        <tr><td><b>责任三</b><br><span class="hint">疾病相关身故给付</span></td>
+          <td>保险期间内因上述三项疾病身故<br>
+            <span class="hint">不含全因身故；其他原因身故不在保障范围内</span></td>
+          <td><b>现金</b>一次性</td>
+          <td class="mono">基本保额 ×20% = ¥${money(sum * 0.2)}</td></tr>
+        <tr style="background:#FBFDFC"><td colspan="4" class="hint" style="padding:6px 12px">
+          ↓ 以下为<b>非现金服务</b>：首次达到三项特定疾病任一给付条件后，取得一次<b>总额 5,000 元</b>、
+          有效期 12 个月的病后医疗照护服务权益；不计入保险责任，不折现、不转让、不抵减现金保险金。</td></tr>
+        <tr><td>血糖管理支持</td><td>确诊 2 型糖尿病，并经保险人确认</td>
+          <td><b>实物 + 服务</b>（直付 / 派单）</td><td>血糖仪 1 台；试纸每月 30 条；血糖监测指导每月 1 次</td></tr>
+        <tr><td>门诊绿色通道</td><td>确诊任一约定疾病后</td>
+          <td><b>服务</b>（预约协调）</td><td>2 次<span class="hint">仅作预约协调，不承诺床位、疗效或支付治疗费用</span></td></tr>
+        <tr><td>住院生活看护</td><td>确诊任一约定疾病后</td>
+          <td><b>服务</b>（派单）</td><td>7 天，每天 8 小时<span class="hint">属疾病后附加健康服务，不构成独立护理保险责任</span></td></tr>
+        <tr><td>康复评估与指导</td><td>确诊急性心肌梗死或脑卒中后</td>
+          <td><b>服务</b>（直付机构）</td><td>4 次</td></tr>
+        <tr style="background:#FBFDFC"><td colspan="4" class="hint" style="padding:6px 12px">
+          各项目同时受<b>单项次数</b>与<b>权益总额</b>双重限制；服务细目、单价、次数、服务区域与使用期限以保单附具的服务清单为准；
+          权益用尽、届满或被保险人身故时终止，不因重疾给付后选择保证续保而恢复。</td></tr>
+      </tbody>
+    </table></div>`;
+
+  // 年度重评
+  if (!done) {
+    $('#reviewBox').innerHTML = `<p class="hint">还没开始模拟干预。回到第 3 步推进 52 周后，这里会给出年度重评结论。</p>`;
+  } else {
+    // 全年积分：用于在积分商城「兑换实物」
+    const yearPts = S.weeks.reduce((s, w) => s + weekPoints(w), 0);
+    const targetY = perDayPts() * 7 * 52;          // 52 周每周满分
+    const adh = Math.min(1, yearPts / targetY);
+    const redeem = Math.floor(yearPts / 100);      // 每 100 分兑 1 件实物
+    const newCoef = curLevel ? PARAMS.level[curLevel].p : 1.0;
+    // ⚠️ 次年保费 = 基准保费 × 等级系数，**不再有任何减免或浮动**
+    //    （取消所有与保费挂钩的减免、浮动规则）
+    const next = PARAMS.base.premium * newCoef;
+
+    const lvTxt = curLevel || '逆转出 MetS';
+    const lvTxt0 = a.level || '—';
+    const changed = (curLevel || 'REV') !== (a.level || 'REV');
+
+    $('#reviewBox').innerHTML = `
+      <div class="kpis">
+        <div class="kpi"><div class="lb">初始等级 → 重评后</div>
+          <div class="vl" style="font-size:22px">${lvTxt0} → ${lvTxt}</div>
+          <div class="dlt ${changed ? 'up' : ''}">${changed ? '降级成功' : '维持原级'}</div></div>
+        <div class="kpi"><div class="lb">达标项数</div>
+          <div class="vl">${a.n} → ${last.count}<small>项</small></div>
+          <div class="dlt ${last.count < a.n ? 'up' : ''}">减少 ${a.n - last.count} 项</div></div>
+        <div class="kpi"><div class="lb">全年打卡积分</div>
+          <div class="vl">${yearPts}<small>分</small></div>
+          <div class="dlt">满分基准 ${targetY} 分（达成 ${(adh * 100).toFixed(0)}%）</div></div>
+        <div class="kpi"><div class="lb">次年保费</div>
+          <div class="vl">¥${money(next)}</div>
+          <div class="dlt ${next <= PARAMS.base.premium * a.coefP ? 'up' : ''}">较首年 ${next <= PARAMS.base.premium * a.coefP ? '↓' : '↑'} ¥${money(Math.abs(PARAMS.base.premium * a.coefP - next))}　·　仅由等级决定</div></div>
+      </div>
+      <div class="tscroll"><table data-cols="3" style="margin-top:14px">
+        <thead><tr><th style="width:26%">调整项</th><th style="width:38%">规则</th><th>本次结果</th></tr></thead>
+        <tbody>
+          <tr><td>等级重评</td><td>按重评当日的五项指标重新定级</td>
+            <td>${lvTxt0} → <b>${lvTxt}</b></td></tr>
+          <tr><td>次年保费</td><td>保费 = 基准保费 × 等级系数，<b>不含任何减免、浮动</b><br>
+            </td>
+            <td class="mono">¥${money(next)}<span class="hint">（系数 ×${fmt(newCoef, 1)}）</span></td></tr>
+          <tr><td>打卡积分权益</td><td>全年积分累计，可在积分商城<b>兑换实物 / 服务</b><br>
+            </td>
+            <td>${yearPts} 分 → 约可兑换 <b>${redeem}</b> 件实物 / 服务</td></tr>
+          <tr><td>惩罚性加费</td><td>健康恶化仅恢复至初始费率，不做惩罚性加费</td>
+            <td class="hint">「只奖不罚」是核心对外表述；注意这里的「奖」= 非现金权益（服务 + 积分兑换），<b>不含保费减免</b></td></tr>
+        </tbody>
+      </table></div>`;
+
+    // 10 年死差（组合口径，直接引用新版方案第六章）
+    const m = mortalityGain();
+
+    /* ── 新版方案的分级口径与稳健性明细（2026-10-12 换系）────────────────
+       来源：团队新版《代谢健康守护———代谢综合征（MetS）特定疾病保险》第六章
+       表 6-1（转移矩阵）/ 6-3（分级费率）/ 6-4（三责 EPV）/ 6-5（敏感性）+ Bootstrap。
+       分级表只列方案给到的列（占比 / 年发生率 / 三档纯保费）；
+       死差按责任维度出表（重症 13,312 / 中症 2,549 / 身故 231），不再由纯保费 × ä 还原分级 EPV。 */
+    const V4 = PARAMS.actuarial;
+    const v4Lv = V4.levels.map(lv => {
+      return `<tr>
+        <td><b>${lv.lv} 级</b><div class="hint" style="font-size:11.5px">达标 ${lv.items} 项</div></td>
+        <td class="num mono">${(lv.share * 100).toFixed(1)}%</td>
+        <td class="num mono">${(lv.dm * 100).toFixed(2)}%</td>
+        <td class="num mono">${(lv.cvd * 100).toFixed(2)}%</td>
+        <td class="num mono">¥${money(lv.premBase)}</td>
+        <td class="num mono">¥${money(lv.premAI)}</td>
+        <td class="num mono">¥${money(lv.premDisc)}</td>
+      </tr>`;
+    }).join('');
+    const v4Resp = V4.resp.map(r => `<tr>
+        <td>${r.name}</td>
+        <td class="num mono">¥${money(r.epvBase)}</td>
+        <td class="num mono">¥${money(r.epvAI)}</td>
+        <td class="num mono">${(r.share * 100).toFixed(1)}%</td>
+        <td class="num mono" style="font-weight:700;color:#2E8B72">¥${money(r.gain)}</td>
+      </tr>`).join('');
+    const v4Yh  = V4.projection.map(r => `<th class="num">第 ${r.y} 年</th>`).join('');
+    const v4Yr0 = V4.projection.map(r => `<td class="num mono">${(r.cum0 * 100).toFixed(1)}%</td>`).join('');
+    const v4Yr1 = V4.projection.map(r => `<td class="num mono">${(r.cum1 * 100).toFixed(1)}%</td>`).join('');
+    const v4Ye0 = V4.projection.map(r => `<td class="num mono">¥${money(r.epv0)}</td>`).join('');
+    const v4Ye1 = V4.projection.map(r => `<td class="num mono">¥${money(r.epv1)}</td>`).join('');
+    const v4Yg  = V4.projection.map(r => `<td class="num mono" style="font-weight:700;color:#2E8B72">¥${money(r.gain)}</td>`).join('');
+    const v4Sen = V4.sensitivity.map(s => `<tr>
+        <td class="num mono">${(s.cut * 100).toFixed(0)}%</td>
+        <td class="num mono">¥${money(s.epv)}</td>
+        <td class="num mono">${(s.drop * 100).toFixed(1)}%</td>
+        <td class="num mono" style="font-weight:700;color:#2E8B72">¥${money(s.gain)}</td>
+      </tr>`).join('');
+    const v4Tr = V4.transitions.rows.map(r => `<tr>
+        <td><b>${r.from}</b></td>${r.v.map(v => `<td class="num mono">${v.toFixed(3)}</td>`).join('')}
+      </tr>`).join('');
+    const v4Panel = `
+      <h4 class="sub" style="margin-top:24px">分级口径</h4>
+      <p class="hint">三档明细。B 级基准纯保费略低于 A 级：中症 A→B 年均发生率（3.3%）高于 B→C（1.9%），
+        A 级的中症额外成本部分抵消其重症风险较低的优势。</p>
+      <div class="tscroll"><table data-cols="7">
+        <thead><tr><th style="width:14%">健康等级</th><th class="num">投保人占比</th>
+          <th class="num">年糖尿病发生率</th><th class="num">年心血管事件发生率</th>
+          <th class="num">年交纯保费（基准）</th><th class="num">年交纯保费（AI 干预）</th>
+          <th class="num">健康改善后保费（20% 优惠）</th></tr></thead>
+        <tbody>${v4Lv}
+          <tr style="background:#F7FAF9"><td><b>加权合计</b></td>
+            <td class="num mono">100.0%</td><td class="num mono">—</td><td class="num mono">—</td>
+            <td class="num mono">¥${money(V4.premBaseWeighted)}</td>
+            <td class="num mono">¥${money(V4.premAIWeighted)}</td>
+            <td class="num mono">—</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4 class="sub" style="margin-top:24px">三责 EPV 对比（10 年期 · 15 万元保额）</h4>
+      <p class="hint">保险责任共三项（重症 / 中症 / 疾病相关身故），分别计算期望赔付现值后汇总。
+        重症是最大赔付成本来源；死差来源有两层 —— AI 干预既延缓糖尿病与心血管事件进展（降重症），
+        也减缓健康等级恶化（降中症）。</p>
+      <div class="tscroll"><table data-cols="5">
+        <thead><tr><th>保险责任</th><th class="num">基准 EPV</th><th class="num">AI 干预 EPV</th>
+          <th class="num">EPV 占比（AI 情景）</th><th class="num">死差</th></tr></thead>
+        <tbody>${v4Resp}
+          <tr style="background:#F7FAF9"><td><b>合计</b></td>
+            <td class="num mono">¥${money(m.pay0)}</td>
+            <td class="num mono">¥${money(m.pay1)}</td>
+            <td class="num mono">100.0%</td>
+            <td class="num mono" style="font-weight:700;color:#2E8B72">¥${money(m.gain)}</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4 class="sub" style="margin-top:24px">10 年逐年投影</h4>
+      <p class="hint">累积总出险率逐年累积，期望赔付为各年末现值；两者之差即当年累计死差。</p>
+      <div class="tscroll"><table data-cols="11">
+        <thead><tr><th style="width:16%">项目</th>${v4Yh}</tr></thead>
+        <tbody>
+          <tr><td>累积总出险（无干预）</td>${v4Yr0}</tr>
+          <tr><td>累积总出险（AI 干预）</td>${v4Yr1}</tr>
+          <tr><td>期望赔付（无干预）</td>${v4Ye0}</tr>
+          <tr><td>期望赔付（AI 干预）</td>${v4Ye1}</tr>
+          <tr><td>死差</td>${v4Yg}</tr>
+        </tbody>
+      </table></div>
+
+      <h4 class="sub" style="margin-top:24px">干预效果敏感性</h4>
+      <p class="hint">把 AI 干预效果从 20% 扫到 58%，看死差是否始终为正。定价采用的是 40%。</p>
+      <div class="tscroll"><table data-cols="4">
+        <thead><tr><th>AI 干预效果</th>
+          <th class="num">10 年期望赔付（现值）</th><th class="num">赔付降幅</th><th class="num">10 年死差</th></tr></thead>
+        <tbody>${v4Sen}</tbody>
+      </table></div>
+      <p class="hint" style="margin-top:10px">
+        Bootstrap 重抽样 1,000 次：死差均值 ¥${money(V4.boot.mean)}／人，
+        95% 置信区间 [¥${money(V4.boot.lo)}, ¥${money(V4.boot.hi)}]／人，全部为正 —— 
+        结论不依赖单次点估计。</p>
+
+      <h4 class="sub" style="margin-top:24px">状态转移概率</h4>
+      <p class="hint">单年转移概率（AI 干预情景 · 40% 效果）：行是期初状态，列是期末状态。A / B / C 为健康等级，
+        DM 为 2 型糖尿病、CVD 为心血管事件、Death 为身故、Reverse 为指标回到非 MetS 状态。
+        DM 与 CVD 是<b>半吸收态</b>：进入后持续停留，年内仍可能死亡并触发疾病相关身故给付。</p>
+      <div class="tscroll"><table data-cols="8">
+        <thead><tr><th>期初 / 期末</th>${V4.transitions.states.map(s => `<th class="num">${s}</th>`).join('')}</tr></thead>
+        <tbody>${v4Tr}</tbody>
+      </table></div>
+
+      <h4 class="sub" style="margin-top:24px">建模样本与口径</h4>
+      <p class="hint">面板匹配 <b>${money(V4.sample.panel)}</b> 人，其中可投保队列
+        <b>${V4.sample.insurable}</b> 人；数据取 CHARLS ${V4.sample.waves} 两波血检；
+        平均年龄 ${V4.sample.meanAge} 岁、男性 ${(V4.sample.maleShare * 100).toFixed(1)}%。
+        基本保额 ${V4.sumInsured / 10000} 万元、保证续保期累计最长 ${V4.term} 年（保险期间一年，
+        下面 ${V4.term} 年投影即保证续保期长度）、贴现率 ${(V4.discount * 100).toFixed(0)}%、
+        AI 干预效果假设 ${(V4.aiEffect * 100).toFixed(0)}%。</p>`;
+
+    $('#marginBox').innerHTML = `
+      <div class="tscroll"><table data-cols="6">
+        <thead><tr><th style="width:16%">情景</th><th class="num">10 年累积糖尿病</th><th class="num">10 年累积心血管事件</th>
+          <th class="num">10 年累积总出险</th><th class="num">10 年期望赔付（现值）</th><th class="num">赔付率</th></tr></thead>
+        <tbody>
+          <tr><td>无 AI 干预</td><td class="num mono">${(m.dm0 * 100).toFixed(1)}%</td>
+            <td class="num mono">${(m.cvd0 * 100).toFixed(1)}%</td>
+            <td class="num mono">${(m.cum0 * 100).toFixed(1)}%</td>
+            <td class="num mono">¥${money(m.pay0)}</td>
+            <td class="num mono" style="font-weight:700;color:#A9610A">${(m.ratio0 * 100).toFixed(1)}%
+              <div class="hint" style="font-weight:400">承保盈余 ¥${money(m.gain0)}</div></td></tr>
+          <tr><td>AI 干预后</td><td class="num mono">${(m.dm1 * 100).toFixed(1)}%</td>
+            <td class="num mono">${(m.cvd1 * 100).toFixed(1)}%</td>
+            <td class="num mono">${(m.cum1 * 100).toFixed(1)}%</td>
+            <td class="num mono">¥${money(m.pay1)}</td>
+            <td class="num mono" style="font-weight:700;color:#2E8B72">${(m.ratio1 * 100).toFixed(1)}%
+              <div class="hint" style="font-weight:400">承保盈余 ¥${money(m.gain1)}</div></td></tr>
+        </tbody>
+      </table></div>
+      <div class="verdict" style="margin-top:16px">
+        <div class="big">10 年死差益 = ¥${money(m.gain)}／人</div>
+        <div>按 A / B / C 三档加权的<b>组合口径</b>测算（基本保额 15 万、年缴纯保费 ¥${money(m.prem)}）。
+        <b>死差益 = 基准期望赔付 ¥${money(m.pay0)} − AI 干预后期望赔付 ¥${money(m.pay1)}</b>：
+        干预把 10 年期望赔付现值压掉 <b>${(m.cut * 100).toFixed(1)}%</b>
+        （赔付率 ${(m.ratio0 * 100).toFixed(1)}% → ${(m.ratio1 * 100).toFixed(1)}%）。
+        不做干预时，加上费用率与安全边际即承保亏损；干预后落进可承保区间。
+        <b>「可保化」落到数字上，就是这一格的差额。</b></div>
+      </div>
+      <p class="hint" style="margin-top:14px">
+        <b>测算口径：</b>死差益取「基准期望赔付 − 干预后期望赔付」，衡量干预压下来的风险价值；
+        它与「承保盈余（保费 − 赔付）」<b>不是一个数</b>，不要混用。
+        未计费用率、退保与投资收益。<br>
+        <b>分级口径：</b>上表为 A / B / C 加权的组合口径；分责任死差见下方「三责 EPV 对比」表
+        （重症 ¥13,312 / 中症 ¥2,549 / 身故 ¥231），分级表列方案给到的保费三列。<br>
+        <b>死因口径（关键）：</b>「死差」的准确说法是<b>发生率差</b>（预期发生率 − 实际发生率）在<b>死亡率</b>上的体现 ——
+        以死亡为给付条件，被保险人不死就不赔，沉淀下来的保费成为收益。
+        本产品的死亡口径<b>只取因承保疾病身故</b>：MetS 及约定并发症（2 型糖尿病、心梗、脑卒中）
+        本身就是主要致死病因，这部分死亡构成承保风险；
+        <b>其他原因的身故不在保障范围内，也不进入死差测算</b>。
+        所以这里的死亡率基础是<b>承保疾病对应的死亡率</b>，<b>不是全因死亡率</b>；
+        死因折算可参照《中国人身保险业重大疾病经验发生率表（2020）》（银保监会）中的
+        <b>kx</b>（因患重大疾病死亡占全部死亡的比率）。<br>
+        <b>加权平均纯保费 ¥${money(V4.premBaseWeighted)} / ¥${money(V4.premAIWeighted)}</b>
+        （无干预 / AI 干预）为三档纯保费按投保人占比加权所得。
+      </p>
+      ${v4Panel}`;
+  }
+}
+
+/* ---------- 统一渲染 ---------- */
+function render() { renderStep2(); renderStep3(); renderStep4(); renderMall(); if (S.person) renderAssess(); }
+
+/* 自定义数据没有现成的「个体可达目标」→ 按偏离度推一个。
+   规则：偏离最小的 2 项设成「一年后能跨回阈值内」，其余设成「逼近但仍在阈值外」。
+   这样一年的模拟结果才符合直觉，不会出现五项一起消失的假象。 */
+function autoGoal(p) {
+  const t = thresholds(p.sex), c = p.cur;
+  const items = [
+    { k: 'waist', over: c.waist >= t.waist, dev: (c.waist - t.waist) / t.waist },
+    { k: 'tg',    over: c.tg    >= t.tg,    dev: (c.tg - t.tg) / t.tg },
+    { k: 'hdl',   over: c.hdl   <  t.hdl,   dev: (t.hdl - c.hdl) / t.hdl },
+    { k: 'bp',    over: c.sbp >= t.sbp || c.dbp >= t.dbp,
+                  dev: Math.max((c.sbp - t.sbp) / t.sbp, (c.dbp - t.dbp) / t.dbp) },
+    { k: 'fbg',   over: c.fbg   >= t.fbg,   dev: (c.fbg - t.fbg) / t.fbg },
+  ].filter(x => x.over);
+  const overKeys = items.map(x => x.k);
+  const cross = new Set(items.slice().sort((a, b) => a.dev - b.dev).slice(0, 2).map(x => x.k));
+  const g = {};
+  const hi = (k, th, grp) => {
+    if (!overKeys.includes(grp)) { g[k] = c[k] * 0.95; return; }
+    g[k] = cross.has(grp) ? th * 0.97 : th * 1.06;
+  };
+  hi('waist', t.waist, 'waist');
+  hi('tg', t.tg, 'tg');
+  hi('fbg', t.fbg, 'fbg');
+  hi('sbp', t.sbp, 'bp');
+  hi('dbp', t.dbp, 'bp');
+  g.hdl = overKeys.includes('hdl') ? (cross.has('hdl') ? t.hdl * 1.05 : t.hdl * 0.98) : c.hdl * 1.05;
+  return g;
+}
+
+function start(c) {
+  S.person = JSON.parse(JSON.stringify(c));
+  S.weeks = [];
+  S.wallet = { log: [] };        // 换投保人 → 积分账户清零
+  S.aiLive = false; S.aiBusy = false; S.chat = [];   // 换投保人 → AI 回到示例模式（新人档案要重新生成）
+  S.gen++;                                                  // 换投保人 → 世代号 +1，实测表单随之重建
+  // 2026-10-11 起默认全空白：一周做到多少由参保人自己逐格点出来，不由系统预填
+  S.dimDays = newWeekDims(0);
+  if (c.custom) S.person.goal = autoGoal(S.person);
+  S.init = Object.assign({}, c.cur);
+  S.base = assess(S.person);
+  render();
+}
+
+/* ---------- 绑定 ---------- */
+renderSteps();
+renderForm();
+renderCases();
+$('#brandSub').textContent = '　' + BRAND.sub;
+// data-go 全局绑定（⚠️ 不能只绑 #home —— 产品介绍页底部「接下来」卡里的
+// 「开始核保 / 看 AI 健康计划」也是 data-go 按钮，2026-10-12 用户实测点不动，病根就在这）
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
+// data-intro="1" → 去产品介绍页；data-intro="home" → 回首页（介绍页里的返回）
+document.querySelectorAll('[data-intro]').forEach(b => b.onclick = () =>
+  (b.dataset.intro === 'home' ? go(-1) : goIntro()));
+$('#btnEnter').onclick = () => goIntro();   // 顶部「进入产品」= 先到产品介绍页（组长 2026-10-11）
+
+$('#btnCustom').onclick = () => { S.active = -1; start(readForm()); renderCases(); go(0); };
+$('#btnFill').onclick = () => {
+  const c = CASES[1];
+  renderForm({ sex: c.sex, age: c.age, height: c.height, weight: c.weight,
+               waist: c.cur.waist, tg: c.cur.tg, hdl: c.cur.hdl,
+               sbp: c.cur.sbp, dbp: c.cur.dbp, fbg: c.cur.fbg });
+};
+$('#btnWeek').onclick = () => { if (S.weeks.length < 52) pushWeeks(1); };
+$('#btn12').onclick = () => { pushWeeks(Math.min(12, 52 - S.weeks.length)); };
+$('#btn52').onclick = () => { pushWeeks(52 - S.weeks.length); };
+$('#btnReset').onclick = () => { if (S.person) start(S.person); };
+
+// ── AI 健康助手：真实模型 ──
+$('#aiModel').value = glmModel();
+syncModelLabel();
+$('#btnLive').onclick = runLiveToday;
+$('#btnBackSample').onclick = backToSample;
+$('#btnAsk').onclick = () => { const v = $('#aiInput').value; $('#aiInput').value = ''; askCoach(v); };
+$('#aiInput').onkeydown = e => {
+  if (e.key === 'Enter') { const v = e.target.value; e.target.value = ''; askCoach(v); }
+};
+$('#btnModelSave').onclick = () => {
+  const m = $('#aiModel').value.trim() || GLM.model;
+  setGlmModel(m); $('#aiModel').value = glmModel(); syncModelLabel();
+  $('#aiStatus').innerHTML = '当前模型：' + escHtml(glmModel());
+};
+$('#btnKeySave').onclick = () => {
+  const v = $('#aiKey').value.trim();
+  if (!v) { $('#aiStatus').innerHTML = '请先填入 API Key。'; return; }
+  setGlmKey(v);
+  $('#aiKey').value = '';          // 保存后立刻清空，不再回填
+  syncModelLabel();
+  $('#aiStatus').innerHTML = 'Key 已保存。';
+};
+$('#btnKeyClear').onclick = () => {
+  setGlmKey(''); $('#aiKey').value = '';
+  syncModelLabel();
+  $('#aiStatus').innerHTML = '已恢复默认。';
+};
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (['1', '2', '3', '4'].includes(e.key)) go(+e.key - 1);
+  if (e.key === 'ArrowRight' && S.person && S.weeks.length < 52) pushWeeks(1);
+});
+
+// 默认载入第一个案例，方便一打开就有东西看
+S.active = 0;
+start(CASES[0]);
+renderCases();
+
+/* ---------- 动效初始化（放最后：DOM 已就绪，且不依赖任何渲染结果） ----------
+   动效不可用（或截图 / 减少动态效果）绝不影响任何功能：整体包在 try 里。 */
+try {
+  if (khbApplyMotion()) { khbCountInit(); khbGrowInit(); khbRevealFuse(); }
+} catch (e) { /* 动效是锦上添花，失败就退化为静态版 */ }
+</script>
+</body>
+</html>
