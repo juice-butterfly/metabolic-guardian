@@ -6041,6 +6041,16 @@ try {
     updatePlayback();
   });
   document.addEventListener('visibilitychange', updatePlayback);
+  // v3.22 手机端自动播放兜底：微信内置浏览器拦 muted 自动播、iOS 低电量模式拦 play() ——
+  // 旧逻辑被拦后只有点「播放画面」按钮才会重试；现在首次任意触摸/点击或微信
+  // JSBridge 就绪信号到达时自动重试，用户随手滑动页面视频即恢复播放。
+  const retryOnGesture = e => {
+    if (e && e.target && e.target.closest && e.target.closest('#odysseyMotion')) return;
+    if (!playbackBlocked || reduced.matches || mediaUnavailable || manuallyPaused || !atHome() || document.hidden) return;
+    updatePlayback();
+  };
+  ['touchend', 'click'].forEach(t => document.addEventListener(t, retryOnGesture, { capture:true, passive:true }));
+  document.addEventListener('WeixinJSBridgeReady', retryOnGesture, false);
   reduced.addEventListener('change', updatePlayback);
   new MutationObserver(() => { if (!atHome()) closeMenu(); updatePlayback(); })
     .observe(document.body, { attributes:true, attributeFilter:['data-page'] });
