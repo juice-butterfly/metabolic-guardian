@@ -2445,9 +2445,10 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
     </section>
     <section class="odyssey-entry" id="odyssey-entry" aria-label="开启健康守护旅程">
       <div class="odyssey-entry-grid">
-        <button class="odyssey-chapter" type="button" data-go="0"><span class="odyssey-chapter-no">01</span><span class="odyssey-chapter-copy"><strong>评估指标定制计划</strong><span>五项指标 · 分级承保 · AI 干预</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
-        <button class="odyssey-chapter" type="button" data-go="1"><span class="odyssey-chapter-no">02</span><span class="odyssey-chapter-copy"><strong>记录每日进步</strong><span>日常打卡 · 健康激励</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
-        <button class="odyssey-chapter" type="button" data-go="2"><span class="odyssey-chapter-no">03</span><span class="odyssey-chapter-copy"><strong>查看保障权益</strong><span>保险给付 · 动态重评</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
+        <button class="odyssey-chapter" type="button" data-go="0"><span class="odyssey-chapter-no">01</span><span class="odyssey-chapter-copy"><strong>评估代谢指标</strong><span>五项指标 · 分级承保</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
+        <button class="odyssey-chapter" type="button" data-go="1"><span class="odyssey-chapter-no">02</span><span class="odyssey-chapter-copy"><strong>定制健康计划</strong><span>AI 教练 · 五维干预</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
+        <button class="odyssey-chapter" type="button" data-go="2"><span class="odyssey-chapter-no">03</span><span class="odyssey-chapter-copy"><strong>记录每日进步</strong><span>日常打卡 · 健康激励</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
+        <button class="odyssey-chapter" type="button" data-go="3"><span class="odyssey-chapter-no">04</span><span class="odyssey-chapter-copy"><strong>查看保障权益</strong><span>保险给付 · 动态重评</span></span><span class="odyssey-chapter-arrow" aria-hidden="true">↗</span></button>
       </div>
       <footer class="odyssey-footer"><span>代谢健康守护 <i>·</i> AI 代谢管理教练</span><span>产品概念演示 · 具体保障以保险条款为准</span><a href="#home">回到顶部 <span aria-hidden="true">↑</span></a></footer>
     </section>
@@ -2632,9 +2633,10 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
       </div>
 
       <div class="knav">
-        <button class="btn ghost" data-go="0">01 核保分级与五维计划</button>
-        <button class="btn ghost" data-go="1">02 打卡闭环</button>
-        <button class="btn ghost" data-go="2">03 给付与重评</button>
+        <button class="btn ghost" data-go="0">01 核保分级</button>
+        <button class="btn ghost" data-go="1">02 五维健康计划</button>
+        <button class="btn ghost" data-go="2">03 打卡闭环</button>
+        <button class="btn ghost" data-go="3">04 给付与重评</button>
       </div>
     </div>
 
@@ -2765,9 +2767,10 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
     </div>
 
     <div class="card">      <h3 class="sec">接下来</h3>
-      <p class="hint">以上为产品说明。以下三个步骤可依次完成：核保分级与五维计划 → 打卡闭环 → 给付与重评。</p>
+      <p class="hint">以上为产品说明。以下四个步骤可依次完成：核保分级 → 五维健康计划 → 打卡闭环 → 给付与重评。</p>
       <div class="row" style="margin-top:14px">
         <button class="btn" data-go="0">开始核保</button>
+        <button class="btn ghost" data-go="1">看 AI 健康计划</button>
         <button class="btn ghost" data-intro="home">返回总览</button>
       </div>
     </div>
@@ -2776,7 +2779,7 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
 
   <!-- ============ 1 核保分级 ============ -->
   <section class="panel" id="p1">
-<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 核保分级</p><h1>从了解身体，开始守护</h1><p>读懂五项代谢指标，找到适合自己的保障起点。</p></div><div class="guard-page-number" aria-hidden="true"><strong>01</strong><span>/ 03</span></div></header>
+<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 核保分级</p><h1>从了解身体，开始守护</h1><p>读懂五项代谢指标，找到适合自己的保障起点。</p></div><div class="guard-page-number" aria-hidden="true"><strong>01</strong><span>/ 04</span></div></header>
     <div class="card">
       <h2><span class="num">01</span>核保分级：MetS 五项判定 → A / B / C 三级定价</h2>
       <p class="lead">传统核保以已确诊疾病作为分类门槛，代谢综合征属亚健康状态，无法归入既有定价模型。本产品将五项判定转化为可计算的核保入口：逐项判定后，按达标项数与偏离程度确定等级。</p>
@@ -2805,10 +2808,21 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
       <p class="hint" id="priceNote"></p>
     </div>
 
-    <!-- ═════ 五维健康计划（原第 2 步；2026-10-13 用户裁决并入核保分级：判定表单字段重复，只差称呼）═════ -->
+    <!-- 身体数据（2026-10-13 用户裁决：从五维计划移入核保分级——称呼 + 身高/体重/年龄是同一组档案输入）-->
+    <div class="card" id="bodyCard" style="display:none">
+      <h3 class="sec">身体数据</h3>
+      <p class="hint">身高、体重与年龄是本方案的输入项，AI 据此计算体重指数，
+        再决定一天该吃多少、动多久。改完点「重新生成方案」，五维健康计划（第 2 步）会跟着重算。</p>
+      <div id="bodyIn"></div>
+    </div>
+  </section>
+
+  <!-- ============ 2 健康计划 ============ -->
+  <section class="panel" id="p2">
+<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · AI 健康计划</p><h1>让健康改变，成为日常</h1><p>把身体数据变成一份具体、可执行的五维健康计划。</p></div><div class="guard-page-number" aria-hidden="true"><strong>02</strong><span>/ 04</span></div></header>
     <div class="card" id="p2empty">
       <h2><span class="num">02</span>五维健康计划</h2>
-      <p class="lead">先在上面选一个投保人，或自定义填一组指标。</p>
+      <p class="lead">先回到第一步选一个投保人。</p>
     </div>
 
     <div class="card" id="p2body" style="display:none">
@@ -2818,11 +2832,6 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
         对应参保人每日需执行的五项行为：练腿劲、主食换粗粮、少放盐、戒酒和甜饮料、每天快走。
         每一项都给到「当前值 → 一年目标 → 每天具体做什么」的完整落点，再按主导表型决定优先投入哪一维。
         计划里的动作全部写成参保人看得懂的话：不使用「低 GI」而写「主食换粗粮」，不使用「中等强度有氧」而写「每天快走 30 分钟」。与普通健康应用给出的「增加运动」一类泛化建议不同，本产品给出的是含明确指标与执行量的建议，例如「高密度脂蛋白胆固醇 0.96 mmol/L，目标 1.10 mmol/L，每周 5 天、每天快走 30 分钟」。</p>
-
-      <h3 class="sec">身体数据</h3>
-      <p class="hint">身高、体重与年龄是本方案的输入项，AI 据此计算体重指数，
-        再决定一天该吃多少、动多久。改完点「重新生成方案」，下面的一日饮食与一日锻炼会跟着重算。</p>
-      <div id="bodyIn"></div>
 
       <div id="algoWarn"></div>
 
@@ -2888,17 +2897,18 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
         </details>
       </div>
     </div>
+  </section>
 
-  <!-- ============ 2 打卡闭环（原 3，2026-10-13 并步后升位）============ -->
+  <!-- ============ 3 打卡闭环 ============ -->
   <section class="panel" id="p3">
-<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 日常打卡</p><h1>每一份坚持，都被看见</h1><p>记录今天的行动，观察指标变化，积累属于自己的健康权益。</p></div><div class="guard-page-number" aria-hidden="true"><strong>02</strong><span>/ 03</span></div></header>
+<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 日常打卡</p><h1>每一份坚持，都被看见</h1><p>记录今天的行动，观察指标变化，积累属于自己的健康权益。</p></div><div class="guard-page-number" aria-hidden="true"><strong>03</strong><span>/ 04</span></div></header>
     <div class="card" id="p3empty">
-      <h2><span class="num">02</span>打卡闭环：依从 → 指标 → 等级</h2>
+      <h2><span class="num">03</span>打卡闭环：依从 → 指标 → 等级</h2>
       <p class="lead">先回到第一步选一个投保人。</p>
     </div>
 
     <div class="card" id="p3body" style="display:none">
-      <h2><span class="num">02</span>打卡闭环：五项日常打卡 → 积分 / 干预强度 → 指标 → 等级</h2>
+      <h2><span class="num">03</span>打卡闭环：五项日常打卡 → 积分 / 干预强度 → 指标 → 等级</h2>
       <p class="lead">健康管理的主要障碍是长期依从。本产品将依从性转化为可计量指标：<b>五个方面各自的打卡天数 → 干预强度 → 五项指标改善 → 达标项数 → 健康等级</b>。
         同时，打卡攒下的积分可以在<b>积分商城</b>可兑换实物与服务。勾选格子可模拟一周记录，观察上述两条链路的运行结果。</p>
 
@@ -2967,14 +2977,14 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
 
   <!-- ============ 4 给付与重评 ============ -->
   <section class="panel" id="p4">
-<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 给付与重评</p><h1>让每一步向好，都有回应</h1><p>了解现金给付、服务权益与年度重评，让保障始终清晰。</p></div><div class="guard-page-number" aria-hidden="true"><strong>03</strong><span>/ 03</span></div></header>
+<header class="guard-page-header"><div><p class="guard-page-kicker">健康守护旅程 · 给付与重评</p><h1>让每一步向好，都有回应</h1><p>了解现金给付、服务权益与年度重评，让保障始终清晰。</p></div><div class="guard-page-number" aria-hidden="true"><strong>04</strong><span>/ 04</span></div></header>
     <div class="card" id="p4empty">
-      <h2><span class="num">03</span>给付与重评</h2>
+      <h2><span class="num">04</span>给付与重评</h2>
       <p class="lead">先回到第一步选一个投保人。</p>
     </div>
 
     <div class="card" id="p4body" style="display:none">
-      <h2><span class="num">03</span>理赔设计：现金给付 + 非现金服务</h2>
+      <h2><span class="num">04</span>理赔设计：现金给付 + 非现金服务</h2>
       <p class="lead">保险责任是三项现金给付：重症（三项特定疾病）给付、中症（MetS 严重进展）给付、因该疾病身故给付。现金给付之外另设服务权益：首次达到三项特定疾病任一给付条件后，取得一次总额 5,000 元、有效期 12 个月的病后医疗照护服务权益益，覆盖血糖管理支持、门诊绿色通道、住院生活看护与康复评估指导；细目以保单附具的服务清单为准。</p>
       <div id="benefitBox"></div>
 
@@ -4549,7 +4559,7 @@ function goIntro() {
 }
 
 /* ---------- 渲染：步骤条 ---------- */
-const STEP_NAMES = ['核保分级与五维计划', '打卡闭环', '给付与重评'];   // 2026-10-13 五维计划并入核保分级，四步并三步
+const STEP_NAMES = ['核保分级', '五维健康计划', '打卡闭环', '给付与重评'];
 function renderSteps() {
   // 「返回总览」是回首页页，不参与 go(0)~go(3) 的编号索引 ——
   // 右侧四个编号按钮的索引因此与 v2.0 完全一致，一处都不用改。
@@ -4565,7 +4575,7 @@ function renderSteps() {
 }
 function go(i) {
   // i = -1：回首页页（不显示任何步骤）
-  // i = 0~2：进入主流程并定位到对应步骤（2026-10-13 五维计划并入核保分级后为三步）
+  // i = 0~3：进入主流程并定位到对应步骤，语义与 v2.0 完全一致
   const scrollTop = { top: 0, behavior: motionOff() ? 'auto' : 'smooth' };
 
   if (i < 0) {
@@ -4578,7 +4588,7 @@ function go(i) {
 
   goPage('app');
   document.querySelectorAll('.stepbtn').forEach(b => {
-    // data-i="intro" 归一化后是 NaN，天然不会与 0~2 相等 —— 这里显式排掉，读起来更清楚
+    // data-i="intro" 归一化后是 NaN，天然不会与 0~3 相等 —— 这里显式排掉，读起来更清楚
     b.classList.toggle('on', b.dataset.i !== undefined && b.dataset.i !== 'intro' && +b.dataset.i === i);
   });
   document.querySelectorAll('.panel').forEach((p, k) => p.classList.toggle('on', k === i));
@@ -4689,6 +4699,7 @@ function renderStep2() {
   if (!a0.level) {
     $('#p2body').style.display = 'none';
     $('#p2empty').style.display = 'block';
+    $('#bodyCard').style.display = 'none';   // 不可承保：身体数据卡一并隐藏
     $('#bodyIn').innerHTML = '';   // 换成不可承保标的后，不留上一个人的输入框
     $('#p2empty').innerHTML = `<h2><span class="num">02</span>五维健康计划</h2>
       <div class="verdict bad" style="margin-top:16px"><div class="big">当前标的不可承保</div>
@@ -4699,6 +4710,7 @@ function renderStep2() {
   }
   $('#p2empty').style.display = 'none';
   $('#p2body').style.display = 'block';
+  $('#bodyCard').style.display = 'block';   // 身体数据卡在核保分级页（2026-10-13 并入）
   $('#algoWarn').innerHTML = `
     <div class="verdict" style="margin:6px 0 16px;background:rgba(20,160,133,.10)">
       <div class="big">AI 算法层</div>
@@ -4932,7 +4944,7 @@ function renderStep3() {
   if (!S.base.level) {
     $('#p3body').style.display = 'none'; $('#p3chart').style.display = 'none';
     $('#p3empty').style.display = 'block';
-    $('#p3empty').innerHTML = `<h2><span class="num">02</span>打卡闭环：五项日常打卡 → 干预强度 → 指标 → 等级</h2>
+    $('#p3empty').innerHTML = `<h2><span class="num">03</span>打卡闭环：五项日常打卡 → 干预强度 → 指标 → 等级</h2>
       <p class="lead">当前标的不可承保，无可模拟的干预闭环。请返回第一步更换投保人。</p>`;
     return;
   }
@@ -5111,7 +5123,7 @@ function renderStep4() {
   if (!S.base.level) {
     $('#p4body').style.display = 'none';
     $('#p4empty').style.display = 'block';
-    $('#p4empty').innerHTML = `<h2><span class="num">03</span>给付与重评</h2>
+    $('#p4empty').innerHTML = `<h2><span class="num">04</span>给付与重评</h2>
       <p class="lead">当前标的不可承保，无给付与重评可测算。请返回第一步更换投保人。</p>`;
     return;
   }
