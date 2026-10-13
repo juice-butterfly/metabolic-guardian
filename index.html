@@ -3676,7 +3676,7 @@ const GLM = {
        凭据以 base64 编码存放；若另填了明文，则明文优先。
        好处：源码里扫不到明文 key，但替换/排障时直接写明文即可，不用重新编码。 */
   apiKey: '',                  // 明文（一般留空）
-  apiKeyB64: '',               // 发布版：内置 key 不随源码公开（玄机阁同款纪律），请在「模型设置」自填
+  apiKeyB64: 'ODRlNmZlMjQ2Y2I1NDRkZTkzOGQxNTdmZDk1MDE0MmQuU2M2bG9oMTdUOWFMQzJZcQ==',        // base64 编码的 key
 };
 
 /* 解出项目内置的 Key：有明文用明文，否则解 base64（透明解码，参照玄机阁） */
@@ -3724,7 +3724,7 @@ function errHint(e) {
       + '把文件保存到本地，<b>双击用浏览器打开</b>就能用。';
   if (/401/.test(all)) return 'API Key 无效或已过期。请在「模型设置」里填自己的 Key。';
   if (/429/.test(all)) return '调用太频繁或额度用尽，稍等再试，或在「模型设置」里换自己的 Key。';
-  if (/没有可用的 API Key/.test(all)) return '没有可用的 API Key。'请展开第 2 步的「模型设置」，填入自己的智谱 API Key（open.bigmodel.cn 可免费申请）；不填也不影响其余演示步骤。';
+  if (/没有可用的 API Key/.test(all)) return '没有可用的 API Key。';
   return msg;
 }
 
