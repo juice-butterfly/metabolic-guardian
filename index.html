@@ -2808,13 +2808,6 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
       <p class="hint" id="priceNote"></p>
     </div>
 
-    <!-- 身体数据（2026-10-13 用户裁决：从五维计划移入核保分级——称呼 + 身高/体重/年龄是同一组档案输入）-->
-    <div class="card" id="bodyCard" style="display:none">
-      <h3 class="sec">身体数据</h3>
-      <p class="hint">身高、体重与年龄是本方案的输入项，AI 据此计算体重指数，
-        再决定一天该吃多少、动多久。改完点「重新生成方案」，五维健康计划（第 2 步）会跟着重算。</p>
-      <div id="bodyIn"></div>
-    </div>
   </section>
 
   <!-- ============ 2 健康计划 ============ -->
@@ -3314,7 +3307,7 @@ const SNACKS = {
      · 力量写清 动作 / 组数（sets）× 每组次数（reps）/ 具体做法（how）。
    三个动作全部是零器械、在家能做的下肢自重练习（坐站 / 静蹲 / 踮脚），
    不用「抗阻训练」「中等强度有氧」这类术语；对 45–65 岁人群安全，也顺带降低跌倒风险。
-   ⚠️ 组数与时长会被体重指数微调（见 renderStep2 的 applyBody 规则），
+   ⚠️ 组数与时长会被体重指数微调（renderStep2 内按 BMI 24/28 分档），
       所以这里给的是**基础量**，界面上显示的是调整后的量。
    ──────────────────────────────────────────────────────────────── */
 const SPORT_PLAN = {
@@ -4615,20 +4608,22 @@ function renderCases() {
 
 function renderForm(v) {
   const v0 = v || { sex: 'M', age: 52, height: 175, weight: 82, waist: 94, tg: 1.8, hdl: 0.99, sbp: 146, dbp: 90, fbg: 5.4 };
-  const F = [['sex', '性别', 'select'], ['age', '年龄', 'number'], ['height', '身高 cm', 'number'], ['weight', '体重 kg', 'number'],
+  const F = [['alias', '称呼（可留空）', 'text'], ['sex', '性别', 'select'], ['age', '年龄', 'number'], ['height', '身高 cm', 'number'], ['weight', '体重 kg', 'number'],
              ['waist', '腰围 cm', 'number'], ['tg', 'TG mmol/L', 'number'], ['hdl', 'HDL-C mmol/L', 'number'],
              ['sbp', '收缩压', 'number'], ['dbp', '舒张压', 'number'], ['fbg', '空腹血糖', 'number']];
   $('#formGrid').innerHTML = F.map(([k, lb, tp]) => `<div class="fld"><label>${lb}</label>${
     tp === 'select'
       ? `<select id="f_${k}"><option value="M"${v0[k] === 'M' ? ' selected' : ''}>男</option><option value="F"${v0[k] === 'F' ? ' selected' : ''}>女</option></select>`
-      : `<input type="number" step="any" id="f_${k}" value="${v0[k]}">`}</div>`).join('');
+      : tp === 'text'
+        ? `<input type="text" id="f_${k}" maxlength="12" value="${escHtml(v0[k] || '')}" placeholder="AI 对话里怎么叫参保人">`
+        : `<input type="number" step="any" id="f_${k}" value="${v0[k]}">`}</div>`).join('');
 }
 
 function readForm() {
   const g = k => parseFloat($('#f_' + k).value);
   const sex = $('#f_sex').value;
   return {
-    name: '自定义', sex, age: g('age'), height: g('height'), weight: g('weight'), goalW: g('weight') * 0.92,
+    name: '自定义', alias: ($('#f_alias') ? $('#f_alias').value.trim() : ''), sex, age: g('age'), height: g('height'), weight: g('weight'), goalW: g('weight') * 0.92,
     cur: { waist: g('waist'), tg: g('tg'), hdl: g('hdl'), sbp: g('sbp'), dbp: g('dbp'), fbg: g('fbg') },
     goal: {}, custom: true,
   };
@@ -4699,8 +4694,6 @@ function renderStep2() {
   if (!a0.level) {
     $('#p2body').style.display = 'none';
     $('#p2empty').style.display = 'block';
-    $('#bodyCard').style.display = 'none';   // 不可承保：身体数据卡一并隐藏
-    $('#bodyIn').innerHTML = '';   // 换成不可承保标的后，不留上一个人的输入框
     $('#p2empty').innerHTML = `<h2><span class="num">02</span>五维健康计划</h2>
       <div class="verdict bad" style="margin-top:16px"><div class="big">当前标的不可承保</div>
       <div>${a0.ex.length ? a0.ex.join('；') : a0.reason}。
@@ -4710,7 +4703,6 @@ function renderStep2() {
   }
   $('#p2empty').style.display = 'none';
   $('#p2body').style.display = 'block';
-  $('#bodyCard').style.display = 'block';   // 身体数据卡在核保分级页（2026-10-13 并入）
   $('#algoWarn').innerHTML = `
     <div class="verdict" style="margin:6px 0 16px;background:rgba(20,160,133,.10)">
       <div class="big">AI 算法层</div>
@@ -4792,27 +4784,7 @@ function renderStep2() {
       第 ① 节的四类表型是把它们<b>归并</b>后的结果（腰围→肥胖轴，TG + HDL-C→血脂轴，血压→血压轴，血糖→血糖轴）。</p>`;
 
   /* ── 身体数据：身高 / 体重 / 年龄可改，体重指数与下面的处方跟着重算 ── */
-  const bmi = p.weight / Math.pow(p.height / 100, 2);
-  const bmiWord = bmi < 24 ? '在正常范围内' : bmi < 28 ? '属于超重' : '属于肥胖';
-  $('#bodyIn').innerHTML = `
-    <div class="fld" style="margin-bottom:10px"><label>称呼（AI 对话里怎么叫参保人，可留空）</label>
-      <input type="text" id="b_alias" maxlength="12" value="${escHtml(p.alias || '')}"
-        placeholder="例如：李阿姨 / 张先生 —— 留空则 AI 不编造姓名"></div>
-    <div class="frm" style="grid-template-columns:repeat(3,1fr)">
-      <div class="fld"><label>身高 cm</label><input type="number" step="any" id="b_height" value="${p.height}"></div>
-      <div class="fld"><label>体重 kg</label><input type="number" step="any" id="b_weight" value="${p.weight}"></div>
-      <div class="fld"><label>年龄</label><input type="number" step="any" id="b_age" value="${p.age}"></div>
-    </div>
-    <div class="bmi">体重指数（BMI）<b>${fmt(bmi)}</b> —— ${bmiWord}；
-      腰围 ${fmt(p.cur.waist)} cm 取自体检值。${bmi >= 24
-        ? '体重指数偏高，有氧时间与力量组数已按此上调。' : '体重指数未偏高，按基础运动量执行即可。'}</div>
-    <div class="row" style="margin-top:12px">
-      <button class="btn sm" id="btnBody">重新生成方案</button>
-      <span class="hint" id="bodyMsg"></span>
-    </div>`;
-  // 称呼失焦即存：台词区（⑥ 与 AI 对话）随 renderStep2 重建，称呼即时生效
-  $('#b_alias').onchange = () => { S.person.alias = $('#b_alias').value; renderStep2(); syncUserCard(); };
-  $('#btnBody').onclick = applyBody;
+  const bmi = p.weight / Math.pow(p.height / 100, 2);   // 只微调运动量；MetS 判定用腰围，与等级无关
 
   /* ── ③ 每天怎么吃：三餐 + 两次加餐，按主导表型换食谱 ── */
   const snacks = SNACKS[ph.primary] || SNACKS['血糖型'];
@@ -4910,32 +4882,6 @@ function renderStep2() {
     <div class="msg"><div class="av ai">AI</div><div class="bub ai">${sc('challenge', ptsNow, PARAMS.points.pass)}<br>
       补一句：积分攒够就能在<b>积分商城</b>换实物和服务，下面这一屏你随时都能看到余额。
     </div></div>`;
-}
-
-/* ---------- 身体数据 → 重算方案 ----------
-   只改身高 / 体重 / 年龄三项：它们影响体重指数、进而影响有氧时长与力量组数。
-   五项判定指标（腰围 / 血糖 / 血压 / TG / HDL-C）不在这里改 —— 那是体检值，
-   改它等于换一个投保人，应当回第 1 步重填。
-   先做范围校验，再用 assess() 重算核保结论，最后整体重渲染。
-   ---------------------------------------------------------- */
-function applyBody() {
-  const g = k => { const el = $('#b_' + k); return el ? parseFloat(el.value) : NaN; };
-  const h = g('height'), w = g('weight'), ag = g('age');
-  const bad = !(h >= 120 && h <= 220) || !(w >= 35 && w <= 180) || !(ag >= 18 && ag <= 90);
-  if (bad) {
-    $('#bodyMsg').innerHTML = '身高 120–220 cm、体重 35–180 kg、年龄 18–90 岁是合理输入范围，请核对后重新生成。';
-    return;
-  }
-  if (w / Math.pow(h / 100, 2) >= 40) {
-    $('#bodyMsg').innerHTML = '按这组数据算出的体重指数已达 40 以上，超出本产品的承保范围（不予承保）。请确认体重是否填错。';
-    return;
-  }
-  S.person.height = h; S.person.weight = w; S.person.age = ag;
-  S.base = assess(S.person);
-  render();
-  const outAge = ag < ELIGIBLE.ageLo || ag > ELIGIBLE.ageHi;
-  $('#bodyMsg').innerHTML = '已按新数据重新生成。'
-    + (outAge ? '（注：' + ag + ' 周岁超出投保范围 ' + ELIGIBLE.ageLo + '–' + ELIGIBLE.ageHi + ' 周岁）' : '');
 }
 
 /* ---------- 渲染：步骤 3 ---------- */
