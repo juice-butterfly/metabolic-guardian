@@ -2355,6 +2355,8 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
   body:is([data-page=app],[data-page=intro]) .btn.sm{min-height:40px;font-size:13.5px;padding:8px 14px}
   body:is([data-page=app],[data-page=intro]) .seg-btn{min-height:38px;padding:8px 15px}
 }
+/* ===== v3.24 数字全站等高：清除 Georgia 老式数字（歪歪扭扭根因），统计数字一律无衬线等高 ===== */
+body:is([data-page=app],[data-page=intro]) :is(.fc-num span,.kpi .vl,.kpi-card .k-v,.num-card :is(.nc-v,.nc-fv),.cardio .big2,.subband :is(.cv b,.prv),.wk,.guard-page-number strong,.comp .big,.verdict .big){font-family:inherit;font-variant-numeric:lining-nums tabular-nums}
 </style>
 </head>
 <body data-page="home">
@@ -6010,6 +6012,7 @@ try {
   function updatePlayback() {
     const ownRequest = ++request;
     updateLabel();
+    if (reversing) return; /* v3.24 乒乓倒放期间不接管 */
     if (!atHome() || document.hidden || reduced.matches || mediaUnavailable || manuallyPaused) {
       video.pause();
       return;
@@ -6027,6 +6030,7 @@ try {
   }
   motion.onclick = () => {
     if (reduced.matches || mediaUnavailable) return;
+    stopReverse(); /* v3.24：倒放中点按钮先停倒放再切暂停 */
     manuallyPaused = !(manuallyPaused || playbackBlocked);
     playbackBlocked = false;
     updatePlayback();
@@ -6035,14 +6039,28 @@ try {
     // v3.23：开场从 0 完整播（蝴蝶飞来→花开），不再默认跳到 6.5s
     updatePlayback();
   }, { once:true });
-  // v3.23 循环叙事：开场只完整播一次；播到结尾跳回 6.0s（花开完成，按帧目检标定）
-  // 无缝续播「蝴蝶绕花打转」段，不再回到开头。时长 8.04s，6-8.04s 即绕花段。
+  // v3.24 乒乓循环（用户裁决：v3.23 硬跳回太丑）：开场 0→结尾完整播一遍；此后在
+  // 「花开后 5.8s ↔ 结尾」之间正放↔倒放无限循环——蝴蝶真的飞来飞去，无跳切。
+  // 倒放实现：ended 后 rAF 逐帧回退 currentTime 至 LOOP_FROM，再交还 updatePlayback 正放。
   video.loop = false;
+  const LOOP_FROM = 5.8;
+  let reversing = false;
+  let revRaf = 0;
+  const stopReverse = () => { reversing = false; if (revRaf) cancelAnimationFrame(revRaf); revRaf = 0; };
   video.addEventListener('ended', () => {
-    if (manuallyPaused || reduced.matches || mediaUnavailable || !atHome()) return;
-    const dur = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 8.04;
-    video.currentTime = dur > 6.4 ? 6.0 : dur * .75;
-    updatePlayback();
+    if (manuallyPaused || reduced.matches || mediaUnavailable || !atHome() || document.hidden) return;
+    reversing = true;
+    video.pause();
+    let last = performance.now();
+    const step = ts => {
+      if (!reversing) return;
+      if (manuallyPaused || !atHome() || document.hidden) { stopReverse(); updatePlayback(); return; }
+      video.currentTime = Math.max(LOOP_FROM, video.currentTime - (ts - last) / 1000);
+      last = ts;
+      if (video.currentTime <= LOOP_FROM + .02) { reversing = false; revRaf = 0; updatePlayback(); return; }
+      revRaf = requestAnimationFrame(step);
+    };
+    revRaf = requestAnimationFrame(step);
   });
   video.addEventListener('error', () => {
     video.hidden = true;
