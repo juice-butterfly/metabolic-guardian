@@ -7165,22 +7165,43 @@ root.HealthCSV={parse:parseCSV};
   var getK = function () { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } };
   var fmt = function (n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
   var fmt2 = function (n) { n = Math.round(n * 100) / 100; return Number.isInteger(n) ? fmt(n) : fmt(Math.floor(n)) + '.' + String(Math.round((n % 1) * 100)).padStart(2, '0'); };
+  /* HTML 静态版会把 window.fetch 劫持为本地垫片（StaticGuardian），
+     外域识别请求会被它截胡返回 404。用一次性同源 iframe 取出原始 fetch 绕过。 */
+  var realFetch = null;
+  function getRealFetch() {
+    if (realFetch) return realFetch;
+    try {
+      var f = document.createElement('iframe');
+      f.style.display = 'none';
+      document.documentElement.appendChild(f);
+      realFetch = f.contentWindow.fetch.bind(f.contentWindow);
+    } catch (e) { realFetch = window.fetch.bind(window); }
+    return realFetch;
+  }
+  var srcLabel = function (d, kind) { kind = kind || '机器提取'; return d._demo ? (d._degraded ? '🧪 演示识别（真识别网络不可用，已自动降级）' : '🧪 本机演示识别（未配置 API Key）') : '🤖 GLM-4.6V ' + kind; };
 
   /* ---- GLM-4.6V 视觉调用（浏览器直连；失败时由调用方降级） ---- */
   function visionAsk(dataUrl, prompt) {
     var key = getK();
     if (!key) return Promise.reject(Error('NO_KEY'));
-    return fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify({ model: 'glm-4.6v', temperature: 0.1, max_tokens: 800, messages: [{ role: 'user', content: [{ type: 'image_url', image_url: { url: dataUrl } }, { type: 'text', text: prompt }] }] })
-    }).then(function (r) { return r.json(); }).then(function (j) {
-      if (j.error) throw Error(j.error.message || '调用失败');
-      var t = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
-      var m = t.match(/\{[\s\S]*\}/);
-      if (!m) throw Error('未能从识别结果中解析出 JSON');
-      return JSON.parse(m[0]);
-    });
+    /* 端点双保险：api.z.ai 对浏览器 CORS 放行（GitHub Pages 可直连）；
+       open.bigmodel.cn 不放行跨域，作为本地同源场景的备选。 */
+    var eps = ['https://api.z.ai/api/paas/v4/chat/completions', 'https://open.bigmodel.cn/api/paas/v4/chat/completions'];
+    var payload = JSON.stringify({ model: 'glm-4.6v', temperature: 0.1, max_tokens: 800, messages: [{ role: 'user', content: [{ type: 'image_url', image_url: { url: dataUrl } }, { type: 'text', text: prompt }] }] });
+    var tryAt = function (i) {
+      if (i >= eps.length) return Promise.reject(Error('识别端点均不可达（网络或跨域限制）'));
+      return getRealFetch()(eps[i], { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: payload })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.error) throw Error(j.error.message || '调用失败');
+          var t = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
+          var m = t.match(/\{[\s\S]*\}/);
+          if (!m) throw Error('未能从识别结果中解析出 JSON');
+          return JSON.parse(m[0]);
+        })
+        .catch(function (e) { return tryAt(i + 1); });
+    };
+    return tryAt(0);
   }
 
   /* ---- CDS 五项判定 ---- */
@@ -7195,11 +7216,11 @@ root.HealthCSV={parse:parseCSV};
   var DEMO_REPORT = { waist: 96, sbp: 138, dbp: 86, fbg: 6.52, tg: 2.31, hdl: 0.91, weight: 78.5 };
   var MOVE_DEMO = { kind: '室内跑步', minutes: 43.9, steps: 5300, distance_km: 5.2, calories: 339, _note: '演示样例：步数按 Keep 截图步频 120 步/分 × 训练时长估算，步数非截图原文。' };
 
-  function withFallback(promise, demoData, started) {
+  function withFallback(promise, demoData, started, hadKey) {
     return promise.catch(function (e) {
       if (String(e.message) !== 'NO_KEY') console.warn('[v4.5] 识别降级为演示：', e && e.message);
       return new Promise(function (res) {
-        setTimeout(function () { res(Object.assign({}, demoData, { _demo: true })); }, Math.max(0, 1200 - (Date.now() - started)));
+        setTimeout(function () { res(Object.assign({}, demoData, { _demo: true, _degraded: !!hadKey })); }, Math.max(0, 1200 - (Date.now() - started)));
       });
     });
   }
@@ -7228,7 +7249,7 @@ root.HealthCSV={parse:parseCSV};
       st.innerHTML = '<div class="er-flag">⏳ 正在识别报告原件…</div>';
       var started = Date.now();
       var prompt = '这是一张中文体检报告图片。请严格只输出一个 JSON 对象，不要任何多余文字。字段：waist(腰围,cm)、sbp(收缩压,mmHg)、dbp(舒张压,mmHg)、fbg(空腹血糖,mmol/L)、tg(甘油三酯,mmol/L)、hdl(高密度脂蛋白胆固醇,mmol/L)、weight(体重,kg)。报告中不存在的字段填 null。';
-      withFallback(visionAsk(data, prompt), DEMO_REPORT, started).then(function (d) {
+      withFallback(visionAsk(data, prompt), DEMO_REPORT, started, !!getK()).then(function (d) {
         METS.forEach(function (m) { var el = document.getElementById('upload_' + m[0]); if (el && d[m[0]] != null) el.value = d[m[0]]; });
         if (d.weight != null) { var w = document.getElementById('upload_weight'); if (w) w.value = d.weight; }
         var chips = METS.map(function (m) {
@@ -7238,7 +7259,7 @@ root.HealthCSV={parse:parseCSV};
         var n = METS.filter(function (m) { return d[m[0]] != null && m[3](d[m[0]]); }).length;
         var grade = n >= 5 ? 'C' : n === 4 ? 'B' : n === 3 ? 'A' : null;
         var gradeTxt = grade ? '按 CDS 五项判定自动分级：<b>' + grade + ' 级</b>（' + n + ' 项异常）。' : (n + ' 项异常，不足 3 项，不符合本产品 MetS 承保分级。');
-        st.innerHTML = '<div class="er-flag">' + (d._demo ? '🧪 本机演示识别（未配置 API Key）' : '🤖 GLM-4.6V 机器提取') + ' · 待审核人员复核</div>'
+        st.innerHTML = '<div class="er-flag">' + srcLabel(d, '机器提取') + ' · 待审核人员复核</div>'
           + '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap"><div class="metric-chips" style="flex:1;min-width:220px">' + chips + '</div>'
           + (grade ? '<div class="grade-badge"><b>' + grade + '</b><span>CDS 判定</span></div>' : '')
           + '</div><div class="er-foot">' + gradeTxt + ' 机器提取仅供回填参考：分级须以加盖公章的体检原件与人工复核为准；未参加健康管理或 AI 打卡不作为减赔、拒赔理由。</div>';
@@ -7269,11 +7290,11 @@ root.HealthCSV={parse:parseCSV};
       st.innerHTML = '<div class="er-flag">⏳ 正在识别运动凭证…</div>';
       var started = Date.now(), plat = $('movePlat').value;
       var prompt = '这是' + plat + '运动记录截图。请严格只输出一个 JSON 对象，不要任何多余文字。字段：kind(运动类型)、minutes(训练时长,分钟,数值)、steps(步数,没有则 null)、distance_km(距离,公里,没有则 null)、calories(消耗,千卡,没有则 null)。';
-      withFallback(visionAsk(data, prompt), MOVE_DEMO, started).then(function (d) {
+      withFallback(visionAsk(data, prompt), MOVE_DEMO, started, !!getK()).then(function (d) {
         var rows = [['运动类型', d.kind || '—'], ['时长', d.minutes != null ? d.minutes + ' 分钟' : '—'], ['距离', d.distance_km != null ? d.distance_km + ' km' : '—'], ['步数', d.steps != null ? d.steps : '—'], ['消耗', d.calories != null ? d.calories + ' 千卡' : '—']];
         var chips = rows.map(function (x) { return '<div class="mc"><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('');
         var csv = 'date,kind,minutes,steps,distance_km\n' + new Date().toISOString().slice(0, 10) + ',' + (d.kind || '运动') + ',' + (d.minutes || '') + ',' + (d.steps || '') + ',' + (d.distance_km || '');
-        st.innerHTML = '<div class="er-flag">' + (d._demo ? '🧪 本机演示识别（未配置 API Key）' : '🤖 GLM-4.6V 凭证提取') + ' · 来源：' + plat + ' 截图</div>'
+        st.innerHTML = '<div class="er-flag">' + srcLabel(d, '凭证提取') + ' · 来源：' + plat + ' 截图</div>'
           + '<div class="metric-chips">' + chips + '</div>'
           + (d._note ? '<div class="er-foot">' + d._note + '</div>' : '')
           + '<div class="er-foot">凭证识别不获取账号权限，符合数据最小必要原则。<a href="#movement" id="moveCopy" style="color:#14A085">复制为 CSV 行</a>，粘贴到模板即可在上方导入正式记录。</div>';
