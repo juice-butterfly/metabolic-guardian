@@ -2820,6 +2820,8 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 .demo-bar kbd{border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:1px 6px;font-size:11px}
 .demo-notes{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;z-index:98;max-width:min(720px,92vw);background:rgba(8,19,15,.95);border:1px solid rgba(20,160,133,.45);border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.9;color:#EAF2EF;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .demo-notes b{color:#14A085}
+.new-chat .chat-bubble{background:rgba(255,255,255,.06);border:1px solid var(--hair);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.85;color:var(--ink,#E9F2EF);margin-bottom:10px;white-space:pre-wrap}
+.new-chat .chat-bubble.user{background:var(--accent-l,rgba(20,160,133,.13));border-color:rgba(20,160,133,.35)}
 </style></head>
 <body data-page="home">
 <div class="guard-world" aria-hidden="true"></div>
@@ -3578,7 +3580,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 <div class="ai-bar" style="margin:6px 0 0"><select id="movePlat" style="background:rgba(255,255,255,.05);border:1px solid var(--hair);border-radius:9px;color:var(--ink,#E9F2EF);padding:8px 10px;font-size:13px"><option>Keep</option><option>Apple 健康</option><option>华为运动健康</option><option>其他运动截图</option></select><input id="moveShot" type="file" accept="image/jpeg,image/png,image/webp" style="font-size:12px;max-width:230px"><button type="button" id="btnMoveExtract" class="btn ghost sm" disabled>AI 识别截图</button></div>
 <div id="moveResult" class="extract-review" hidden></div>
 <details style="margin-top:8px"><summary style="cursor:pointer;font-size:12px;color:#7B8F88">接入 GLM-4.6V 真识别（可选）</summary><div class="key-row"><input id="glmKeyInput2" type="password" placeholder="粘贴 BigModel API Key，仅保存在本机浏览器"><button type="button" id="glmKeySave2" class="btn ghost sm">保存</button><span id="glmKeyState2" style="font-size:11px;color:#7B8F88"></span></div><p class="muted" style="font-size:11px;margin:6px 0 0">未配置 Key 时使用本机演示识别（Keep 跑步样例），流程与真识别一致。</p></details></article></div><div class="section-heading"><h2>我的运动记录</h2><span class="muted">展示最近 1000 条</span></div><div id="activityList" class="card table-scroll"></div></section>
-<section data-page="coach" hidden><div class="guard-page-header"><div><p class="guard-page-kicker">A LITTLE CLARITY, EVERY DAY</p><h1>看不懂的指标，一起读懂。</h1><p class="lead">AI 解释指标含义、整理日常建议，人工审核结果仍单独保留。</p></div></div><div class="coach-layout"><aside class="card"><span class="tag">在线 AI · 尚未连接</span><h2>这次参考哪些资料？</h2><p id="coachContext" class="reading"></p><div class="notice">静态版未连接在线 AI。输入的问题不会发给 DeepSeek；完整 AI 解读需要配置服务端接口。</div><div class="quick-questions"><button data-question="请用通俗语言解释这些体检指标的含义，并区分已确认的信息和仍需核对的信息。">解释我的体检指标 ↗</button><button data-question="请根据现有资料，帮我整理就医或复查时可以向医生询问的问题。">整理复查问题 ↗</button></div></aside><article class="card chat-card"><div id="newChat" class="new-chat" aria-live="polite"><div class="welcome-icon">✳</div><h2>把专业术语，变成日常语言。</h2><p class="reading">你可以问：“这个指标是什么意思？”<br>AI 内容供理解资料参考，不替代医生诊断和人工审核。</p></div><form id="coachForm"><label class="sr-only" for="coachQuestion">你的问题</label><textarea id="coachQuestion" placeholder="想了解什么？" rows="2" maxlength="2000" required></textarea><button class="btn" type="submit">发送 ↗</button></form></article></div></section>
+<section data-page="coach" hidden><div class="guard-page-header"><div><p class="guard-page-kicker">A LITTLE CLARITY, EVERY DAY</p><h1>看不懂的指标，一起读懂。</h1><p class="lead">AI 解释指标含义、整理日常建议，人工审核结果仍单独保留。</p></div></div><div class="coach-layout"><aside class="card"><span class="tag" id="coachAiTag">在线 AI · 尚未连接</span><h2>这次参考哪些资料？</h2><p id="coachContext" class="reading"></p><div class="notice" id="coachAiNotice">未配置 API Key：回答为内置演示内容（离线可用）。在下方折叠面板配置 Key 后即为真实大模型回答。</div><details style="margin-top:10px"><summary style="cursor:pointer;font-size:12px;color:#7B8F88">接入 GLM 在线教练（可选）</summary><div class="key-row"><input id="glmKeyInput3" type="password" placeholder="粘贴 BigModel API Key，仅保存在本机浏览器"><button type="button" id="glmKeySave3" class="btn ghost sm">保存</button></div><p class="muted" style="font-size:11px;margin:6px 0 0">Key 仅存本机浏览器。未配置时使用内置演示回复，演示流程与在线完全一致。</p></details><div class="quick-questions"><button data-question="请用通俗语言解释这些体检指标的含义，并区分已确认的信息和仍需核对的信息。">解释我的体检指标 ↗</button><button data-question="请根据现有资料，帮我整理就医或复查时可以向医生询问的问题。">整理复查问题 ↗</button></div></aside><article class="card chat-card"><div id="newChat" class="new-chat" aria-live="polite"><div class="welcome-icon">✳</div><h2>把专业术语，变成日常语言。</h2><p class="reading">你可以问：“这个指标是什么意思？”<br>AI 内容供理解资料参考，不替代医生诊断和人工审核。</p></div><form id="coachForm"><label class="sr-only" for="coachQuestion">你的问题</label><textarea id="coachQuestion" placeholder="想了解什么？" rows="2" maxlength="2000" required></textarea><button class="btn" type="submit">发送 ↗</button></form></article></div></section>
 <section data-page="admin" hidden><div class="guard-page-header"><div><p class="guard-page-kicker">REVIEW WORKSPACE</p><h1>核对原件，把好资料这一关。</h1><p class="lead">这是当前浏览器内的审核流程演示，不提供真实的管理员权限或机构核验。</p></div><button class="btn" data-upload>保存体检报告</button></div><div id="adminList" class="report-list"></div><article id="reviewEditor" class="card" hidden></article></section>
 </section><footer class="guard-app-footer"><span>代谢健康守护 · AI 代谢管理教练<br>产品概念演示，具体保障以保险条款为准。</span><button type="button" data-intro="home">返回首页 ↗</button></footer>
 </div>
@@ -7042,7 +7044,7 @@ root.HealthCSV={parse:parseCSV};
     catch(error){answer.classList.add('error');answer.textContent=error.message;}finally{busy=false;button.disabled=false;}}
   $('coachForm').onsubmit=event=>{event.preventDefault();ask($('coachQuestion').value.trim());};document.querySelectorAll('[data-question]').forEach(button=>button.onclick=()=>{$('coachQuestion').value=button.dataset.question;$('coachQuestion').focus();});
   $('demoButton').onclick=()=>{if(demo)return;demo=true;state={authenticated:false,role:'user',userId:'demo',users:[],activities:[{activity_date:today(),kind:'步行',minutes:30,steps:3500,distance:'2.4',source:'可穿戴设备文件（演示）'}],reports:[{id:'demo-report',user_id:'demo',uploader_id:'demo',title:'年度健康体检 · 演示',organization:'示例体检中心',report_date:today(),status:'approved',attention:'重点关注（演示）',metrics:JSON.stringify({waist:94,sbp:138,dbp:88,fbg:6.3,tg:1.9,hdl:1.1,weight:78}),review_note:'这是一份演示报告，用于展示人工解读的位置。正式解读需演示审核者对照你的原件填写，不能将此示例视为个人健康结论。',reviewed_at:new Date().toISOString()}]};$('reportDetail').hidden=true;render();};$('leaveDemo').onclick=()=>{demo=false;$('reportDetail').hidden=true;load();};
-  window.addEventListener('hashchange',route);window.addEventListener('guardian-static-change',()=>{demo=false;load();});$('staticRole').onclick=()=>StaticGuardian.toggleRole();$('coachQuestion').disabled=true;$('coachQuestion').placeholder='HTML 静态版尚未连接在线 AI';$('coachForm').querySelector('button').disabled=true;$('coachForm').querySelector('button').textContent='在线 AI 待接入';document.querySelectorAll('[data-question]').forEach(b=>b.disabled=true);load();
+  window.addEventListener('hashchange',route);window.addEventListener('guardian-static-change',()=>{demo=false;load();});$('staticRole').onclick=()=>StaticGuardian.toggleRole();$('coachQuestion').placeholder='想了解什么？';load();
 })();
 </script>
 <script>
@@ -7321,7 +7323,8 @@ root.HealthCSV={parse:parseCSV};
     b.addEventListener('click', function () {
       var v = $(inputId).value.trim();
       try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) { }
-      var msg = v ? '已保存，识别将调用 glm-4.6v' : '已清除，将使用本机演示识别';
+      var msg = v ? '已保存，在线功能已接入' : '已清除，将使用内置演示内容';
+      try { window.dispatchEvent(new Event('sbKeyChanged')); } catch (e) { }
       [stateId, stateId === 'glmKeyState' ? 'glmKeyState2' : 'glmKeyState'].forEach(function (id) { var s2 = $(id); if (s2) s2.textContent = msg; });
     });
   }
@@ -7383,12 +7386,80 @@ root.HealthCSV={parse:parseCSV};
     show(0);
   }
 
+  /* ---- AI 教练（glm-4.7 文本对话，双端点；未配置 Key 时内置演示回复） ---- */
+  function chatText(q) {
+    var key = getK();
+    if (!key) return Promise.reject(Error('NO_KEY'));
+    var sys = '你是"代谢健康守护"的 AI 代谢管理教练，面向 45—65 岁代谢综合征人群。用通俗中文解释体检指标、给出饮食/运动/作息的日常建议；不作医疗诊断，不参与保险核保定价或理赔决定；异常指标建议咨询专业医师。回答不超过 200 字，分点短句。';
+    var eps = ['https://api.z.ai/api/paas/v4/chat/completions', 'https://open.bigmodel.cn/api/paas/v4/chat/completions'];
+    var payload = JSON.stringify({ model: 'glm-4.7', temperature: 0.6, max_tokens: 1500, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] });
+    var tryAt = function (i) {
+      if (i >= eps.length) return Promise.reject(Error('在线端点均不可达'));
+      return getRealFetch()(eps[i], { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: payload })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.error) throw Error(j.error.message || '调用失败');
+          var m = j.choices && j.choices[0] && j.choices[0].message;
+          var t = (m && m.content || '').trim();
+          if (!t) throw Error('empty');
+          return t.replace(/\*\*/g, '');
+        })
+        .catch(function () { return tryAt(i + 1); });
+    };
+    return tryAt(0);
+  }
+  function canned(q, netFail) {
+    var k = q && /血糖|糖/.test(q) ? '血糖' : /血压/.test(q) ? '血压' : /运动|步|锻炼/.test(q) ? '运动' : /吃|饮食|餐/.test(q) ? '饮食' : '通用';
+    var map = {
+      血糖: '关于空腹血糖（示例 6.52 mmol/L）：高于 6.1 的判定线，属于"需要关注"区间。先做三件事：主食一半换粗粮、饭后散步 20 分钟、晚上 11 点前睡觉。下周复测空腹血糖，若持续 ≥7.0 请带化验单咨询内分泌科医生。',
+      血压: '关于血压（示例 138/86 mmHg）：刚过 130/85 的关注线。建议：早晚各测一次并记录；饮食先减盐（少腌菜、少浓汤）；快走从每天 20 分钟开始。若多次 ≥140/90，请及时就医。',
+      运动: '适合代谢人群的起步方案：每周 5 天、每天 30 分钟快走（约 4000 步），加 2 天下肢自重练习（椅子坐站、扶墙静蹲各 2 组×10 次）。从"不喘能说话"的强度开始，逐步加量。运动凭证识别导入的记录会累计到运动页。',
+      饮食: '一餐的简单搭配法：半餐蔬菜、四分之一蛋白质（鱼/鸡/豆制品）、四分之一主食（粗细各半）。少喝含糖饮料，烹调少油少盐。这是健康管理建议，不是处方，具体请结合临床意见调整。',
+      通用: '我从五个维度帮你把代谢管起来：饮食结构、有氧运动、下肢力量、控盐控糖、规律作息。可以先上传体检报告让我解读指标，或从"运动记录"导入今天的步行数据。以上是健康管理建议，不构成医疗诊断。'
+    };
+    return map[k] + (netFail ? '\n\n（在线模型暂不可达，本条为内置演示回复）' : '\n\n（演示回复 · 配置 API Key 后即为 GLM 在线回答）');
+  }
+  function bindCoach() {
+    var form = $('coachForm');
+    if (!form || form.dataset.sbBound) return;
+    form.dataset.sbBound = '1';
+    var input = $('coachQuestion'), btn = form.querySelector('button'), container = $('newChat');
+    form.onsubmit = null; /* 中和静态版旧 onsubmit（会发『未连接在线 AI』错误气泡） */
+    input.disabled = false; btn.disabled = false; btn.textContent = '发送 ↗'; input.placeholder = '想了解什么？';
+    document.querySelectorAll('[data-question]').forEach(function (b) { b.disabled = false; });
+    function setGate() {
+      var k = !!getK();
+      var tag = $('coachAiTag'), no = $('coachAiNotice');
+      if (tag) tag.textContent = k ? 'GLM 在线教练 · 已连接' : '演示教练 · 未配置 Key';
+      if (no) no.textContent = k ? '已接入 GLM（浏览器直连，Key 仅保存在本机）。AI 解读供理解资料参考，不作诊断、核保或理赔依据。' : '未配置 API Key：回答为内置演示内容（离线可用）。在下方折叠面板配置 Key 后即为真实大模型回答。';
+    }
+    setGate();
+    window.addEventListener('sbKeyChanged', setGate);
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var q = input.value.trim();
+      if (!q) return;
+      if (container.querySelector('.welcome-icon')) container.innerHTML = '';
+      var uq = document.createElement('div'); uq.className = 'chat-bubble user'; uq.textContent = q; container.append(uq);
+      var ab = document.createElement('div'); ab.className = 'chat-bubble'; ab.textContent = '正在思考…'; container.append(ab);
+      container.scrollTop = container.scrollHeight;
+      input.value = ''; btn.disabled = true;
+      var t0 = Date.now();
+      var p = getK()
+        ? chatText(q).catch(function () { return new Promise(function (res) { setTimeout(function () { res(canned(q, true)); }, Math.max(0, 600 - (Date.now() - t0))); }); })
+        : new Promise(function (res) { setTimeout(function () { res(canned(q, false)); }, 500); });
+      p.then(function (t) { ab.textContent = t; container.scrollTop = container.scrollHeight; btn.disabled = false; });
+    });
+  }
+
   function boot() {
     bindReportExtract();
     bindMoveExtract();
     bindKey('glmKeySave', 'glmKeyInput', 'glmKeyState');
     bindKey('glmKeySave2', 'glmKeyInput2', 'glmKeyState2');
+    bindKey('glmKeySave3', 'glmKeyInput3', null);
     bindPrice();
+    bindCoach();
     demoMode();
     var k = getK();
     if (k) { var s1 = $('glmKeyState'), s2 = $('glmKeyState2'); if (s1) s1.textContent = '已保存，识别将调用 glm-4.6v'; if (s2) s2.textContent = '已保存，识别将调用 glm-4.6v'; }
