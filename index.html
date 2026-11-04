@@ -2884,7 +2884,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
       </div>
     </div>
 
-    <nav class="odyssey-nav" id="odysseyNav" aria-label="首页导航"><a href="#home" aria-current="page">首页</a><button type="button" data-intro="1">保障方案</button><button type="button" data-home-go="1">AI 健康教练</button><a href="#odyssey-entry">健康旅程</a></nav><button type="button" class="odyssey-menu-toggle" id="odysseyMenuToggle" aria-controls="odysseyNav" aria-expanded="false" aria-label="打开导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="odyssey-menu-icon" d="M4 8h16M4 16h16"/><path class="odyssey-close-icon" d="m6 6 12 12M18 6 6 18"/></svg></button><button class="btn enter" id="btnEnter" type="button">体验产品 <span aria-hidden="true">↗</span></button>
+    <nav class="odyssey-nav" id="odysseyNav" aria-label="首页导航"><a href="#home" aria-current="page">首页</a><button type="button" onclick="location.hash='sandbox'">死差沙盘</button><a href="#odyssey-entry">健康旅程</a></nav><button type="button" class="odyssey-menu-toggle" id="odysseyMenuToggle" aria-controls="odysseyNav" aria-expanded="false" aria-label="打开导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="odyssey-menu-icon" d="M4 8h16M4 16h16"/><path class="odyssey-close-icon" d="m6 6 12 12M18 6 6 18"/></svg></button><button class="btn enter" id="btnEnter" type="button">体验产品 <span aria-hidden="true">↗</span></button>
   </div>
 </div>
 
@@ -2915,7 +2915,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
         <p class="odyssey-description">让日常的改变，走向更安心的明天。<br><span>AI 陪伴健康改善，保险守护每一步。</span></p>
         <div class="odyssey-actions"><button class="odyssey-glass" type="button" id="resumeJourney" hidden>继续我的健康旅程 ↗</button>
           <button class="odyssey-glass" type="button" data-go="0">开启我的守护 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
-          <button class="odyssey-text-link" type="button" data-intro="1">了解保障方案 <span aria-hidden="true">↗</span></button>
+          <button class="odyssey-text-link" type="button" onclick="location.hash='sandbox'">了解保障与定价 <span aria-hidden="true">↗</span></button>
         </div>
       </div>
       <div class="odyssey-hero-bottom">
@@ -3098,7 +3098,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
           <div class="f3t">五项指标 → 分级定价 → AI 干预 → 年度重评降费</div>
           <div class="row" style="margin-top:18px">
             <button class="btn hero-main" data-go="0">开始核保</button>
-            <button class="btn ghost" data-intro="1">进入我的保障</button>
+            <button class="btn ghost" onclick="location.hash='sandbox'">进入死差沙盘</button>
           </div>
         </div>
         <div class="f3 b">
@@ -6944,9 +6944,12 @@ try {
     button.dataset.view=views[hash];button.onclick=()=>location.hash=hash;
   }
   const sandboxBtn=document.createElement('button');sandboxBtn.type='button';sandboxBtn.className='stepbtn';sandboxBtn.dataset.view='sandbox';sandboxBtn.textContent='死差沙盘';sandboxBtn.onclick=()=>location.hash='sandbox';byId('stepbar').appendChild(sandboxBtn);
+  /* 导航收口：空壳「给付与重评」下线（给付与定价内容已并入死差沙盘页）；侧栏按参保旅程排序 */
+  const navBar=byId('stepbar'),oldP4=navBar.querySelector('.stepbtn[data-i="3"]');if(oldP4)oldP4.remove();
+  const bMove=navBar.querySelector('.stepbtn[data-i="2"]'),bCoach=navBar.querySelector('.stepbtn[data-i="1"]');if(bMove&&bCoach)navBar.insertBefore(bMove,bCoach);
   const admin=document.createElement('button');admin.type='button';admin.id='adminNav';admin.className='stepbtn';admin.hidden=true;admin.dataset.view='admin';admin.textContent='资料审核';admin.onclick=()=>location.hash='admin';byId('stepbar').append(admin);
   document.querySelectorAll('.mobile-dock a').forEach((link,index)=>{
-    const hashes=['reports','coach','movement','step-4'],names=['体检报告','AI 教练','运动记录','保障方案'];
+    const hashes=['reports','movement','coach','sandbox'],names=['体检报告','运动记录','AI 教练','死差沙盘'];
     link.href='#'+hashes[index];link.querySelector('span').textContent=names[index];link.dataset.view=views[hashes[index]]||'benefits';
   });
   byId('resumeJourney').onclick=()=>location.hash='health';
@@ -7014,7 +7017,7 @@ root.HealthCSV={parse:parseCSV};
     const from=new Date(Date.now()+8*3600000-6*86400000).toISOString().slice(0,10);$('weeklyMinutes').innerHTML=state.activities.filter(r=>r.activity_date>=from&&r.activity_date<=today()).reduce((sum,r)=>sum+r.minutes,0)+' <small>分钟 / 近 7 天</small>';
     renderReports('reportList',own,false);renderReports('adminList',state.reports,state.role==='admin');
     $('activityList').innerHTML=state.activities.length?'<table><thead><tr><th>日期 / 类型</th><th>时长</th><th>步数</th><th>距离</th><th>来源 / 状态</th></tr></thead><tbody>'+state.activities.map(r=>`<tr><td>${escape(r.activity_date)}<br>${escape(r.kind)}</td><td>${r.minutes} 分钟</td><td>${r.steps}</td><td>${escape(r.distance)} km</td><td>${escape(r.source)}<br><span class="muted">用户导入 · 未核验</span></td></tr>`).join('')+'</tbody></table>':'<div class="empty"><h2>从一份运动文件开始</h2><p>下载模板，整理运动数据后导入。这里不会把自行勾选算成设备记录。</p></div>';
-    $('coachContext').textContent=latest?`${latest.title}\n${latest.report_date} · ${statusName(latest)}\n${latest.status==='approved'?latest.attention:'未核验数据，AI 会提示核对原件。'}\n静态版暂未连接在线 AI，报告原件和指标均保存在当前浏览器。`:'暂无报告。你可以先提问指标的一般含义，上传并审核报告后再获得针对资料的解释。';
+    $('coachContext').textContent=latest?`${latest.title}\n${latest.report_date} · ${statusName(latest)}\n${latest.status==='approved'?latest.attention:'未核验数据，AI 会提示核对原件。'}\n教练已接入 GLM 在线模型；报告原件和指标仅保存在当前浏览器。`:'暂无报告。你可以先提问指标的一般含义，上传并审核报告后再获得针对资料的解释。';
     $('targetLabel').hidden=true;$('targetUser').innerHTML='<option value="">我的报告</option>'+state.users.filter(u=>u.id!==state.userId).map(u=>`<option value="${escape(u.id)}">${escape(u.email)}</option>`).join('');
     route();
   }
@@ -7398,7 +7401,7 @@ root.HealthCSV={parse:parseCSV};
     if (!key) return Promise.reject(Error('NO_KEY'));
     var sys = '你是"代谢健康守护"的 AI 代谢管理教练，面向 45—65 岁代谢综合征人群。用通俗中文解释体检指标、给出饮食/运动/作息的日常建议；不作医疗诊断，不参与保险核保定价或理赔决定；异常指标建议咨询专业医师。回答不超过 200 字，分点短句。';
     var eps = ['https://api.z.ai/api/paas/v4/chat/completions', 'https://open.bigmodel.cn/api/paas/v4/chat/completions'];
-    var payload = JSON.stringify({ model: 'glm-4.7', temperature: 0.6, max_tokens: 1500, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] });
+    var payload = JSON.stringify({ model: 'glm-4.5-air', temperature: 0.6, max_tokens: 1500, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] });
     var tryAt = function (i) {
       if (i >= eps.length) return Promise.reject(Error('在线端点均不可达'));
       return getRealFetch()(eps[i], { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: payload })
@@ -7412,9 +7415,9 @@ root.HealthCSV={parse:parseCSV};
         })
         .catch(function () { return tryAt(i + 1); });
     };
-    return withTimeout(tryAt(0), 25000);
+    return withTimeout(tryAt(0), 60000);
   }
-  function canned(q, netFail) {
+  function canned(q, netFail, err) {
     var k = q && /血糖|糖/.test(q) ? '血糖' : /血压/.test(q) ? '血压' : /运动|步|锻炼/.test(q) ? '运动' : /吃|饮食|餐/.test(q) ? '饮食' : '通用';
     var map = {
       血糖: '关于空腹血糖（示例 6.52 mmol/L）：高于 6.1 的判定线，属于"需要关注"区间。先做三件事：主食一半换粗粮、饭后散步 20 分钟、晚上 11 点前睡觉。下周复测空腹血糖，若持续 ≥7.0 请带化验单咨询内分泌科医生。',
@@ -7423,7 +7426,7 @@ root.HealthCSV={parse:parseCSV};
       饮食: '一餐的简单搭配法：半餐蔬菜、四分之一蛋白质（鱼/鸡/豆制品）、四分之一主食（粗细各半）。少喝含糖饮料，烹调少油少盐。这是健康管理建议，不是处方，具体请结合临床意见调整。',
       通用: '我从五个维度帮你把代谢管起来：饮食结构、有氧运动、下肢力量、控盐控糖、规律作息。可以先上传体检报告让我解读指标，或从"运动记录"导入今天的步行数据。以上是健康管理建议，不构成医疗诊断。'
     };
-    return map[k] + (netFail ? '\n\n（在线模型暂不可达，本条为内置演示回复）' : '\n\n（演示回复 · 配置 API Key 后即为 GLM 在线回答）');
+    return map[k] + (netFail ? '\n\n（在线模型暂不可达：' + (err && err.message ? String(err.message).slice(0, 40) : '网络异常') + '，本条为内置演示回复）' : '\n\n（演示回复 · 配置 API Key 后即为 GLM 在线回答）');
   }
   function bindCoach() {
     var form = $('coachForm');
@@ -7452,7 +7455,7 @@ root.HealthCSV={parse:parseCSV};
       input.value = ''; btn.disabled = true;
       var t0 = Date.now();
       var p = getK()
-        ? chatText(q).catch(function () { return new Promise(function (res) { setTimeout(function () { res(canned(q, true)); }, Math.max(0, 600 - (Date.now() - t0))); }); })
+        ? chatText(q).catch(function (e) { console.warn('[v4.5] 教练在线回答失败：', e && e.message); return new Promise(function (res) { setTimeout(function () { res(canned(q, true, e)); }, Math.max(0, 600 - (Date.now() - t0))); }); })
         : new Promise(function (res) { setTimeout(function () { res(canned(q, false)); }, 500); });
       p.then(function (t) { ab.textContent = t; container.scrollTop = container.scrollHeight; btn.disabled = false; });
     });
