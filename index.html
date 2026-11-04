@@ -6992,14 +6992,35 @@ try {
     const button=document.querySelector('.stepbtn[data-i="'+index+'"]');
     if(!button)continue;
     const icon=button.querySelector('i');button.replaceChildren();if(icon)button.append(icon);button.append(document.createTextNode(label));
-    button.dataset.view=views[hash];button.onclick=()=>location.hash=hash;
+    button.dataset.view=views[hash];button.onclick=()=>gotoView(hash);
   }
-  const benefitsBtn=document.createElement('button');benefitsBtn.type='button';benefitsBtn.className='stepbtn';benefitsBtn.dataset.view='benefits';benefitsBtn.textContent='保障与定价';benefitsBtn.onclick=()=>location.hash='benefits';byId('stepbar').appendChild(benefitsBtn);
-  const sandboxBtn=document.createElement('button');sandboxBtn.type='button';sandboxBtn.className='stepbtn';sandboxBtn.dataset.view='sandbox';sandboxBtn.textContent='死差沙盘';sandboxBtn.onclick=()=>location.hash='sandbox';byId('stepbar').appendChild(sandboxBtn);
+  const benefitsBtn=document.createElement('button');benefitsBtn.type='button';benefitsBtn.className='stepbtn';benefitsBtn.dataset.view='benefits';benefitsBtn.textContent='保障与定价';benefitsBtn.onclick=()=>gotoView('benefits');byId('stepbar').appendChild(benefitsBtn);
+  const sandboxBtn=document.createElement('button');sandboxBtn.type='button';sandboxBtn.className='stepbtn';sandboxBtn.dataset.view='sandbox';sandboxBtn.textContent='死差沙盘';sandboxBtn.onclick=()=>gotoView('sandbox');byId('stepbar').appendChild(sandboxBtn);
   /* 导航收口：空壳「给付与重评」下线（给付与定价内容已并入死差沙盘页）；侧栏按参保旅程排序 */
   const navBar=byId('stepbar'),oldP4=navBar.querySelector('.stepbtn[data-i="3"]');if(oldP4)oldP4.remove();
-  const bMove=navBar.querySelector('.stepbtn[data-i="2"]'),bCoach=navBar.querySelector('.stepbtn[data-i="1"]');if(bMove&&bCoach)navBar.insertBefore(bMove,bCoach);
-  const admin=document.createElement('button');admin.type='button';admin.id='adminNav';admin.className='stepbtn';admin.hidden=true;admin.dataset.view='admin';admin.textContent='资料审核';admin.onclick=()=>location.hash='admin';byId('stepbar').append(admin);
+  /* 侧栏完整顺序由下方重排统一决定 */
+  const admin=document.createElement('button');admin.type='button';admin.id='adminNav';admin.className='stepbtn';admin.hidden=true;admin.dataset.view='admin';admin.textContent='资料审核';admin.onclick=()=>gotoView('admin');byId('stepbar').append(admin);
+  /* —— 恢复 v3.x 精华页入口：每日方案(p2 五维健康计划) 与 打卡积分(p3 打卡闭环) ——
+     两页内容与 JS 完整保留。注意：go() 外层有 hash 同步包装（#step-N），
+     会被 guardian 路由再劫持，因此这里直接驱动 .panel 类切换，不经过 hash。 */
+  function showLegacyPanel(v) {
+    const p2b = document.getElementById('p2body');
+    if (!p2b || p2b.style.display === 'none') { const c = document.querySelector('#p1 .case'); if (c) c.click(); }
+    byId('healthWorkspace').hidden = true;
+    document.body.removeAttribute('data-health-workspace');
+    goPage('app');
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === (v === 'plan' ? 'p2' : 'p3')));
+    const cur = v === 'plan' ? planBtn : checkinBtn;
+    document.querySelectorAll('.stepbtn').forEach(b => b.classList.toggle('on', b === cur));
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  window.__showLegacy = showLegacyPanel;
+  /* workspace 入口统一走 gotoView：若 hash 未变（从旧面板返回），先无事件清空再设，保证路由必触发 */
+  const gotoView = hash => { if (location.hash === '#' + hash) { history.replaceState(null, '', location.pathname + location.search); } location.hash = hash; };
+  const planBtn=document.createElement('button');planBtn.type='button';planBtn.className='stepbtn';planBtn.textContent='每日方案';planBtn.onclick=()=>showLegacyPanel('plan');byId('stepbar').appendChild(planBtn);
+  const checkinBtn=document.createElement('button');checkinBtn.type='button';checkinBtn.className='stepbtn';checkinBtn.textContent='打卡积分';checkinBtn.onclick=()=>showLegacyPanel('checkin');byId('stepbar').appendChild(checkinBtn);
+  const seq={};['intro','0','1','2'].forEach(i=>{seq[i]=navBar.querySelector('.stepbtn[data-i="'+i+'"]');});
+  [seq.intro,seq['0'],planBtn,seq['2'],checkinBtn,seq['1'],benefitsBtn,sandboxBtn,admin].forEach(b=>{if(b)navBar.appendChild(b);});
   document.querySelectorAll('.mobile-dock a').forEach((link,index)=>{
     const hashes=['reports','movement','coach','sandbox'],names=['体检报告','运动记录','AI 教练','死差沙盘'];
     link.href='#'+hashes[index];link.querySelector('span').textContent=names[index];link.dataset.view=views[hashes[index]]||'benefits';
@@ -7417,14 +7438,16 @@ root.HealthCSV={parse:parseCSV};
     ['health', '运营看板 1 分钟', '承保后的运营视角：<b>在保人数、A 级占比、干预依从与期望赔付</b>。强调数据闭环：体检机构回传 → 机器提取 → 人工复核 → 看板。'],
     ['sandbox', '死差沙盘 4 分钟（高潮）', '先拖到 20% 讲保守假设，再回 40% 建模取值，最后拖到 58% 讲 RCT 上限——<b>每个锚点都与项目书第六章一致</b>。红色流转随干预收缩 = 干预减少进展；收尾点死差徽章 16,092 元/单。'],
     ['reports', '体检报告 3 分钟', '上传医院报告原件 → AI 提取五项指标 → 自动分级 → <b>人工复核确认</b>。强调双保险：机器提效、人把关；未打卡不作为拒赔理由。'],
+    ['plan', '每日方案 2 分钟', '按指标生成的五维计划：<b>饮食教练 / 运动处方 / 服药提醒 / 季度快检 / 健康挑战</b>，每天的任务具体到动作。'],
     ['movement', '运动记录 2 分钟', 'Keep 截图上传 → 凭证识别 → 复制为 CSV 导入正式记录。<b>不拿账号权限，只要运动记录</b>——数据最小必要原则。'],
+    ['checkin', '打卡积分 2 分钟', '五维打卡矩阵（练腿劲 / 粗粮 / 少盐 / 戒甜饮 / 快走）→ 积分商城兑换。<b>积分不抵保费</b>——激励与费率分离的合规设计。'],
     ['coach', 'AI 教练 2 分钟', '教练解释指标、生成每日方案。<b>只做健康管理，不做核保与理赔决定</b>——合规边界在这里收口。'],
     ['benefits', '保障与定价 2 分钟（收尾）', '回到产品本体：<b>六责四层、三病共用一次 100%、身故与进展各 20%</b>；在定价速查里切保额和等级看价格，落在「改善即可省 20%」的优惠机制上收尾。']
   ];
   function demoMode() {
     if (!/[?&]demo=1/.test(location.search)) return;
     var bar = document.createElement('div'); bar.className = 'demo-bar';
-    bar.innerHTML = '🎬 演示模式 <kbd>→</kbd><kbd>←</kbd> 剧本 · <kbd>1-7</kbd> 直达 · <kbd>T</kbd> 提词条 · <kbd>Esc</kbd> 退出';
+    bar.innerHTML = '🎬 演示模式 <kbd>→</kbd><kbd>←</kbd> 剧本 · <kbd>1-9</kbd> 直达 · <kbd>T</kbd> 提词条 · <kbd>Esc</kbd> 退出';
     document.body.appendChild(bar);
     var notes = document.createElement('div'); notes.className = 'demo-notes'; notes.hidden = true;
     document.body.appendChild(notes);
@@ -7432,7 +7455,8 @@ root.HealthCSV={parse:parseCSV};
     function show(i) {
       idx = (i + DEMO_NODES.length) % DEMO_NODES.length;
       var h = DEMO_NODES[idx][0];
-      if (location.hash !== '#' + h) location.hash = h;
+      if (h === 'plan' || h === 'checkin') { if (window.__showLegacy) window.__showLegacy(h); }
+      else if (location.hash !== '#' + h) location.hash = h;
       notes.innerHTML = '<b>【' + DEMO_NODES[idx][1] + '】</b>' + DEMO_NODES[idx][2];
     }
     document.addEventListener('keydown', function (e) {
@@ -7442,7 +7466,7 @@ root.HealthCSV={parse:parseCSV};
       else if (e.key === 'ArrowLeft') hit = function () { show(idx - 1); };
       else if (e.key === 'Escape') hit = function () { bar.remove(); notes.remove(); location.search = location.search.replace(/[?&]demo=1/, ''); };
       else if (e.key === 't' || e.key === 'T') hit = function () { notes.hidden = !notes.hidden; };
-      else if (/^[1-7]$/.test(e.key)) hit = function () { show(+e.key - 1); };
+      else if (/^[1-9]$/.test(e.key)) hit = function () { show(+e.key - 1); };
       if (hit) { e.preventDefault(); e.stopImmediatePropagation(); hit(); }
     }, true);
     show(0);
