@@ -2915,7 +2915,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
         <p class="odyssey-description">让日常的改变，走向更安心的明天。<br><span>AI 陪伴健康改善，保险守护每一步。</span></p>
         <div class="odyssey-actions"><button class="odyssey-glass" type="button" id="resumeJourney" hidden>继续我的健康旅程 ↗</button>
           <button class="odyssey-glass" type="button" data-go="0">开启我的守护 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
-          <button class="odyssey-text-link" type="button" onclick="location.hash='sandbox'">了解保障与定价 <span aria-hidden="true">↗</span></button>
+          <button class="odyssey-text-link" type="button" onclick="location.hash='benefits'">了解保障与定价 <span aria-hidden="true">↗</span></button>
         </div>
       </div>
       <div class="odyssey-hero-bottom">
@@ -3470,6 +3470,50 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
   </section>
 
 <section id="healthWorkspace" hidden><div class="notice">演示版 · 资料仅保存在当前浏览器，不会跨设备同步；清理浏览器数据会丢失记录，请保留原件。在线 AI（报告识别 / 运动凭证 / 教练问答）已内置接入，断网时自动降级为演示模式。</div><div class="cloud-toolbar"><span id="breadcrumb">健康概览</span><div><span id="roleBadge" class="subtle-badge">访客浏览</span><a id="login" class="btn ghost sm" href="/signin-with-chatgpt?return_to=%2F%23health" target="_top">登录健康空间 ↗</a><button id="staticRole" class="btn ghost sm" type="button">切换审核演示</button><button id="demoButton" class="btn ghost sm" type="button">查看演示数据</button></div></div><div id="demoNotice" class="notice" hidden>当前为独立演示数据，不会写入你的档案，也不代表真实审核或诊断。<button id="leaveDemo">退出演示</button></div><div id="pageStatus" role="status" class="notice" hidden></div>
+<!-- ============ 保障与定价（v4.7）：六责四层 · 给付边界 · 年度重评 · 死差益 · 定价速查 ============ -->
+<section id="benefits" data-page="benefits" hidden>
+<header class="guard-page-header"><div><p class="guard-page-kicker">COVERAGE &amp; PRICING · 保障与定价</p><h1>保什么、赔多少、怎么变便宜</h1><p>「六责四层」保障架构与分级费率：三项特定疾病共用一次 100% 基本保额，MetS 严重进展与疾病相关身故各 20%，服务层随保单附带；健康改善再享次年 20% 优惠。条款边界以项目书第四章及条款草案为准。</p></div><div class="guard-page-number" aria-hidden="true"><strong>05</strong><span>COVERAGE</span></div></header>
+<div class="card" style="margin-bottom:16px">
+  <h2 class="sb-h2">六责四层 · 保障责任总览 <i>BENEFIT LAYERS</i></h2>
+  <p class="sb-sub">基本保险金额 5 万 / 10 万 / 15 万元三档；保险期间一年，自首次合同生效日起保证续保十年。</p>
+  <table>
+    <thead><tr><th style="width:12%">层级</th><th style="width:34%">保险责任</th><th style="width:26%">给付标准</th><th>给付次数与边界</th></tr></thead>
+    <tbody>
+      <tr><td><b>重疾层</b></td><td>2 型糖尿病 / 急性心肌梗死 / 脑卒中</td><td>三病合计一次 <b>100%</b> 基本保额</td><td>共用一次限额，给付后该层终止；保证续保权与其余责任继续</td></tr>
+      <tr><td><b>中症层</b></td><td>MetS 严重进展（A→B / B→C，经两次独立复核确认）</td><td>一次 <b>20%</b> 基本保额</td><td>限一次；初始核定为 C 级者不构成首次进展</td></tr>
+      <tr><td><b>抚恤层</b></td><td>疾病相关身故（承保疾病及其直接相关并发症）</td><td>一次 <b>20%</b> 基本保额</td><td>不含全因身故；须有直接因果关系的医学证据</td></tr>
+      <tr><td><b>服务层</b></td><td>年度健康体检 + 病后医疗照护服务</td><td>体检 <b>800 元</b>/保险年度；照护 <b>5,000 元</b>/12 个月</td><td>按服务项目直接结算，不折现、不转让、不抵减现金保险金</td></tr>
+    </tbody>
+  </table>
+  <p class="sb-note" style="margin-top:10px">等待期：2 型糖尿病 <b>180 日</b>、急性心肌梗死与脑卒中 <b>90 日</b>，连续续保不重算；各责任限额不恢复、层级间不相互抵减。未参加健康管理、未使用 AI 服务或未打卡，不单独作为减赔、拒赔的理由。</p>
+</div>
+<div class="sb-grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+  <div class="card">
+    <h2 class="sb-h2">年度重评与改善优惠 <i>RE-ASSESSMENT</i></h2>
+    <p class="sb-sub">费率跟着健康结果走，不跟打卡次数走。</p>
+    <div class="sb-rows" style="margin-top:4px">
+      <div class="sb-row"><span>首次承保</span><b>按异常项数定 A / B / C 级</b></div>
+      <div class="sb-row"><span>改善条件</span><b>异常项数 ≤2 项且维持 ≥12 个月</b></div>
+      <div class="sb-row"><span>复核节点</span><b>起始 + 第 6 个月 + 满 12 个月</b></div>
+      <div class="sb-row"><span>次年优惠</span><b class="up">保费 −20%</b></div>
+      <div class="sb-row"><span>波动回退</span><b>再次 ≥3 项恢复基准，不追回既往</b></div>
+    </div>
+    <p class="sb-note">保证续保期内不因健康恶化或既往理赔单独加费；优惠仅作用于下一保险年度，不逐年复利累积。</p>
+  </div>
+  <div class="card">
+    <h2 class="sb-h2">死差益：可承保性的来源 <i>MARGIN</i></h2>
+    <p class="sb-sub">无干预情形下十年期望赔付 44,628 元，AI 干预情景 28,536 元——期望死差 <b>16,092 元/单</b>，把「带病体不可保」变成「改善即可保」。</p>
+    <div class="sb-rows" style="margin-top:4px">
+      <div class="sb-row"><span>基准情景 EPV（15 万保额）</span><b>44,628 元</b></div>
+      <div class="sb-row"><span>AI 干预情景 EPV</span><b class="up">28,536 元</b></div>
+      <div class="sb-row"><span>期望死差</span><b class="up">16,092 元/单</b></div>
+      <div class="sb-row"><span>敏感性（20%—58% 五档）</span><b>死差全部为正</b></div>
+    </div>
+    <p class="sb-note">流转机制与敏感性交互演示见「死差沙盘」页；本页数字为项目书第六章情景演算，不构成真实测算或投保依据。</p>
+  </div>
+</div>
+<div class="card sb-price"><h2 class="sb-h2">精算定价速查 <i>PREMIUM LOOKUP</i></h2><p class="sb-sub">基本保额 × 健康等级 × 情景的年交纯保费（元）。数字与项目书表 1-1 及费率表逐位一致；纯保费不等于最终实交保费。</p><div class="price-row"><label>基本保额<select id="prAmt"><option value="5">5 万元</option><option value="10">10 万元</option><option value="15" selected>15 万元</option></select></label><label>健康等级<select id="prLvl"><option value="0">A 级 · 3 项异常</option><option value="1">B 级 · 4 项异常</option><option value="2">C 级 · 5 项异常</option></select></label></div><div class="price-grid"><div class="price-cell"><div class="p-lb">基准情景（无干预）</div><div class="p-v" id="prV1">5,229<small> 元/年</small></div></div><div class="price-cell hot"><div class="p-lb">AI 干预情景（建模 40%）</div><div class="p-v" id="prV2">3,383<small> 元/年</small></div></div><div class="price-cell hot"><div class="p-lb">健康改善后（再优惠 20%）</div><div class="p-v" id="prV3">2,707<small> 元/年</small></div></div></div><p class="sb-foot" style="margin-top:12px">改善优惠条件：异常项数降至 ≤2 项并连续维持 12 个月，经起始、第 6 个月和满 12 个月三次复核确认，仅作用于下一保险年度。</p></div>
+</section>
 <section id="sandbox" data-page="sandbox" hidden>
 <header class="guard-page-header"><div><p class="guard-page-kicker">DEATH MARGIN SANDBOX · 精算沙盘</p><h1>拖动干预强度，看见保费背后的账</h1><p>左：AI 干预效果假设（建模取 40%，低于大庆研究 51% 与 DPS/DPP 58% 的临床上限）；中：CHARLS 七状态 Markov 流转；右：十年期望给付现值与责任构成。差值即「AI 优化死差」。全部数字为情景演算，不构成真实测算或投保依据。</p></div><div class="guard-page-number" aria-hidden="true"><strong>04</strong><span>SANDBOX</span></div></header>
 <div class="sb-grid">
@@ -3568,7 +3612,6 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
     </div>
   </div>
 </div>
-<div class="card sb-price"><h2 class="sb-h2">精算定价速查 <i>PREMIUM LOOKUP</i></h2><p class="sb-sub">基本保额 × 健康等级 × 情景的年交纯保费（元）。数字与项目书表 1-1 及费率表逐位一致；纯保费不等于最终实交保费。</p><div class="price-row"><label>基本保额<select id="prAmt"><option value="5">5 万元</option><option value="10">10 万元</option><option value="15" selected>15 万元</option></select></label><label>健康等级<select id="prLvl"><option value="0">A 级 · 3 项异常</option><option value="1">B 级 · 4 项异常</option><option value="2">C 级 · 5 项异常</option></select></label></div><div class="price-grid"><div class="price-cell"><div class="p-lb">基准情景（无干预）</div><div class="p-v" id="prV1">5,229<small> 元/年</small></div></div><div class="price-cell hot"><div class="p-lb">AI 干预情景（建模 40%）</div><div class="p-v" id="prV2">3,383<small> 元/年</small></div></div><div class="price-cell hot"><div class="p-lb">健康改善后（再优惠 20%）</div><div class="p-v" id="prV3">2,707<small> 元/年</small></div></div></div><p class="sb-foot" style="margin-top:12px">改善优惠条件：异常项数降至 ≤2 项并连续维持 12 个月，经起始、第 6 个月和满 12 个月三次复核确认，仅作用于下一保险年度。</p></div>
 </section>
 <section data-page="overview"><div class="guard-page-header"><div><p class="guard-page-kicker">YOUR HEALTH, IN FOCUS</p><h1>从读懂身体，<br class="mobile-only">开始今天的守护。</h1><p class="lead">体检指标、人工解读与每一次运动，清晰地放在一起。</p></div><button class="btn" data-upload>＋ 上传体检报告</button></div>
 <p class="kv-cap">数据回传运营 · 演示情景</p><div class="kv-strip"><div class="kv"><b>4,354 <em>份</em></b><span>本季度报告与复查回传</span></div><div class="kv"><b>92.4<em>%</em></b><span>机器指标提取采纳率</span></div><div class="kv"><b>3.1<em>%</em></b><span>人工复核驳回率</span></div><div class="kv"><b>12 <em>分钟</em></b><span>上传到分级确认中位时长</span></div></div><div class="overview-grid"><article class="card health-report-summary"><div><p class="guard-page-kicker">HEALTH SNAPSHOT</p><span class="tag" id="latestStatus">等待第一份报告</span><h2 id="latestTitle">一份报告，<br>让健康有迹可循。</h2><p id="latestDescription">上传体检原件并录入指标，审核人员核对后，你就能在这里看到关注级别与人工解读。</p><a class="btn pale" href="#reports">查看我的报告 <span>↗</span></a></div></article>
@@ -6930,7 +6973,7 @@ try {
 <div id="toast" role="status" hidden></div><script>(() => {
   'use strict';
   const byId=id=>document.getElementById(id);
-  const views={health:'overview',reports:'reports',coach:'coach',movement:'movement',sandbox:'sandbox',admin:'admin','step-1':'reports','step-2':'coach','step-3':'movement'};
+  const views={health:'overview',reports:'reports',coach:'coach',movement:'movement',benefits:'benefits',sandbox:'sandbox',admin:'admin','step-1':'reports','step-2':'coach','step-3':'movement'};
   const previousGo=go;
   go=function(index){
     if(index>=0&&index<=2){location.hash=['health','coach','movement'][index];return;}
@@ -6943,6 +6986,7 @@ try {
     const icon=button.querySelector('i');button.replaceChildren();if(icon)button.append(icon);button.append(document.createTextNode(label));
     button.dataset.view=views[hash];button.onclick=()=>location.hash=hash;
   }
+  const benefitsBtn=document.createElement('button');benefitsBtn.type='button';benefitsBtn.className='stepbtn';benefitsBtn.dataset.view='benefits';benefitsBtn.textContent='保障与定价';benefitsBtn.onclick=()=>location.hash='benefits';byId('stepbar').appendChild(benefitsBtn);
   const sandboxBtn=document.createElement('button');sandboxBtn.type='button';sandboxBtn.className='stepbtn';sandboxBtn.dataset.view='sandbox';sandboxBtn.textContent='死差沙盘';sandboxBtn.onclick=()=>location.hash='sandbox';byId('stepbar').appendChild(sandboxBtn);
   /* 导航收口：空壳「给付与重评」下线（给付与定价内容已并入死差沙盘页）；侧栏按参保旅程排序 */
   const navBar=byId('stepbar'),oldP4=navBar.querySelector('.stepbtn[data-i="3"]');if(oldP4)oldP4.remove();
@@ -7030,8 +7074,8 @@ root.HealthCSV={parse:parseCSV};
       $('reviewForm').onsubmit=async event=>{event.preventDefault();await submit(event.currentTarget,async()=>{await api('/api/health',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'review',id:report.id,revision:report.revision,status:$('reviewDecision').value,attention:$('reviewAttention').value,note:$('reviewNote').value,metrics:readMetrics('review_')})});toast('本机审核演示已保存');target.hidden=true;await load();});};}
     target.scrollIntoView({behavior:'smooth',block:'start'});
   }
-  function route(){const rawView=location.hash.slice(1)||'overview',view=window.GuardianShell?.view(rawView)||rawView,allowed=['overview','reports','movement','coach','sandbox',...(state.role==='admin'&&!demo?['admin']:[])],active=allowed.includes(view)?view:'overview';
-    ($('healthWorkspace')||document).querySelectorAll('[data-page]').forEach(page=>page.hidden=page.dataset.page!==active);document.querySelectorAll('[data-view]').forEach(link=>{if(link.dataset.view===active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});$('breadcrumb').textContent={overview:'健康概览',reports:'体检报告',movement:'运动记录',coach:'AI 健康教练',sandbox:'死差沙盘',admin:'资料审核'}[active];$('login').href='/signin-with-chatgpt?return_to='+encodeURIComponent('/#'+(active==='overview'&&window.GuardianShell?'health':active));window.GuardianShell?.sync(active,state,demo);
+  function route(){const rawView=location.hash.slice(1)||'overview',view=window.GuardianShell?.view(rawView)||rawView,allowed=['overview','reports','movement','coach','benefits','sandbox',...(state.role==='admin'&&!demo?['admin']:[])],active=allowed.includes(view)?view:'overview';
+    ($('healthWorkspace')||document).querySelectorAll('[data-page]').forEach(page=>page.hidden=page.dataset.page!==active);document.querySelectorAll('[data-view]').forEach(link=>{if(link.dataset.view===active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});$('breadcrumb').textContent={overview:'健康概览',reports:'体检报告',movement:'运动记录',coach:'AI 健康教练',benefits:'保障与定价',sandbox:'死差沙盘',admin:'资料审核'}[active];$('login').href='/signin-with-chatgpt?return_to='+encodeURIComponent('/#'+(active==='overview'&&window.GuardianShell?'health':active));window.GuardianShell?.sync(active,state,demo);
   }
   async function load(){try{state=await api('/api/health');$('pageStatus').hidden=true;}catch(error){if(error.status!==401){$('pageStatus').hidden=false;$('pageStatus').textContent=error.message;}else{$('pageStatus').hidden=false;$('pageStatus').textContent='登录后查看个人报告、导入运动资料并使用 AI 教练。公开页面不展示他人的健康数据。';}state={authenticated:false,role:'guest',userId:'',reports:[],activities:[],users:[]};}render();}
   async function submit(form,action){const buttons=form.querySelectorAll('button');buttons.forEach(b=>b.disabled=true);try{await action();}catch(error){toast(error.message);}finally{buttons.forEach(b=>b.disabled=false);}}
@@ -7366,12 +7410,13 @@ root.HealthCSV={parse:parseCSV};
     ['sandbox', '死差沙盘 4 分钟（高潮）', '先拖到 20% 讲保守假设，再回 40% 建模取值，最后拖到 58% 讲 RCT 上限——<b>每个锚点都与项目书第六章一致</b>。红色流转随干预收缩 = 干预减少进展；收尾点死差徽章 16,092 元/单。'],
     ['reports', '体检报告 3 分钟', '上传医院报告原件 → AI 提取五项指标 → 自动分级 → <b>人工复核确认</b>。强调双保险：机器提效、人把关；未打卡不作为拒赔理由。'],
     ['movement', '运动记录 2 分钟', 'Keep 截图上传 → 凭证识别 → 复制为 CSV 导入正式记录。<b>不拿账号权限，只要运动记录</b>——数据最小必要原则。'],
-    ['coach', 'AI 教练 2 分钟', '教练解释指标、生成每日方案。<b>只做健康管理，不做核保与理赔决定</b>——合规边界在这里收口。最后回看板收尾。']
+    ['coach', 'AI 教练 2 分钟', '教练解释指标、生成每日方案。<b>只做健康管理，不做核保与理赔决定</b>——合规边界在这里收口。'],
+    ['benefits', '保障与定价 2 分钟（收尾）', '回到产品本体：<b>六责四层、三病共用一次 100%、身故与进展各 20%</b>；在定价速查里切保额和等级看价格，落在「改善即可省 20%」的优惠机制上收尾。']
   ];
   function demoMode() {
     if (!/[?&]demo=1/.test(location.search)) return;
     var bar = document.createElement('div'); bar.className = 'demo-bar';
-    bar.innerHTML = '🎬 演示模式 <kbd>→</kbd><kbd>←</kbd> 剧本 · <kbd>1-6</kbd> 直达 · <kbd>T</kbd> 提词条 · <kbd>Esc</kbd> 退出';
+    bar.innerHTML = '🎬 演示模式 <kbd>→</kbd><kbd>←</kbd> 剧本 · <kbd>1-7</kbd> 直达 · <kbd>T</kbd> 提词条 · <kbd>Esc</kbd> 退出';
     document.body.appendChild(bar);
     var notes = document.createElement('div'); notes.className = 'demo-notes'; notes.hidden = true;
     document.body.appendChild(notes);
@@ -7389,7 +7434,7 @@ root.HealthCSV={parse:parseCSV};
       else if (e.key === 'ArrowLeft') hit = function () { show(idx - 1); };
       else if (e.key === 'Escape') hit = function () { bar.remove(); notes.remove(); location.search = location.search.replace(/[?&]demo=1/, ''); };
       else if (e.key === 't' || e.key === 'T') hit = function () { notes.hidden = !notes.hidden; };
-      else if (/^[1-6]$/.test(e.key)) hit = function () { show(+e.key - 1); };
+      else if (/^[1-7]$/.test(e.key)) hit = function () { show(+e.key - 1); };
       if (hit) { e.preventDefault(); e.stopImmediatePropagation(); hit(); }
     }, true);
     show(0);
