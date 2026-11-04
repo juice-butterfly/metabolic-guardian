@@ -7692,6 +7692,7 @@ root.HealthCSV={parse:parseCSV};
     bindMoveDemo();
     seedOnFirstVisit();
     window.addEventListener('hashchange', renderRx);
+    window.addEventListener('guardian-static-change', renderRx); /* 种子数据落库后重渲染处方卡 */
     renderRx();
     demoMode();
     var k = getK();
