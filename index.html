@@ -2726,6 +2726,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 #sandbox{min-width:0}
 .sb-grid{display:grid;grid-template-columns:288px minmax(0,1.18fr) minmax(0,1fr);gap:16px;align-items:start;margin-bottom:16px}
 .sb-grid>.card{margin-bottom:0}
+.sb-grid.sb-grid2{grid-template-columns:1fr 1fr}
 .sb-h2{font-size:15px;font-weight:700;letter-spacing:1px;color:var(--ink);margin:0 0 4px;display:flex;align-items:center;gap:8px}
 .sb-h2 i{font-style:normal;font-size:10px;letter-spacing:2px;color:var(--ink3);font-weight:400}
 .sb-sub{font-size:12px;line-height:1.7;color:var(--ink2);margin:0 0 14px}
@@ -2823,7 +2824,8 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 .rx-day span{display:block;font-size:12px;font-weight:700;color:var(--accent);margin:3px 0}
 .rx-day small{display:block;font-size:10px;color:var(--ink3);line-height:1.5}
 .rx-day.rest span{color:var(--ink3)}
-@media(max-width:860px){.rx-week{grid-template-columns:repeat(4,1fr)}.kv-strip{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr}}
+@media(max-width:860px){.sb-grid,.sb-grid.sb-grid2{grid-template-columns:1fr}.rx-week{grid-template-columns:repeat(4,1fr)}.kv-strip{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr}.mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:640px){.sb-row{display:block;padding:7px 0}.sb-row span{display:block;margin-bottom:3px}.sb-row b{display:block;text-align:right;font-size:16px}}
 .demo-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:98;display:flex;gap:10px;align-items:center;background:rgba(8,19,15,.92);border:1px solid rgba(20,160,133,.45);border-radius:99px;padding:8px 18px;font-size:12px;color:#cfe4d8;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .demo-bar kbd{border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:1px 6px;font-size:11px}
 .demo-notes{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;z-index:98;max-width:min(720px,92vw);background:rgba(8,19,15,.95);border:1px solid rgba(20,160,133,.45);border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.9;color:#EAF2EF;box-shadow:0 10px 30px rgba(0,0,0,.5)}
@@ -3495,7 +3497,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
   </table></div>
   <p class="sb-note" style="margin-top:10px">等待期：2 型糖尿病 <b>180 日</b>、急性心肌梗死与脑卒中 <b>90 日</b>，连续续保不重算；各责任限额不恢复、层级间不相互抵减。未参加健康管理、未使用 AI 服务或未打卡，不单独作为减赔、拒赔的理由。</p>
 </div>
-<div class="sb-grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+<div class="sb-grid sb-grid2" style="margin-bottom:16px">
   <div class="card">
     <h2 class="sb-h2">年度重评与改善优惠 <i>RE-ASSESSMENT</i></h2>
     <p class="sb-sub">费率跟着健康结果走，不跟打卡次数走。</p>
@@ -7023,8 +7025,16 @@ try {
   [seq.intro,seq['0'],planBtn,seq['2'],checkinBtn,seq['1'],benefitsBtn,sandboxBtn,admin].forEach(b=>{if(b)navBar.appendChild(b);});
   document.querySelectorAll('.mobile-dock a').forEach((link,index)=>{
     const hashes=['reports','movement','coach','sandbox'],names=['体检报告','运动记录','AI 教练','死差沙盘'];
-    link.href='#'+hashes[index];link.querySelector('span').textContent=names[index];link.dataset.view=views[hashes[index]]||'benefits';
+    link.href='#'+hashes[index];link.querySelector('span').textContent=names[index];link.dataset.view=views[hashes[index]]||hashes[index];
   });
+  /* 手机 dock 补「健康概览」——此前手机端无法回到概览页 */
+  const dockLinks=[...document.querySelectorAll('.mobile-dock a')];
+  if(dockLinks.length===4){
+    const ov=dockLinks[0].cloneNode(true);
+    ov.href='#health';ov.dataset.view='overview';ov.querySelector('span').textContent='健康概览';
+    ov.querySelector('svg').innerHTML='<path d="M3.5 11.5 12 4l8.5 7.5M5.5 10.5V20h13v-9.5"/>';
+    dockLinks[0].parentElement.insertBefore(ov,dockLinks[0]);
+  }
   byId('resumeJourney').onclick=()=>location.hash='health';
   for(const root of [byId('healthWorkspace'),byId('uploadDialog')])root.addEventListener('keydown',event=>{
     // The original document-level 1–4 shortcuts must not navigate while typing a note.
@@ -7473,12 +7483,12 @@ root.HealthCSV={parse:parseCSV};
   }
 
   /* ---- AI 教练（glm-4.7 文本对话，双端点；未配置 Key 时内置演示回复） ---- */
-  function chatText(q) {
+  function chatText(q, ctx) {
     var key = getK();
     if (!key) return Promise.reject(Error('NO_KEY'));
-    var sys = '你是"代谢健康守护"的 AI 代谢管理教练，面向 45—65 岁代谢综合征人群。用通俗中文解释体检指标、给出饮食/运动/作息的日常建议；不作医疗诊断，不参与保险核保定价或理赔决定；异常指标建议咨询专业医师。回答不超过 200 字，分点短句。';
+    var sys = '你是"代谢健康守护"的 AI 代谢管理教练，用户是 45—65 岁、正在做代谢管理的中老年人。像一位熟识的健康管家在微信上聊天：先用一句话接住对方说的话，再给一两件具体可做的小事，语气温和口语化。不要用编号或列表，不要"首先""其次""建议您"这种腔调，一次不超过三句话，结尾可以带一句鼓励或提醒。遇到指标异常提醒对方遵医嘱；你只做生活方式建议，不做诊断、不碰核保定价或理赔。风格示例——用户说"今晚想喝点小酒"，你回"小酌可以，但咱这情况得悠着点：别空腹喝，配点菜，选低度的；明早记得测测空腹血糖，一周尽量别超过两次。"。就照这个味道说。' + (ctx || '');
     var eps = ['https://api.z.ai/api/paas/v4/chat/completions', 'https://open.bigmodel.cn/api/paas/v4/chat/completions'];
-    var payload = JSON.stringify({ model: 'glm-4.5-air', temperature: 0.6, max_tokens: 1500, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] });
+    var payload = JSON.stringify({ model: 'glm-4.5-air', temperature: 0.8, max_tokens: 600, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] });
     var tryAt = function (i) {
       if (i >= eps.length) return Promise.reject(Error('在线端点均不可达'));
       return getRealFetch()(eps[i], { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: payload })
@@ -7494,14 +7504,29 @@ root.HealthCSV={parse:parseCSV};
     };
     return withTimeout(tryAt(0), 60000);
   }
+  function reportContext() {
+    return fetch('/api/health', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) {
+      var rep = st.reports && st.reports[0];
+      if (!rep || !rep.metrics) return '';
+      var mm; try { mm = JSON.parse(rep.metrics); } catch (e) { return ''; }
+      var parts = [];
+      if (mm.waist) parts.push('腰围 ' + mm.waist + 'cm');
+      if (mm.sbp && mm.dbp) parts.push('血压 ' + mm.sbp + '/' + mm.dbp);
+      if (mm.fbg) parts.push('空腹血糖 ' + mm.fbg);
+      if (mm.tg) parts.push('甘油三酯 ' + mm.tg);
+      if (mm.hdl) parts.push('HDL-C ' + mm.hdl);
+      if (mm.weight) parts.push('体重 ' + mm.weight + 'kg');
+      return '（用户最近一次报告 ' + rep.report_date + '，已核对：' + parts.join('、') + '；审核标注：' + (rep.attention || '无') + '。回答时自然贴合这些数值，不要复述整串）';
+    }).catch(function () { return ''; });
+  }
   function canned(q, netFail, err) {
     var k = q && /血糖|糖/.test(q) ? '血糖' : /血压/.test(q) ? '血压' : /运动|步|锻炼/.test(q) ? '运动' : /吃|饮食|餐/.test(q) ? '饮食' : '通用';
     var map = {
-      血糖: '关于空腹血糖（示例 6.52 mmol/L）：高于 6.1 的判定线，属于"需要关注"区间。先做三件事：主食一半换粗粮、饭后散步 20 分钟、晚上 11 点前睡觉。下周复测空腹血糖，若持续 ≥7.0 请带化验单咨询内分泌科医生。',
-      血压: '关于血压（示例 138/86 mmHg）：刚过 130/85 的关注线。建议：早晚各测一次并记录；饮食先减盐（少腌菜、少浓汤）；快走从每天 20 分钟开始。若多次 ≥140/90，请及时就医。',
-      运动: '适合代谢人群的起步方案：每周 5 天、每天 30 分钟快走（约 4000 步），加 2 天下肢自重练习（椅子坐站、扶墙静蹲各 2 组×10 次）。从"不喘能说话"的强度开始，逐步加量。运动凭证识别导入的记录会累计到运动页。',
-      饮食: '一餐的简单搭配法：半餐蔬菜、四分之一蛋白质（鱼/鸡/豆制品）、四分之一主食（粗细各半）。少喝含糖饮料，烹调少油少盐。这是健康管理建议，不是处方，具体请结合临床意见调整。',
-      通用: '我从五个维度帮你把代谢管起来：饮食结构、有氧运动、下肢力量、控盐控糖、规律作息。可以先上传体检报告让我解读指标，或从"运动记录"导入今天的步行数据。以上是健康管理建议，不构成医疗诊断。'
+      血糖: '空腹血糖 6.52 是过了线，先别慌——主食一半换粗粮、饭后溜达十来分钟、晚上十一点前睡，这三件先做起来。下周复测一次，要是还高，就带着化验单找内分泌科医生聊聊。',
+      血压: '血压 138/86 刚过关注线。早上别猛起身，饭菜咸淡先减一半，每天傍晚快走二十分钟。家里备个血压计早晚各量一次，要是老在 140/90 以上，就得找医生看看了。',
+      运动: '不用一上来就猛练——每天快走三十分钟、约四千步，一周挑两天做做椅子坐站、扶墙静蹲这些居家动作，比办卡实在。强度以"还能说话"为准，走完微微出汗刚好。做完了到运动页记一笔。',
+      饮食: '记个顺口溜：半餐菜、一掌蛋白、一把粗粮。含糖饮料先戒了，炒菜油盐减一半。慢慢调，不用一步到位，两个月后复查时见分晓。',
+      通用: '咱们盯着五件事就行：迈开腿、换粗粮、少放盐、戒甜饮、睡够觉。你今天想先聊哪一件？或者把最近的化验单说说，我帮你逐项看看。'
     };
     return map[k] + (netFail ? '\n\n（在线模型暂不可达：' + (err && err.message ? String(err.message).slice(0, 40) : '网络异常') + '，本条为内置演示回复）' : '\n\n（演示回复 · 配置 API Key 后即为 GLM 在线回答）');
   }
@@ -7532,7 +7557,7 @@ root.HealthCSV={parse:parseCSV};
       input.value = ''; btn.disabled = true;
       var t0 = Date.now();
       var p = getK()
-        ? chatText(q).catch(function (e) { console.warn('[v4.5] 教练在线回答失败：', e && e.message); return new Promise(function (res) { setTimeout(function () { res(canned(q, true, e)); }, Math.max(0, 600 - (Date.now() - t0))); }); })
+        ? reportContext().then(function (ctx) { return chatText(q, ctx); }).catch(function (e) { console.warn('[v4.5] 教练在线回答失败：', e && e.message); return new Promise(function (res) { setTimeout(function () { res(canned(q, true, e)); }, Math.max(0, 900 - (Date.now() - t0))); }); })
         : new Promise(function (res) { setTimeout(function () { res(canned(q, false)); }, 500); });
       p.then(function (t) { ab.textContent = t; container.scrollTop = container.scrollHeight; btn.disabled = false; });
     });
@@ -7669,7 +7694,7 @@ root.HealthCSV={parse:parseCSV};
         + '</div>'
         + '<div class="rx-week">' + weekHtml + '</div>'
         + (rx.tips.length ? '<p class="sb-note"><b>针对你的指标</b>：' + rx.tips.join('；') + '。</p>' : '')
-        + '<p class="sb-foot" style="margin-top:10px">做完记得记录：右上"载入 Keep 演示截图"或 CSV 导入。<a href="#coach" id="rxAsk" style="color:var(--accent,#14A085)">让 AI 教练细化为一周课表 ↗</a>。本处方为演示规则生成，不构成医疗建议。</p>';
+        + '<p class="sb-foot" style="margin-top:10px">做完记得记录：下方「载入 Keep 演示截图」或 CSV 导入。<a href="#coach" id="rxAsk" style="color:var(--accent,#14A085)">让 AI 教练细化为一周课表 ↗</a>。本处方为演示规则生成，不构成医疗建议。</p>';
       var ask = $('rxAsk');
       if (ask) ask.onclick = function (ev) {
         ev.preventDefault();
