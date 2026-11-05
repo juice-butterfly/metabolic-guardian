@@ -6846,7 +6846,7 @@ try {
     conflictDialog.innerHTML='<p class="eyebrow">REVIEW CHANGES</p><h2>保留你需要的记录</h2><p>其他更改已自动合并。下面的同一项记录有不同数值，请选择保留哪一个。</p>'+conflictInfo.conflicts.map((c,i)=>`<fieldset class="conflict-item"><legend>${escHtml(conflictLabel(c.path))}</legend><label><input type="radio" name="conflict_${i}" value="local" checked> 此设备：${escHtml(display(c.local))}</label><label><input type="radio" name="conflict_${i}" value="remote"> 本机：${escHtml(display(c.remote))}</label></fieldset>`).join('')+'<div class="conflict-actions"><button id="laterConflict" class="btn ghost">稍后处理</button><button id="confirmConflict" class="btn">合并并保存</button></div>';
     el('laterConflict').onclick=()=>conflictDialog.close();el('confirmConflict').onclick=()=>{const result=sync.merge(base,current(),conflictInfo.data).data;conflictInfo.conflicts.forEach((c,i)=>{const choice=conflictDialog.querySelector(`input[name=conflict_${i}]:checked`).value;sync.choose(result,c.path,c[choice]);});restore(result);conflictInfo=null;review.hidden=true;conflictDialog.close();renderJournal();changed();flush();};conflictDialog.showModal();
   };
-  const privacy=document.createElement('dialog');privacy.className='portal-dialog';privacy.innerHTML='<p class="eyebrow">YOUR HEALTH SPACE</p><h2>你的记录，清晰可见</h2><p>每日行动与实测数据保存在当前账号的本机空间，本机保留恢复草稿。使用共享设备后，请退出账号并清理站点数据。</p><p>健康日记记录你实际填写的内容。方案体验中的费率、预测、积分商城和保险责任均为概念演示，不代表已生效保单、真实兑换或诊疗结论。</p><p>在线 AI 启用后，发送对话会把当前健康背景与对话发送至 DeepSeek 官方模型服务。未配置服务端密钥时，仅提供示例计划。</p><form method="dialog"><button class="btn">我知道了</button></form>';document.body.append(privacy);el('privacyInfo').onclick=()=>privacy.showModal();
+  const privacy=document.createElement('dialog');privacy.className='portal-dialog';privacy.innerHTML='<p class="eyebrow">YOUR HEALTH SPACE</p><h2>你的记录，清晰可见</h2><p>每日行动与实测数据保存在当前账号的本机空间，本机保留恢复草稿。使用共享设备后，请退出账号并清理站点数据。</p><p>健康日记记录你实际填写的内容。方案体验中的费率、预测、积分商城和保险责任均为概念演示，不代表已生效保单、真实兑换或诊疗结论。</p><p>在线对话由 GLM 直连生成（Key 已内置，也可在本机替换）；离线时自动降级为演示回复。</p><form method="dialog"><button class="btn">我知道了</button></form>';document.body.append(privacy);el('privacyInfo').onclick=()=>privacy.showModal();
   const panel=el('p3');panel.dataset.mode='daily';const modes=document.createElement('div');modes.className='journal-modes';modes.innerHTML='<div role="tablist" aria-label="记录与方案"><button id="dailyTab" role="tab" aria-selected="true" aria-controls="realJournal">我的健康日记</button><button id="simTab" role="tab" aria-selected="false" aria-controls="simulationArea">方案模拟体验 <span>DEMO</span></button></div><span class="mode-caption">每一份改变，都值得记录</span>';panel.prepend(modes);
   const simulation=document.createElement('div');simulation.id='simulationArea';simulation.setAttribute('role','tabpanel');[...panel.children].filter(x=>x!==modes&&x.id!=='realJournal').forEach(x=>simulation.append(x));panel.append(simulation);el('realJournal').setAttribute('role','tabpanel');el('realJournal').setAttribute('aria-labelledby','dailyTab');simulation.setAttribute('aria-labelledby','simTab');
   function mode(value){panel.dataset.mode=value;el('dailyTab').setAttribute('aria-selected',String(value==='daily'));el('simTab').setAttribute('aria-selected',String(value==='simulation'));document.body.dataset.journalMode=value;}
@@ -7014,6 +7014,7 @@ try {
     document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === (v === 'plan' ? 'p2' : 'p3')));
     const cur = v === 'plan' ? planBtn : checkinBtn;
     document.querySelectorAll('.stepbtn').forEach(b => b.classList.toggle('on', b === cur));
+    window.assertPlanChatUi && window.assertPlanChatUi();
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
   window.__showLegacy = showLegacyPanel;
@@ -7722,6 +7723,50 @@ root.HealthCSV={parse:parseCSV};
     }).catch(function () { });
   }
 
+  /* ---- 每日方案页「与 AI 对话」：改接 GLM 直驱（旧 SSE /api/coach 已被静态版禁用） ---- */
+  function p2Msg(role, text, cls) {
+    const box = document.getElementById('chatBox');
+    const m = document.createElement('div');
+    m.className = 'msg';
+    m.innerHTML = '<div class="av ' + (role === 'user' ? 'us' : 'ai') + '">' + (role === 'user' ? '用户' : 'AI') + '</div><div class="bub ' + (cls || (role === 'user' ? 'us' : 'ai')) + '"></div>';
+    m.querySelector('.bub').textContent = text;
+    box.append(m);
+    box.scrollTop = box.scrollHeight;
+    return m.querySelector('.bub');
+  }
+  function assertPlanChatUi() {
+    const p2 = document.getElementById('p2');
+    if (!p2 || !p2.classList.contains('on')) return;
+    const ctl = document.getElementById('aiCtl');
+    if (ctl) ctl.style.display = '';
+    const live = document.getElementById('btnLive');
+    if (live) live.style.display = 'none';
+    const back = document.getElementById('btnBackSample');
+    if (back) back.style.display = 'none';
+    const hint = document.getElementById('chatHint');
+    if (hint) hint.innerHTML = '与 AI 教练对话：回答结合<b>最近已核对报告</b>生成，不作医疗诊断或核保理赔依据；离线自动降级为演示回复。';
+  }
+  function bindPlanChat() {
+    const btnAsk = document.getElementById('btnAsk'), input = document.getElementById('aiInput');
+    if (!btnAsk || btnAsk.dataset.sbBound) return;
+    btnAsk.dataset.sbBound = '1';
+    assertPlanChatUi();
+    const send = function () {
+      const v = (input.value || '').trim();
+      if (!v) return;
+      input.value = '';
+      p2Msg('user', v);
+      const bub = p2Msg('ai', '正在思考…');
+      const t0 = Date.now();
+      const p = getK()
+        ? reportContext().then(function (ctx) { return chatText(v, ctx); }).catch(function (e) { console.warn('[v4.5] 方案对话失败：', e && e.message); return new Promise(function (res) { setTimeout(function () { res(canned(v, true, e)); }, Math.max(0, 900 - (Date.now() - t0))); }); })
+        : new Promise(function (res) { setTimeout(function () { res(canned(v, false)); }, 500); });
+      p.then(function (t) { bub.textContent = t; });
+    };
+    btnAsk.onclick = send;
+    input.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } };
+  }
+
   function boot() {
     bindReportExtract();
     bindMoveExtract();
@@ -7733,7 +7778,10 @@ root.HealthCSV={parse:parseCSV};
     bindDemoFile();
     bindMoveDemo();
     seedOnFirstVisit();
+    bindPlanChat();
     window.addEventListener('hashchange', renderRx);
+    window.addEventListener('hashchange', assertPlanChatUi);
+    setInterval(function () { try { assertPlanChatUi(); } catch (e) { } }, 700); /* 旧渲染器会覆写聊天区 UI，轮询纠正 */
     window.addEventListener('guardian-static-change', renderRx); /* 种子数据落库后重渲染处方卡 */
     renderRx();
     demoMode();
