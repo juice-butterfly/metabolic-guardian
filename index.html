@@ -7007,7 +7007,27 @@ try {
      会被 guardian 路由再劫持，因此这里直接驱动 .panel 类切换，不经过 hash。 */
   function showLegacyPanel(v) {
     const p2b = document.getElementById('p2body');
-    if (!p2b || p2b.style.display === 'none') { const c = document.querySelector('#p1 .case'); if (c) c.click(); }
+    const rebuilt = !p2b || p2b.style.display === 'none';
+    if (!p2b || p2b.style.display === 'none') {
+      const rep = window.__sbLatestReport;
+      const savedGo = window.go; window.go = function () { }; /* 吞掉 btnCustom 内部的 go(0)，避免 hash 竞态 */
+      try {
+        let done = false;
+        if (rep && rep.metrics) {
+          try {
+            const mm = JSON.parse(rep.metrics);
+            const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+            set('f_alias', '张三（演示）'); set('f_sex', 'M'); set('f_age', 58); set('f_height', 172);
+            set('f_weight', mm.weight); set('f_waist', mm.waist); set('f_tg', mm.tg); set('f_hdl', mm.hdl);
+            set('f_sbp', mm.sbp); set('f_dbp', mm.dbp); set('f_fbg', mm.fbg);
+            const bc = document.getElementById('btnCustom');
+            if (bc) { bc.click(); done = document.getElementById('p2body').style.display !== 'none'; }
+          } catch (e) { }
+        }
+        if (!done) { const c = document.querySelector('#p1 .case'); if (c) c.click(); }
+      } finally { window.go = savedGo; }
+    }
+    window.setPersonCard && window.setPersonCard();
     byId('healthWorkspace').hidden = true;
     document.body.removeAttribute('data-health-workspace');
     goPage('app');
@@ -7537,6 +7557,20 @@ root.HealthCSV={parse:parseCSV};
       return '（用户最近一次报告 ' + rep.report_date + '，已核对：' + parts.join('、') + '；审核标注：' + (rep.attention || '无') + '。回答时自然贴合这些数值，不要复述整串）';
     }).catch(function () { return ''; });
   }
+  /* ---- 人物卡统一：所有页面展示与种子报告一致的演示人物 ---- */
+  function setPersonCard() {
+    var rep = window.__sbLatestReport;
+    if (!rep || !rep.metrics) return;
+    var mm; try { mm = JSON.parse(rep.metrics); } catch (e) { return; }
+    var g = gradeOf(mm) || 'A';
+    var a = document.getElementById('userAlias');
+    if (a) a.textContent = '张三（演示）';
+    var l = document.getElementById('userLevel');
+    if (l) l.textContent = g + ' 级 · 方案模拟';
+    var av = document.getElementById('userAvatar');
+    if (av) av.textContent = '张';
+  }
+
   function canned(q, netFail, err) {
     var k = q && /血糖|糖/.test(q) ? '血糖' : /血压/.test(q) ? '血压' : /运动|步|锻炼/.test(q) ? '运动' : /吃|饮食|餐/.test(q) ? '饮食' : '通用';
     var map = {
@@ -7697,6 +7731,7 @@ root.HealthCSV={parse:parseCSV};
     if (!card) return;
     fetch('/api/health', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) {
       var rep = st.reports && st.reports[0];
+      if (rep) window.__sbLatestReport = rep;
       var m = null;
       if (rep && rep.metrics) { try { m = JSON.parse(rep.metrics); } catch (e) { } }
       if (!m || !m.waist) { card.innerHTML = '<h2 class="sb-h2">本周运动处方 <i>PRESCRIPTION</i></h2><p class="sb-sub">上传体检报告并核对后，这里会按你的指标生成每天该做什么运动。</p>'; return; }
@@ -7781,7 +7816,7 @@ root.HealthCSV={parse:parseCSV};
     bindPlanChat();
     window.addEventListener('hashchange', renderRx);
     window.addEventListener('hashchange', assertPlanChatUi);
-    setInterval(function () { try { assertPlanChatUi(); } catch (e) { } }, 700); /* 旧渲染器会覆写聊天区 UI，轮询纠正 */
+    setInterval(function () { try { assertPlanChatUi(); setPersonCard(); } catch (e) { } }, 700); /* 旧渲染器会覆写聊天区 UI 与人物卡，轮询纠正 */
     window.addEventListener('guardian-static-change', renderRx); /* 种子数据落库后重渲染处方卡 */
     renderRx();
     demoMode();
