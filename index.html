@@ -2889,8 +2889,8 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </button>
       <div class="user-card" title="当前参保人">
-        <span class="avatar" id="userAvatar">李</span>
-        <span class="user-meta"><b id="userAlias">李静</b><small id="userLevel">示例档案</small></span>
+        <span class="avatar" id="userAvatar">张</span>
+        <span class="user-meta"><b id="userAlias">张三（演示）</b><small id="userLevel">C 级 · 方案模拟</small></span>
       </div>
     </div>
 
@@ -5983,7 +5983,7 @@ const DASH = {
   noAI: [4463, 8926, 13389, 17852, 22315, 26778, 31241, 35704, 40167, 44628],
   withAI: [2854, 5707, 8561, 11414, 14268, 17121, 19975, 22828, 25682, 28536],
   members: [
-    ['李静', 'A', 3, 19.83, 86, 'ok', '保障中'],
+    ['张三', 'C', 5, 19.83, 86, 'ok', '保障中'],
     ['王玉兰', 'B', 4, 27.47, 72, 'ok', '保障中'],
     ['陈志远', 'C', 5, 35.66, 54, 'warn', '重评待办'],
     ['赵敏', 'A', 3, 19.83, 91, 'ok', '保障中'],
@@ -6419,12 +6419,9 @@ function personAlias(p) {
 /* 右上角用户卡跟随核保分级（2026-10-13 用户裁决）：称呼与等级由当前参保人决定；
    没选人时不接管，保持默认演示态（李静 · 示例档案）。 */
 function syncUserCard() {
-  const p = S.person;
-  if (!p) return;
-  const nm = personAlias(p) || '我的档案';
-  $('#userAvatar').textContent = nm.charAt(0);
-  $('#userAlias').textContent = nm;
-  $('#userLevel').textContent = (S.base && S.base.level) ? S.base.level + ' 级 · 方案模拟' : '未通过核保';
+  $('#userAvatar').textContent = '张';
+  $('#userAlias').textContent = '张三（演示）';
+  $('#userLevel').textContent = (S.base && S.base.level) ? S.base.level + ' 级 · 方案模拟' : 'C 级 · 方案模拟';
 }
 
 /* ---------- 绑定 ---------- */
@@ -6950,9 +6947,9 @@ try {
     if (daily) {
       const name = S.person?.custom ? personAlias(S.person) || '我的健康空间' : '我的健康空间';
       byId('userAlias').textContent = name;
-      byId('userAvatar').textContent = S.person?.custom ? name.charAt(0) : '我';
-      byId('userLevel').textContent = '个人健康日记';
-      byId('userAlias').closest('.user-card').title = '个人健康日记';
+      byId('userAvatar').textContent = '张';
+      byId('userLevel').textContent = 'C 级 · 方案模拟';
+      byId('userAlias').closest('.user-card').title = 'C 级 · 方案模拟';
       footer.innerHTML = '代谢健康守护 · 每一份改变，都值得记录。<br>日常行动与实测指标，汇成属于你的健康足迹。';
     } else {
       previousSync();
@@ -7082,10 +7079,10 @@ try {
   field.addEventListener('keydown',event=>{if(event.key!=='Enter')return;event.preventDefault();const q=field.value.trim();location.hash=/运动|步数|CSV/i.test(q)?'movement':/AI|血糖|血压|指标/.test(q)?'coach':'reports';});
   let currentState=null;
   function profile(){if(!document.body.hasAttribute('data-health-workspace')||!currentState)return;
-    byId('userAlias').textContent=currentState.demo?'演示健康档案':currentState.state.authenticated?'我的健康空间':'访客浏览';
-    byId('userLevel').textContent=currentState.demo?'示例数据':currentState.state.role==='admin'?'本机审核演示':currentState.state.authenticated?'本机记录':'登录后查看个人资料';
-    byId('userAvatar').textContent=currentState.state.role==='admin'?'审':'我';
-    byId('userAlias').closest('.user-card').title=byId('userLevel').textContent;
+    byId('userAlias').textContent='张三（演示）';
+    byId('userLevel').textContent='C 级 · 方案模拟';
+    byId('userAvatar').textContent='张';
+    byId('userAlias').closest('.user-card').title='当前参保人';
   }
   window.GuardianShell={
     view(hash){return views[hash]||hash;},
@@ -7560,9 +7557,9 @@ root.HealthCSV={parse:parseCSV};
   /* ---- 人物卡统一：所有页面展示与种子报告一致的演示人物 ---- */
   function setPersonCard() {
     var rep = window.__sbLatestReport;
-    if (!rep || !rep.metrics) return;
-    var mm; try { mm = JSON.parse(rep.metrics); } catch (e) { return; }
-    var g = gradeOf(mm) || 'A';
+    var mm = null;
+    if (rep && rep.metrics) { try { mm = JSON.parse(rep.metrics); } catch (e) { } }
+    var g = mm ? (gradeOf(mm) || 'C') : 'C';
     var a = document.getElementById('userAlias');
     if (a) a.textContent = '张三（演示）';
     var l = document.getElementById('userLevel');
