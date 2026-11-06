@@ -2816,6 +2816,8 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 .kv-strip .kv b em{font-style:normal;font-size:12px;font-weight:400;color:var(--ink3)}
 .kv-strip .kv span{font-size:11px;color:var(--ink3)}
 .kv-cap{margin:0 0 10px;font-size:10px;color:var(--ink3)}
+/* 方案页内嵌 AI 对话已并入「AI 健康教练」tab，此处整体隐藏 */
+#p2 #chatHint,#p2 .aiBar,#p2 #aiBrief,#p2 #chatBox,#p2 #aiCtl{display:none!important}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
 .tbl-wrap table{min-width:640px}
 .rx-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 4px}
@@ -3343,7 +3345,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
       <h3 class="sec">⑤ 配套支撑</h3>
       <div class="grid2" id="dimBox"></div>
 
-      <h3 class="sec">⑥ 与 AI 对话</h3>
+      <h3 class="sec" hidden>⑥ 与 AI 对话（已并入「AI 健康教练」）</h3>
       <p class="hint" id="chatHint">当前为示例对话。点击启用后，当前方案档案与对话将发送至 DeepSeek 生成回答。</p>
 
       <div class="aiBar">
@@ -3414,14 +3416,12 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
       <h3 class="sec">实测数据回传</h3>
       <p class="hint"><b>下图曲线为模型预测值，非真实数据。</b>真实产品里，用户每季度到社区卫生中心复查五项指标，
         或用蓝牙设备自动回传，<b>实测值会覆盖当周的预测值，之后的轨迹从实测点重新起算</b>——这也是次年重评的证据链。
-        填入一组实测数据并提交，曲线将自实测点重新推算。</p>
+        下方为季度复查回传样例（只读展示）。</p>
       <p class="hint" style="color:#8A5A00"><b>数据真实性要求：</b>实测数据必须提交
         <b>加盖医院公章的体检单</b>，由保险公司核验真实性，<b>不接受用户自行填报</b>。</p>
-      <div class="frm" id="realGrid"></div>
+      <div class="frm" id="realGrid" style="pointer-events:none;opacity:.8"></div>
       <div class="row" style="margin-top:14px">
-        <button class="btn" id="btnReal">回传实测数据，覆盖本周</button>
-        <button class="btn ghost" id="btnRealReset">恢复预测值</button>
-        <span class="hint" id="realMsg" style="margin-left:12px"></span>
+        <span class="hint" id="realMsg" style="margin-left:12px">实测值由社区卫生服务中心季度复查回传，用户不可自行填报；原件核对见「体检报告」页。</span>
       </div>
     </div>
 
@@ -7004,8 +7004,7 @@ try {
      会被 guardian 路由再劫持，因此这里直接驱动 .panel 类切换，不经过 hash。 */
   function showLegacyPanel(v) {
     const p2b = document.getElementById('p2body');
-    const rebuilt = !p2b || p2b.style.display === 'none';
-    if (!p2b || p2b.style.display === 'none') {
+    {
       const rep = window.__sbLatestReport;
       const savedGo = window.go; window.go = function () { }; /* 吞掉 btnCustom 内部的 go(0)，避免 hash 竞态 */
       try {
@@ -7810,7 +7809,6 @@ root.HealthCSV={parse:parseCSV};
     bindDemoFile();
     bindMoveDemo();
     seedOnFirstVisit();
-    bindPlanChat();
     window.addEventListener('hashchange', renderRx);
     window.addEventListener('hashchange', assertPlanChatUi);
     setInterval(function () { try { assertPlanChatUi(); setPersonCard(); } catch (e) { } }, 700); /* 旧渲染器会覆写聊天区 UI 与人物卡，轮询纠正 */
