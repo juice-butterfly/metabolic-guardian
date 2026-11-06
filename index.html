@@ -2827,7 +2827,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 .rx-day small{display:block;font-size:10px;color:var(--ink3);line-height:1.5}
 .rx-day.rest span{color:var(--ink3)}
 @media(max-width:860px){.sb-grid,.sb-grid.sb-grid2{grid-template-columns:1fr}.rx-week{grid-template-columns:repeat(4,1fr)}.kv-strip{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr}.mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))}}
-@media(max-width:640px){.sb-row{display:block;padding:7px 0}.sb-row span{display:block;margin-bottom:3px}.sb-row b{display:block;text-align:right;font-size:16px}}
+@media(max-width:640px){.sb-row{display:block;padding:7px 0}.sb-row span{display:block;margin-bottom:3px}.sb-row b{display:block;text-align:right;font-size:16px}.panel.on,#intro{animation:none!important;transition:none!important}}
 .demo-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:98;display:flex;gap:10px;align-items:center;background:rgba(8,19,15,.92);border:1px solid rgba(20,160,133,.45);border-radius:99px;padding:8px 18px;font-size:12px;color:#cfe4d8;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .demo-bar kbd{border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:1px 6px;font-size:11px}
 .demo-notes{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;z-index:98;max-width:min(720px,92vw);background:rgba(8,19,15,.95);border:1px solid rgba(20,160,133,.45);border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.9;color:#EAF2EF;box-shadow:0 10px 30px rgba(0,0,0,.5)}
@@ -2836,6 +2836,7 @@ body[data-health-workspace] :is(#cloudToolbar,#productNotice,#intro,.panel){disp
 .new-chat .chat-bubble.user{background:var(--accent-l,rgba(20,160,133,.13));border-color:rgba(20,160,133,.35)}
 </style></head>
 <body data-page="home">
+<div id="bootSplash" style="position:fixed;inset:0;background:#08130F;z-index:99999;display:flex;align-items:center;justify-content:center;color:#B3E7CB;font-size:14px;letter-spacing:3px">代谢健康守护 · 加载中</div>
 <div class="guard-world" aria-hidden="true"></div>
 
 <!-- 极光背景层（首页专属）
@@ -6533,6 +6534,15 @@ try {
   const shouldPlay = () => atHome() && inView && !document.hidden && !manualPause && !unavailable;
   const currentVideo = () => scene === 'loop' && loop ? loop : video;
   const setScene = value => { scene = value; hero.dataset.scene = value; };
+  /* 移动端快速通道：小屏跳过开场空镜（录屏实测要等 20s+ 才出文案），直接进 loop 场景显示标题与 CTA。
+     延时一拍执行——场景机末尾的初始化会把场景设回 intro，这里在其之后覆盖。 */
+  setTimeout(function () {
+    if (!(window.matchMedia && matchMedia('(max-width:640px)').matches)) return;
+    setScene('loop');
+    hero.dataset.scene = 'loop';
+    if (loop) { loop.classList.add('on'); const pp = loop.play(); if (pp && pp.catch) pp.catch(function () { }); }
+    try { video.pause(); video.currentTime = 0; } catch (e) { }
+  }, 0);
   const closeMenu = () => {
     nav?.classList.remove('is-open');
     menu?.setAttribute('aria-expanded', 'false');
@@ -7816,6 +7826,14 @@ root.HealthCSV={parse:parseCSV};
     renderRx();
     demoMode();
     document.querySelectorAll('[data-enter-product]').forEach(function (b) { b.onclick = function () { goIntro(); }; });
+    const bootSplash = document.getElementById('bootSplash');
+    if (bootSplash) bootSplash.remove();
+    /* 离开首页即暂停开场视频：X5 内核下 display:none 也可能继续合成，导致气泡串页 */
+    new MutationObserver(function () {
+      if (document.body.dataset.page !== 'home') {
+        document.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) { } });
+      }
+    }).observe(document.body, { attributes: true, attributeFilter: ['data-page'] });
     var k = getK();
     if (k) { var s1 = $('glmKeyState'), s2 = $('glmKeyState2'); if (s1) s1.textContent = '已保存，识别将调用 glm-4.6v'; if (s2) s2.textContent = '已保存，识别将调用 glm-4.6v'; }
   }
