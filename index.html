@@ -7177,6 +7177,7 @@ root.HealthCSV={parse:parseCSV};
   window.addEventListener('hashchange',route);window.addEventListener('guardian-static-change',()=>{demo=false;load();});$('staticRole').onclick=()=>StaticGuardian.toggleRole();$('coachQuestion').placeholder='想了解什么？';load();
 })();
 </script>
+<script>window.__errs=[];window.addEventListener("error",function(e){window.__errs.push(String(e.message||e)+" @ line "+(e.lineno||"?"))});window.addEventListener("unhandledrejection",function(e){window.__errs.push("REJ "+String(e.reason).slice(0,200))});</script>
 <script>
 /* ═════════ 死差沙盘引擎（v4.4）═════════
    数据锚点：费率表.xlsx —— 10年投影 / 敏感性_AI效果（含三责分解）/ AI 情景转移矩阵。
@@ -7576,6 +7577,11 @@ root.HealthCSV={parse:parseCSV};
     var av = document.getElementById('userAvatar');
     if (av) av.textContent = '张';
   }
+
+  window.setPersonCard = setPersonCard;
+  /* splash 双保险：任何脚本异常都不会让加载页卡死 */
+  setTimeout(function () { const bs = document.getElementById('bootSplash'); if (bs) bs.remove(); }, 4000);
+  window.addEventListener('load', function () { const bs = document.getElementById('bootSplash'); if (bs) bs.remove(); });
 
   function canned(q, netFail, err) {
     var k = q && /血糖|糖/.test(q) ? '血糖' : /血压/.test(q) ? '血压' : /运动|步|锻炼/.test(q) ? '运动' : /吃|饮食|餐/.test(q) ? '饮食' : '通用';
