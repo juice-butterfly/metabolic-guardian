@@ -2254,6 +2254,15 @@ body:is([data-page=app],[data-page=intro]) code{background:#D7EAC612;color:#D4E9
 body:is([data-page=app],[data-page=intro]) .todo{font-size:15px;line-height:1.8;background:var(--warn-bg);border-color:var(--warn-ln);color:var(--warn)}
 body:is([data-page=app],[data-page=intro]) .todo b{color:#F0D5AA}
 body:is([data-page=app],[data-page=intro]) .illu{overflow-x:auto;background:#C1DCAF08;border-color:var(--hair);border-radius:15px;padding:16px}
+body:is([data-page=app],[data-page=intro]) .illu-flex{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+body:is([data-page=app],[data-page=intro]) .illu-plate{width:92px;height:92px;flex:0 0 auto}
+body:is([data-page=app],[data-page=intro]) .illu-legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:#edf2e8}
+body:is([data-page=app],[data-page=intro]) .illu-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:9px;vertical-align:-1px}
+body:is([data-page=app],[data-page=intro]) .illu-note{font-size:14px;line-height:1.8;color:#a2b69f;border-left:1px solid var(--hair);padding-left:18px;flex:1 1 240px;min-width:220px}
+body:is([data-page=app],[data-page=intro]) .illu-chip{display:flex;align-items:center;gap:10px;border:1px solid var(--hair);border-radius:12px;padding:11px 16px;background:rgba(255,255,255,.035);font-size:15px;font-weight:600;color:#edf2e8;white-space:nowrap}
+body:is([data-page=app],[data-page=intro]) .illu-ico{width:40px;height:22px;flex:0 0 auto}
+body:is([data-page=app],[data-page=intro]) .illu-arrow{font-size:19px;color:#a2b69f}
+@media(max-width:640px){body:is([data-page=app],[data-page=intro]) .illu-plate{width:76px;height:76px}body:is([data-page=app],[data-page=intro]) .illu-note{border-left:0;padding-left:0;flex-basis:100%}}
 body:is([data-page=app],[data-page=intro]) .cardio{background:#BEDCA609;border-color:var(--hair);border-radius:15px;padding:21px}
 body:is([data-page=app],[data-page=intro]) .cardio .big2{font-family:Georgia,serif;color:#D9E9CC;font-size:46px;font-weight:400}
 body:is([data-page=app],[data-page=intro]) .dash-head{margin-bottom:22px;gap:17px}
@@ -2365,7 +2374,7 @@ body.compact:is([data-page=app],[data-page=intro]) .stepbtn{padding:9px 14px;min
 @media(max-width:1280px){body:is([data-page=app],[data-page=intro]){grid-template-columns:218px minmax(0,1fr)}body:is([data-page=app],[data-page=intro]) #appMain{padding:27px 28px 30px}body:is([data-page=app],[data-page=intro]) .steps{padding:24px 14px}body:is([data-page=app],[data-page=intro]) .dash-hero{grid-template-columns:1fr}body:is([data-page=app],[data-page=intro]) .grid-dash>:is(.col-8,.col-4){grid-column:span 12}body:is([data-page=app],[data-page=intro]) .focus-card{min-height:260px}body:is([data-page=app],[data-page=intro]) .col-side .kpi-row{grid-template-columns:repeat(4,minmax(0,1fr))}body:is([data-page=app],[data-page=intro]) .kpi-card .k-v{font-size:29px}body:is([data-page=app],[data-page=intro]) .kpi-card .k-lb .badge{display:none}body:is([data-page=app],[data-page=intro]) .card{padding:26px}body:is([data-page=app],[data-page=intro]) .top .wrap{padding:0 28px;gap:18px}}
 @media(max-width:1050px){body:is([data-page=app],[data-page=intro]) .search input{width:155px}body:is([data-page=app],[data-page=intro]) .status-chip{display:none}body:is([data-page=app],[data-page=intro]) .topbar-tools{gap:10px}body:is([data-page=app],[data-page=intro]) .col-side .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}.guard-page-header h1{font-size:34px}.guard-page-number strong{font-size:56px}body:is([data-page=app],[data-page=intro]) .grid3{grid-template-columns:1fr}body:is([data-page=app],[data-page=intro]) .case{padding-right:68px}body:is([data-page=app],[data-page=intro]) .frm{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:860px){body:is([data-page=app],[data-page=intro]){grid-template-columns:minmax(0,1fr);grid-template-rows:84px auto minmax(0,1fr)}body:is([data-page=app],[data-page=intro]) .top{grid-area:1/1/2/2}body:is([data-page=app],[data-page=intro]) .steps{grid-area:2/1/3/2;top:84px;width:100%;height:auto;max-height:none;z-index:30;padding:12px 22px;border-right:0;border-bottom:1px solid var(--hair);background:#09160EEE;overflow-x:auto}body:is([data-page=app],[data-page=intro]) .steps::before,body:is([data-page=app],[data-page=intro]) .steps::after{display:none}body:is([data-page=app],[data-page=intro]) .steps .wrap{flex-direction:row;gap:9px;width:max-content;overflow:visible}body:is([data-page=app],[data-page=intro]) .stepbtn{width:auto;min-height:41px;padding:9px 13px;font-size:14px;gap:8px;border-radius:99px}body:is([data-page=app],[data-page=intro]) .stepbtn i{width:22px;height:22px;font-size:13px}body:is([data-page=app],[data-page=intro]) .stepbtn.back{margin-bottom:0;font-size:14px}body:is([data-page=app],[data-page=intro]) #appMain{grid-area:3/1/4/2;padding:27px 26px 30px}.guard-page-header{padding-top:0;margin-bottom:23px}.guard-page-header h1{font-size:37px}.guard-page-number strong{font-size:61px}body:is([data-page=app],[data-page=intro]) .brand{font-size:21px}body:is([data-page=app],[data-page=intro]) .search{display:none}}
-@media(max-width:640px){body:is([data-page=app],[data-page=intro]){--top-h:72px;grid-template-rows:72px auto minmax(0,1fr);--fs-hint:14.5px}body:is([data-page=app],[data-page=intro]) .top{height:72px}body:is([data-page=app],[data-page=intro]) .top .wrap{padding:0 19px;gap:10px}body:is([data-page=app],[data-page=intro]) .brand{font-size:19px;letter-spacing:1.5px;gap:9px}body:is([data-page=app],[data-page=intro]) .topbar-tools{gap:10px}body:is([data-page=app],[data-page=intro]) .user-card{border:0;background:none;padding:0}body:is([data-page=app],[data-page=intro]) .user-meta{display:none}body:is([data-page=app],[data-page=intro]) .icon-btn{width:35px;height:35px}body:is([data-page=app],[data-page=intro]) .steps{top:72px;padding:11px 17px}body:is([data-page=app],[data-page=intro]) #appMain{padding:24px 17px 24px}.guard-page-header{gap:13px;padding-bottom:22px;margin-bottom:22px;align-items:flex-start}.guard-page-header h1{font-size:28px;line-height:1.55;letter-spacing:.5px}.guard-page-header p:last-child{font-size:15px;line-height:1.8}.guard-page-kicker{font-size:12px;letter-spacing:1px;margin-bottom:8px}.guard-page-number{min-width:40px}.guard-page-number strong{font-size:39px}.guard-page-number span{font-size:10px;letter-spacing:1px}.guard-page-header h1 br{display:none}body:is([data-page=app],[data-page=intro]) .card{padding:22px 19px;border-radius:18px;margin-bottom:17px}body:is([data-page=app],[data-page=intro]) .card>h2{font-size:20px;line-height:1.65}body:is([data-page=app],[data-page=intro]) .lead{font-size:15.5px;line-height:1.85;margin-bottom:21px}body:is([data-page=app],[data-page=intro]) .hint{font-size:14.5px;line-height:1.85}body:is([data-page=app],[data-page=intro]) h3.sec{font-size:18px;line-height:1.65;padding-left:17px;margin-top:25px}body:is([data-page=app],[data-page=intro]) .btn{font-size:14px;min-height:43px;padding:10px 17px;letter-spacing:0}body:is([data-page=app],[data-page=intro]) .btn.sm{font-size:13px;min-height:35px;padding:7px 13px}body:is([data-page=app],[data-page=intro]) .frm{gap:14px 12px}body:is([data-page=app],[data-page=intro]) .fld label{font-size:13.5px}body:is([data-page=app],[data-page=intro]) :is(input,select,textarea){font-size:16px;min-height:44px;padding:9px 11px}body:is([data-page=app],[data-page=intro]) .case{padding:18px 62px 18px 19px;border-radius:14px}body:is([data-page=app],[data-page=intro]) .case .nm{font-size:20px}body:is([data-page=app],[data-page=intro]) .case .cmt{font-size:14.5px}body:is([data-page=app],[data-page=intro]) :is(.grid2,.grid3,.goodsgrid){grid-template-columns:1fr}body:is([data-page=app],[data-page=intro]) .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}body:is([data-page=app],[data-page=intro]) .kpi{padding:16px 13px}body:is([data-page=app],[data-page=intro]) .kpi .vl{font-size:28px}body:is([data-page=app],[data-page=intro]) .kpi .lb{font-size:13px}body:is([data-page=app],[data-page=intro]) .verdict{padding:17px 18px}body:is([data-page=app],[data-page=intro]) .verdict .big{font-size:18px}body:is([data-page=app],[data-page=intro]) .guard-week-scroll{padding:14px;margin:14px -3px}body:is([data-page=app],[data-page=intro]) .daygrid{min-width:562px;grid-template-columns:139px repeat(7,48px);gap:11px}body:is([data-page=app],[data-page=intro]) .dimlb{font-size:14px}body:is([data-page=app],[data-page=intro]) .dimlb span{font-size:12.5px}body:is([data-page=app],[data-page=intro]) .bub{max-width:calc(100% - 48px);font-size:15px;padding:14px 15px;border-radius:15px}body:is([data-page=app],[data-page=intro]) .aiKey{padding:14px}body:is([data-page=app],[data-page=intro]) .aiKey summary{font-size:14px}body:is([data-page=app],[data-page=intro]) .aiCtl #aiInput{min-width:0;width:100%}body:is([data-page=app],[data-page=intro]) .aiCtl .row{flex-wrap:wrap}body:is([data-page=app],[data-page=intro]) :is(.chart-wrap:not(.donut-wrap),.guard-chart-scroll){overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:9px}body:is([data-page=app],[data-page=intro]) .chart-wrap:not(.donut-wrap) svg{min-width:680px;max-width:none}body:is([data-page=app],[data-page=intro]) .guard-chart-scroll svg{min-width:780px;max-width:none}body:is([data-page=app],[data-page=intro]) .illu svg{min-width:740px;max-width:none}body:is([data-page=app],[data-page=intro]) .donut-wrap{gap:15px;flex-wrap:wrap;justify-content:center;padding-top:8px}body:is([data-page=app],[data-page=intro]) .donut-legend{min-width:200px;font-size:14px}body:is([data-page=app],[data-page=intro]) .ch-head{gap:13px}body:is([data-page=app],[data-page=intro]) .ch-tools{width:100%;flex-wrap:wrap}body:is([data-page=app],[data-page=intro]) .mini-input{min-height:37px;max-width:none;height:37px;font-size:14px}body:is([data-page=app],[data-page=intro]) .col-side .kpi-row{gap:12px}body:is([data-page=app],[data-page=intro]) .kpi-card{padding:17px 15px}body:is([data-page=app],[data-page=intro]) .kpi-card .k-v{font-size:28px}body:is([data-page=app],[data-page=intro]) .kpi-card .k-lb{font-size:13px}body:is([data-page=app],[data-page=intro]) .focus-card{min-height:245px}body:is([data-page=app],[data-page=intro]) .focus-inner{padding:24px 15px}body:is([data-page=app],[data-page=intro]) .fc-kicker{font-size:13px}body:is([data-page=app],[data-page=intro]) .fc-num span{font-size:60px}body:is([data-page=app],[data-page=intro]) .fc-badge{font-size:13px;padding:7px 12px}body:is([data-page=app],[data-page=intro]) .snap-card{padding:17px 18px}body:is([data-page=app],[data-page=intro]) .dash-title{font-size:22px}body:is([data-page=app],[data-page=intro]) .dash-sub{font-size:13px}body:is([data-page=app],[data-page=intro]) .dh-right{gap:9px}body:is([data-page=app],[data-page=intro]) .seg-btn{font-size:13px;padding:7px 14px}body:is([data-page=app],[data-page=intro]) .guard-app-footer{align-items:flex-start;gap:12px;font-size:12px;line-height:1.8}body:is([data-page=app],[data-page=intro]) .num-card{padding:24px 19px}body:is([data-page=app],[data-page=intro]) .num-card .nc-row{gap:13px}body:is([data-page=app],[data-page=intro]) .num-card .nc-v{font-size:34px}body:is([data-page=app],[data-page=intro]) .num-card .nc-dl{font-size:12px}body.compact:is([data-page=app],[data-page=intro]) .card{padding:18px 17px}}
+@media(max-width:640px){body:is([data-page=app],[data-page=intro]){--top-h:72px;grid-template-rows:72px auto minmax(0,1fr);--fs-hint:14.5px}body:is([data-page=app],[data-page=intro]) .top{height:72px}body:is([data-page=app],[data-page=intro]) .top .wrap{padding:0 19px;gap:10px}body:is([data-page=app],[data-page=intro]) .brand{font-size:19px;letter-spacing:1.5px;gap:9px}body:is([data-page=app],[data-page=intro]) .topbar-tools{gap:10px}body:is([data-page=app],[data-page=intro]) .user-card{border:0;background:none;padding:0}body:is([data-page=app],[data-page=intro]) .user-meta{display:none}body:is([data-page=app],[data-page=intro]) .icon-btn{width:35px;height:35px}body:is([data-page=app],[data-page=intro]) .steps{top:72px;padding:11px 17px}body:is([data-page=app],[data-page=intro]) #appMain{padding:24px 17px 24px}.guard-page-header{gap:13px;padding-bottom:22px;margin-bottom:22px;align-items:flex-start}.guard-page-header h1{font-size:28px;line-height:1.55;letter-spacing:.5px}.guard-page-header p:last-child{font-size:15px;line-height:1.8}.guard-page-kicker{font-size:12px;letter-spacing:1px;margin-bottom:8px}.guard-page-number{min-width:40px}.guard-page-number strong{font-size:39px}.guard-page-number span{font-size:10px;letter-spacing:1px}.guard-page-header h1 br{display:none}body:is([data-page=app],[data-page=intro]) .card{padding:22px 19px;border-radius:18px;margin-bottom:17px}body:is([data-page=app],[data-page=intro]) .card>h2{font-size:20px;line-height:1.65}body:is([data-page=app],[data-page=intro]) .lead{font-size:15.5px;line-height:1.85;margin-bottom:21px}body:is([data-page=app],[data-page=intro]) .hint{font-size:14.5px;line-height:1.85}body:is([data-page=app],[data-page=intro]) h3.sec{font-size:18px;line-height:1.65;padding-left:17px;margin-top:25px}body:is([data-page=app],[data-page=intro]) .btn{font-size:14px;min-height:43px;padding:10px 17px;letter-spacing:0}body:is([data-page=app],[data-page=intro]) .btn.sm{font-size:13px;min-height:35px;padding:7px 13px}body:is([data-page=app],[data-page=intro]) .frm{gap:14px 12px}body:is([data-page=app],[data-page=intro]) .fld label{font-size:13.5px}body:is([data-page=app],[data-page=intro]) :is(input,select,textarea){font-size:16px;min-height:44px;padding:9px 11px}body:is([data-page=app],[data-page=intro]) .case{padding:18px 62px 18px 19px;border-radius:14px}body:is([data-page=app],[data-page=intro]) .case .nm{font-size:20px}body:is([data-page=app],[data-page=intro]) .case .cmt{font-size:14.5px}body:is([data-page=app],[data-page=intro]) :is(.grid2,.grid3,.goodsgrid){grid-template-columns:1fr}body:is([data-page=app],[data-page=intro]) .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}body:is([data-page=app],[data-page=intro]) .kpi{padding:16px 13px}body:is([data-page=app],[data-page=intro]) .kpi .vl{font-size:28px}body:is([data-page=app],[data-page=intro]) .kpi .lb{font-size:13px}body:is([data-page=app],[data-page=intro]) .verdict{padding:17px 18px}body:is([data-page=app],[data-page=intro]) .verdict .big{font-size:18px}body:is([data-page=app],[data-page=intro]) .guard-week-scroll{padding:14px;margin:14px -3px}body:is([data-page=app],[data-page=intro]) .daygrid{min-width:562px;grid-template-columns:139px repeat(7,48px);gap:11px}body:is([data-page=app],[data-page=intro]) .dimlb{font-size:14px}body:is([data-page=app],[data-page=intro]) .dimlb span{font-size:12.5px}body:is([data-page=app],[data-page=intro]) .bub{max-width:calc(100% - 48px);font-size:15px;padding:14px 15px;border-radius:15px}body:is([data-page=app],[data-page=intro]) .aiKey{padding:14px}body:is([data-page=app],[data-page=intro]) .aiKey summary{font-size:14px}body:is([data-page=app],[data-page=intro]) .aiCtl #aiInput{min-width:0;width:100%}body:is([data-page=app],[data-page=intro]) .aiCtl .row{flex-wrap:wrap}body:is([data-page=app],[data-page=intro]) :is(.chart-wrap:not(.donut-wrap),.guard-chart-scroll){overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:9px}body:is([data-page=app],[data-page=intro]) .chart-wrap:not(.donut-wrap) svg{min-width:680px;max-width:none}body:is([data-page=app],[data-page=intro]) .guard-chart-scroll svg{min-width:780px;max-width:none}body:is([data-page=app],[data-page=intro]) .illu svg{max-width:none}body:is([data-page=app],[data-page=intro]) .donut-wrap{gap:15px;flex-wrap:wrap;justify-content:center;padding-top:8px}body:is([data-page=app],[data-page=intro]) .donut-legend{min-width:200px;font-size:14px}body:is([data-page=app],[data-page=intro]) .ch-head{gap:13px}body:is([data-page=app],[data-page=intro]) .ch-tools{width:100%;flex-wrap:wrap}body:is([data-page=app],[data-page=intro]) .mini-input{min-height:37px;max-width:none;height:37px;font-size:14px}body:is([data-page=app],[data-page=intro]) .col-side .kpi-row{gap:12px}body:is([data-page=app],[data-page=intro]) .kpi-card{padding:17px 15px}body:is([data-page=app],[data-page=intro]) .kpi-card .k-v{font-size:28px}body:is([data-page=app],[data-page=intro]) .kpi-card .k-lb{font-size:13px}body:is([data-page=app],[data-page=intro]) .focus-card{min-height:245px}body:is([data-page=app],[data-page=intro]) .focus-inner{padding:24px 15px}body:is([data-page=app],[data-page=intro]) .fc-kicker{font-size:13px}body:is([data-page=app],[data-page=intro]) .fc-num span{font-size:60px}body:is([data-page=app],[data-page=intro]) .fc-badge{font-size:13px;padding:7px 12px}body:is([data-page=app],[data-page=intro]) .snap-card{padding:17px 18px}body:is([data-page=app],[data-page=intro]) .dash-title{font-size:22px}body:is([data-page=app],[data-page=intro]) .dash-sub{font-size:13px}body:is([data-page=app],[data-page=intro]) .dh-right{gap:9px}body:is([data-page=app],[data-page=intro]) .seg-btn{font-size:13px;padding:7px 14px}body:is([data-page=app],[data-page=intro]) .guard-app-footer{align-items:flex-start;gap:12px;font-size:12px;line-height:1.8}body:is([data-page=app],[data-page=intro]) .num-card{padding:24px 19px}body:is([data-page=app],[data-page=intro]) .num-card .nc-row{gap:13px}body:is([data-page=app],[data-page=intro]) .num-card .nc-v{font-size:34px}body:is([data-page=app],[data-page=intro]) .num-card .nc-dl{font-size:12px}body.compact:is([data-page=app],[data-page=intro]) .card{padding:18px 17px}}
 @media(prefers-reduced-motion:reduce){body:is([data-page=app],[data-page=intro]) *{transition:none!important}body:is([data-page=app],[data-page=intro]) :is(.aura-spin,.ruler,.live-dot){animation:none!important}}
 
 /* ===== v3.21 移动端体验优化：iOS 聚焦字号 / 触控目标 / 横滑提示 ===== */
@@ -4025,46 +4034,53 @@ const SPORT_PLAN = {
   },
 };
 
-/* ── 3d. 插画横幅（第 2 步「每天怎么吃 / 每天怎么练」用，2026-10-11）────
-   负责人要求给每日健康方案加配图。纯内联 SVG、零外部依赖；
-   餐盘结构是通用配餐原则，运动横幅的「有氧分钟数」随体重指数由 JS 传入重画。
-   视觉沿用产品色系：翡翠绿 #0E7C66 / 鎏金 #C98A2E / 浅底 #F2F8F5。 */
+/* ── 3d. 插画横幅（第 2 步「每天怎么吃 / 每天怎么练」用，2026-11-08 暗色统一版）────
+   负责人要求给每日健康方案加配图；原版按浅底绘制（白盘/粉彩/深字），换暗色主题后
+   与全文风格冲突（队里反馈「配图和字体太雷霆」）。现改为：SVG 只画图形（低饱和
+   透明色 + 主题描边），文字一律输出真实 HTML 节点，字号随正文缩放，不再被
+   viewBox 拉伸放大。餐盘结构是通用配餐原则，运动横幅的「有氧分钟数」随体重指数
+   由 JS 传入。配色取主题色系：翡翠绿 rgba(127,191,158) / 鎏金 rgba(228,195,124) /
+   陶土 rgba(217,142,106)。 */
 function mealIllu() {
-  return `<svg viewBox="0 0 680 100" preserveAspectRatio="xMidYMid meet" role="img"
-    aria-label="餐盘结构示意：半盘蔬菜、一份粗粮主食、一份优质蛋白">
-    <circle cx="58" cy="50" r="38" fill="#FFFFFF"/>
-    <path d="M20 50 A38 38 0 0 1 96 50 Z" fill="#7FBF9E"/>
-    <path d="M20 50 A38 38 0 0 0 58 88 L58 50 Z" fill="#E4C37C"/>
-    <path d="M58 88 A38 38 0 0 0 96 50 L58 50 Z" fill="#D98E6A"/>
-    <circle cx="58" cy="50" r="38" fill="none" stroke="#C3DBEF" stroke-width="2"/>
-    <circle cx="122" cy="26" r="7" fill="#7FBF9E"/>
-    <text x="138" y="31" font-size="14.5" fill="#1F3A33">半盘蔬菜</text>
-    <circle cx="122" cy="50" r="7" fill="#E4C37C"/>
-    <text x="138" y="55" font-size="14.5" fill="#1F3A33">一份粗粮主食</text>
-    <circle cx="122" cy="74" r="7" fill="#D98E6A"/>
-    <text x="138" y="79" font-size="14.5" fill="#1F3A33">一份优质蛋白</text>
-    <line x1="268" y1="18" x2="268" y2="82" stroke="#DCEAE4" stroke-width="1.5"/>
-    <text x="290" y="42" font-size="14" fill="#40614F">配餐原则：餐盘一半是蔬菜，主食以粗粮为主，蛋白不油炸</text>
-    <text x="290" y="66" font-size="14" fill="#40614F">每一餐的具体内容按主导表型给出，见下表</text>
-  </svg>`;
+  /* 2026-11-08 视觉统一：暗色主题重绘。文字改为真实 HTML 节点（字号随正文），
+     SVG 只承担图形；配色取主题翡翠绿/鎏金的低饱和透明变体。 */
+  return `<div class="illu-flex">
+    <svg viewBox="0 0 120 120" class="illu-plate" role="img"
+      aria-label="餐盘结构示意：半盘蔬菜、一份粗粮主食、一份优质蛋白">
+      <path d="M18 60 A42 42 0 0 1 102 60 Z" fill="rgba(127,191,158,.62)"/>
+      <path d="M18 60 A42 42 0 0 0 60 102 L60 60 Z" fill="rgba(228,195,124,.55)"/>
+      <path d="M60 102 A42 42 0 0 0 102 60 L60 60 Z" fill="rgba(217,142,106,.5)"/>
+      <circle cx="60" cy="60" r="42" fill="none" stroke="rgba(237,242,232,.32)" stroke-width="1.5"/>
+    </svg>
+    <ul class="illu-legend">
+      <li><i style="background:rgba(127,191,158,.9)"></i>半盘蔬菜</li>
+      <li><i style="background:rgba(228,195,124,.9)"></i>一份粗粮主食</li>
+      <li><i style="background:rgba(217,142,106,.9)"></i>一份优质蛋白</li>
+    </ul>
+    <div class="illu-note">配餐原则：餐盘一半是蔬菜，主食以粗粮为主，蛋白不油炸<br>每一餐的具体内容按主导表型给出，见下表</div>
+  </div>`;
 }
 function sportIllu(min) {
-  return `<svg viewBox="0 0 680 100" preserveAspectRatio="xMidYMid meet" role="img"
-    aria-label="先有氧后力量示意">
-    <rect x="16" y="22" width="150" height="56" rx="12" fill="#FFFFFF" stroke="#DCEAE4" stroke-width="1.5"/>
-    <polyline points="34,44 54,44 62,30 74,58 82,44 104,44" fill="none" stroke="#0E7C66"
-      stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="91" y="70" font-size="13" fill="#40614F" text-anchor="middle">有氧 · ${min} 分钟</text>
-    <path d="M186 50 h30 m-9 -8 l9 8 l-9 8" stroke="#8AA29C" stroke-width="2.5" fill="none"
-      stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="236" y="22" width="150" height="56" rx="12" fill="#FFFFFF" stroke="#DCEAE4" stroke-width="1.5"/>
-    <rect x="258" y="46" width="106" height="8" rx="4" fill="#0E7C66"/>
-    <rect x="250" y="32" width="14" height="36" rx="5" fill="#C98A2E"/>
-    <rect x="358" y="32" width="14" height="36" rx="5" fill="#C98A2E"/>
-    <text x="311" y="70" font-size="13" fill="#40614F" text-anchor="middle">力量 · 3 个动作</text>
-    <text x="410" y="42" font-size="14" fill="#40614F">先有氧、后力量；力量练习隔天做一次</text>
-    <text x="410" y="66" font-size="14" fill="#40614F">体重指数偏高时，时长与组数相应上调</text>
-  </svg>`;
+  /* 2026-11-08 视觉统一：白底示意卡改为主题描边 chip；文字改真实 HTML。 */
+  return `<div class="illu-flex">
+    <div class="illu-chip">
+      <svg viewBox="0 0 44 24" class="illu-ico" aria-hidden="true">
+        <polyline points="3,13 12,13 17,5 24,20 29,13 41,13" fill="none"
+          stroke="rgba(198,223,169,.95)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>有氧 · ${min} 分钟</span>
+    </div>
+    <span class="illu-arrow" aria-hidden="true">→</span>
+    <div class="illu-chip">
+      <svg viewBox="0 0 44 24" class="illu-ico" aria-hidden="true">
+        <rect x="7" y="10" width="30" height="4.5" rx="2.2" fill="rgba(198,223,169,.95)"/>
+        <rect x="2" y="4" width="5" height="16" rx="2.4" fill="rgba(228,195,124,.9)"/>
+        <rect x="37" y="4" width="5" height="16" rx="2.4" fill="rgba(228,195,124,.9)"/>
+      </svg>
+      <span>力量 · 3 个动作</span>
+    </div>
+    <div class="illu-note">先有氧、后力量；力量练习隔天做一次<br>体重指数偏高时，时长与组数相应上调</div>
+  </div>`;
 }
 
 /* ── 4. 教练话术模板 ─────────────────────────────────────────────────
@@ -4728,41 +4744,41 @@ function countChart(recs) {
   const Y = v => PT + ih * (1 - v / ymax);
   let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
   // 色带
-  [[0, 2.5, '#F1F5F4', '逆转'], [2.5, 3.5, '#E9F5EF', 'A'], [3.5, 4.5, '#FDF4E3', 'B'], [4.5, 5.55, '#FBE9E7', 'C']]
+  [[0, 2.5, 'rgba(127,191,158,.09)', '逆转'], [2.5, 3.5, 'rgba(47,191,156,.10)', 'A'], [3.5, 4.5, 'rgba(224,163,60,.10)', 'B'], [4.5, 5.55, 'rgba(229,119,106,.10)', 'C']]
     .forEach(([lo, hi, c, t]) => {
       s += `<rect x="${PL}" y="${Y(hi)}" width="${iw}" height="${Y(lo) - Y(hi)}" fill="${c}"/>`;
-      s += `<text x="${PL + iw + 9}" y="${(Y(lo) + Y(hi)) / 2 + 4}" font-size="11" fill="#8AA29C">${t}</text>`;
+      s += `<text x="${PL + iw + 9}" y="${(Y(lo) + Y(hi)) / 2 + 4}" font-size="11" fill="#a1b39f">${t}</text>`;
     });
   // 网格与刻度
   for (let v = 0; v <= 5; v++) {
-    s += `<line x1="${PL}" y1="${Y(v)}" x2="${PL + iw}" y2="${Y(v)}" stroke="#E7EDEB" stroke-width="1"/>`;
-    s += `<text x="${PL - 10}" y="${Y(v) + 4}" font-size="12" fill="#7B918C" text-anchor="end">${v}</text>`;
+    s += `<line x1="${PL}" y1="${Y(v)}" x2="${PL + iw}" y2="${Y(v)}" stroke="rgba(237,242,232,.08)" stroke-width="1"/>`;
+    s += `<text x="${PL - 10}" y="${Y(v) + 4}" font-size="12" fill="#a1b39f" text-anchor="end">${v}</text>`;
   }
   // X 轴基线 + 刻度（0/13/26/39/52 周）
-  s += `<line x1="${PL}" y1="${PT + ih}" x2="${PL + iw}" y2="${PT + ih}" stroke="#C9D6D2" stroke-width="1.5"/>`;
+  s += `<line x1="${PL}" y1="${PT + ih}" x2="${PL + iw}" y2="${PT + ih}" stroke="rgba(237,242,232,.25)" stroke-width="1.5"/>`;
   for (let w = 0; w <= 52; w += 13) {
-    s += `<line x1="${X(w)}" y1="${PT}" x2="${X(w)}" y2="${PT + ih}" stroke="#EDF2F0" stroke-width="1"/>`;
-    s += `<line x1="${X(w)}" y1="${PT + ih}" x2="${X(w)}" y2="${PT + ih + 5}" stroke="#C9D6D2" stroke-width="1.5"/>`;
-    s += `<text x="${X(w)}" y="${H - 30}" font-size="12" fill="#7B918C" text-anchor="middle">${w}</text>`;
+    s += `<line x1="${X(w)}" y1="${PT}" x2="${X(w)}" y2="${PT + ih}" stroke="rgba(237,242,232,.05)" stroke-width="1"/>`;
+    s += `<line x1="${X(w)}" y1="${PT + ih}" x2="${X(w)}" y2="${PT + ih + 5}" stroke="rgba(237,242,232,.25)" stroke-width="1.5"/>`;
+    s += `<text x="${X(w)}" y="${H - 30}" font-size="12" fill="#a1b39f" text-anchor="middle">${w}</text>`;
   }
-  s += `<text x="${PL + iw / 2}" y="${H - 10}" font-size="12.5" fill="#5B7A70" text-anchor="middle" letter-spacing="1">干预周数（周）</text>`;
+  s += `<text x="${PL + iw / 2}" y="${H - 10}" font-size="12.5" fill="#a1b39f" text-anchor="middle" letter-spacing="1">干预周数（周）</text>`;
   // 折线
   if (recs.length) {
     const pts = [[0, S.base.n]].concat(recs.map(r => [r.w, r.count]));
-    s += `<polyline fill="none" stroke="#0E7C66" stroke-width="2.5" stroke-linejoin="round" points="${
+    s += `<polyline fill="none" stroke="#2FBF9C" stroke-width="2.5" stroke-linejoin="round" points="${
       pts.map(([w, v]) => `${X(w)},${Y(v)}`).join(' ')}"/>`;
     recs.forEach((r, i) => {
       if (r.real) {
         // 实测数据点：实心方块，与模型预测的空心圆点区分
         s += `<rect x="${X(r.w) - 5}" y="${Y(r.count) - 5}" width="10" height="10" rx="2"
-                fill="#0A5E4E" stroke="#fff" stroke-width="2"/>`;
+                fill="#2FBF9C" stroke="#0B1B14" stroke-width="2"/>`;
       } else if (i % 4 === 0 || i === recs.length - 1) {
         s += `<circle cx="${X(r.w)}" cy="${Y(r.count)}" r="${i === recs.length - 1 ? 4.5 : 3}"
-                fill="#fff" stroke="#0E7C66" stroke-width="2"/>`;
+                fill="#0F211B" stroke="#2FBF9C" stroke-width="2"/>`;
       }
     });
     const last = pts[pts.length - 1];
-    s += `<text x="${X(last[0]) - 6}" y="${Y(last[1]) - 12}" font-size="13" font-weight="700" fill="#0A5E4E" text-anchor="end">${last[1]} 项</text>`;
+    s += `<text x="${X(last[0]) - 6}" y="${Y(last[1]) - 12}" font-size="13" font-weight="700" fill="#E9F2EF" text-anchor="end">${last[1]} 项</text>`;
   }
   s += '</svg>';
   return s;
