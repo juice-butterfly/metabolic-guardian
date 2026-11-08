@@ -5555,8 +5555,10 @@ function renderStep3() {
     S.realOwner = ownerKey; S.realTouched = false; S.realSnap = snap;
   }
 
-  $('#btnReal').onclick = pushReal;
-  $('#btnRealReset').onclick = () => {
+  const _btnReal = $('#btnReal');
+  if (_btnReal) _btnReal.onclick = pushReal;
+  const _btnRealReset = $('#btnRealReset');
+  if (_btnRealReset) _btnRealReset.onclick = () => {
     const l = S.weeks[S.weeks.length - 1];
     if (!l || !l.real) { $('#realMsg').innerHTML = '还没有可恢复的实测覆盖 —— 先回传一次。'; return; }
     l.real = false;
@@ -6981,12 +6983,17 @@ try {
       byId('userAlias').closest('.user-card').title = '当前方案体验档案';
       footer.innerHTML = oldFooter;
     }
-    nav.querySelectorAll('a').forEach(a => {
-      /* view 感知高亮：与 guardian sync 的 data-view 体系一致（旧 #step-N 规则已废弃） */
-      const activeView = views[location.hash.slice(1)] || location.hash.slice(1);
-      if (a.dataset.view && a.dataset.view === activeView) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
+    const _ws = document.getElementById('healthWorkspace');
+    if (!_ws || !_ws.hidden) {
+      nav.querySelectorAll('a').forEach(a => {
+        /* view 感知高亮：与 guardian sync 的 data-view 体系一致（旧 #step-N 规则已废弃）；
+           workspace 隐藏（每日方案旧面板激活）时跳过，高亮由 showLegacyPanel 负责 */
+        const rawHash = location.hash.slice(1);
+        const activeView = (window.GuardianShell && window.GuardianShell.view(rawHash)) || rawHash;
+        if (a.dataset.view && a.dataset.view === activeView) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      });
+    }
     document.querySelectorAll('.stepbtn[data-i]').forEach(button => {
       if (button.classList.contains('on')) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
@@ -7055,8 +7062,12 @@ try {
     document.body.removeAttribute('data-health-workspace');
     goPage('app');
     document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === (v === 'plan' ? 'p2' : 'p3')));
-    const cur = v === 'plan' ? planBtn : checkinBtn;
+    const cur = v === 'plan' ? planBtn : null;
     document.querySelectorAll('.stepbtn').forEach(b => b.classList.toggle('on', b === cur));
+    document.querySelectorAll('.mobile-dock a').forEach(l => {
+      if (l.dataset.view === 'plan') l.setAttribute('aria-current', 'page');
+      else l.removeAttribute('aria-current');
+    });
     window.assertPlanChatUi && window.assertPlanChatUi();
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
@@ -7848,8 +7859,21 @@ root.HealthCSV={parse:parseCSV};
     ).join('');
     /* 每日方案走 showLegacyPanel：事件委托到 nav 上，不依赖单个链接的 onclick */
     nav.addEventListener('click', function (e) {
-      const a = e.target.closest('[data-view="plan"]');
-      if (a) { e.preventDefault(); showLegacyPanel('plan'); }
+      const a = e.target.closest('a');
+      if (!a) return;
+      /* 每日方案：showLegacyPanel 定义在另一 script 块作用域内，必须走 window.__showLegacy 全局引用 */
+      if (a.dataset.view === 'plan') {
+        e.preventDefault();
+        const f = window.__showLegacy; if (f) f('plan');
+        return;
+      }
+      /* 同 hash 再点（如从每日方案页点回原页面）：hashchange 不触发，先清后设强制 guardian 路由 */
+      const href = a.getAttribute('href') || '';
+      if (href.charAt(0) === '#' && location.hash === href) {
+        e.preventDefault();
+        history.replaceState(null, '', location.pathname + location.search);
+        location.hash = href.slice(1);
+      }
     });
   }
 
