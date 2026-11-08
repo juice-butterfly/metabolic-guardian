@@ -7837,12 +7837,15 @@ root.HealthCSV={parse:parseCSV};
       ['reports', '体检报告', '<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 8h6m-6 4h6m-6 4h3"/>'],
       ['movement', '运动记录', '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18m-13 5 3 3 5-5"/>'],
       ['coach', 'AI 教练', '<path d="M12 21s-8-5-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 6-8 11-8 11Z"/><path d="M8 12h2l1-3 2 6 1-3h2"/>'],
-      ['benefits', '保障与定价', '<path d="M12 3 4.5 6v6c0 5 3.5 8 7.5 9 4-1 7.5-4 7.5-9V6Z"/><path d="M9.5 12h5"/>']
+      ['plan', '每日方案', '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>']
     ];
     const viewOf = { health: 'overview' }; /* 概览的 views 键是 health，高亮映射用 data-view 值 */
     nav.innerHTML = items.map(([view, name, paths]) =>
-      '<a href="#' + view + '" data-view="' + (viewOf[view] || view) + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + paths + '</svg><span>' + name + '</span></a>'
+      '<a href="' + (view === 'plan' ? 'javascript:void(0)' : '#' + view) + '" data-view="' + (viewOf[view] || view) + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + paths + '</svg><span>' + name + '</span></a>'
     ).join('');
+    /* 每日方案走 showLegacyPanel（旧面板直驱，不经 hash 路由） */
+    const planLink = nav.querySelector('[data-view="plan"]');
+    if (planLink) planLink.onclick = function (e) { e.preventDefault(); showLegacyPanel('plan'); };
   }
 
   function boot() {
