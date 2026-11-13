@@ -12,7 +12,7 @@ export async function POST(request) {
   if (!['report','movement'].includes(input.kind) || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(input.image || '')) return reply({error:'请选择 JPG、PNG 或 WebP 图片。'},400);
   const fields=input.kind==='report'?reportFields:moveFields;
   const prompt=input.kind==='report'
-    ? '提取体检图片中的 waist腰围cm、sbp收缩压、dbp舒张压mmHg、fbg空腹血糖、tg甘油三酯、hdl高密度脂蛋白mmol/L、weight体重kg、age年龄、height身高cm、sex性别F或M。'
+    ? '提取体检图片中的 title报告名称、reportDate体检日期（YYYY-MM-DD）、organization出具机构，以及waist腰围cm、sbp收缩压、dbp舒张压mmHg、fbg空腹血糖、tg甘油三酯、hdl高密度脂蛋白mmol/L、weight体重kg、age年龄、height身高cm、sex性别F或M。不要把患者姓名当作报告名称。'
     : '提取运动截图中的 kind运动类型、minutes分钟、steps步数、distance_km公里、calories千卡。时长请换算成分钟。';
   try {
     const response=await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions',{
@@ -22,9 +22,15 @@ export async function POST(request) {
     const body=await response.json();const content=body.choices?.[0]?.message?.content || '';
     const data=JSON.parse(content.match(/\{[\s\S]*\}/)?.[0] || '{}');
     const result=Object.fromEntries(fields.map(k=>[k,typeof data[k]==='number' && Number.isFinite(data[k]) && data[k]>=0?data[k]:null]));
-    if(input.kind==='report')result.sex=['F','M'].includes(data.sex)?data.sex:null;
+    if(input.kind==='report'){
+      result.sex=['F','M'].includes(data.sex)?data.sex:null;
+      result.title=typeof data.title==='string'?data.title.trim().slice(0,100):null;
+      result.organization=typeof data.organization==='string'?data.organization.trim().slice(0,120):null;
+      const date=data.reportDate;
+      result.reportDate=typeof date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(date+'T00:00:00Z')) && new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date && date>='2000-01-01' && date<=new Date(Date.now()+8*3600000).toISOString().slice(0,10)?date:null;
+    }
     else result.kind=typeof data.kind==='string'?data.kind.slice(0,40):null;
-    if(!fields.some(k=>result[k]!==null))return reply({error:'没有识别出可确认的数值，请裁剪清晰区域后重试。'},422);
+    if(!fields.some(k=>result[k]!==null) && !result.title && !result.organization && !result.reportDate)return reply({error:'没有识别出可确认的资料，请裁剪清晰区域后重试。'},422);
     return reply({result});
   } catch {return reply({error:'在线识别暂未完成，原件及已填数值会保留。'},502);}
 }
