@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<link rel="stylesheet" href="assets/app.css">
-<link rel="preload" href="assets/app.js" as="script">
-<script src="assets/app.js" defer></script>
-<link rel="stylesheet" href="assets/demo.css">
-<script src="assets/demo.js" defer></script>
+<link rel="stylesheet" href="assets/app.css?v=20261113-repair1">
+<link rel="preload" href="assets/app.js?v=20261113-repair1" as="script">
+<script src="assets/app.js?v=20261113-repair1" defer></script>
+
+
 <meta name="guardian-coach-endpoint" content="https://metabolic-guardian-coach.vercel.app/api/coach">
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -106,7 +106,7 @@
         <h1 id="odysseyTitle"><span class="odyssey-title-line">守护代谢健康</span><span class="odyssey-title-line">见证每一次向好</span></h1>
         <p class="odyssey-description">面向符合承保条件的 45–65 岁代谢综合征人群。<br><span>特定疾病保险与日常健康管理。</span></p>
         <div class="odyssey-actions"><button class="odyssey-glass" type="button" id="resumeJourney" hidden>继续我的健康旅程 ↗</button>
-          <a class="odyssey-glass guardian-demo-link" href="?demo=1">开始 3 分钟演示 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+          <a class="odyssey-glass" href="#health">开启我的守护 <span aria-hidden="true">→</span></a>
           <button class="odyssey-text-link" type="button" onclick="location.hash='benefits'">了解保障与定价 <span aria-hidden="true">↗</span></button>
         </div>
       </div>
@@ -811,6 +811,6 @@
 <details style="margin-top:8px"><summary style="cursor:pointer;font-size:12px;color:#7B8F88">接入 GLM-4.6V 真识别（可选）</summary><div class="key-row"><input id="glmKeyInput" type="password" placeholder="粘贴 BigModel API Key，仅保存在本机浏览器"><button type="button" id="glmKeySave" class="btn ghost sm" type="button">保存</button><span id="glmKeyState" style="font-size:11px;color:#7B8F88"></span></div><p class="muted" style="font-size:11px;margin:6px 0 0">联网识别需要自行配置密钥。离线识别仅适用于主动加载的内置样例。</p></details><h3>录入报告指标</h3><div class="form-grid"><label>报告性别（用于腰围判定）<select id="uploadSex" name="sex"><option value="">待补充</option><option value="F">女</option><option value="M">男</option></select></label><label>年龄（可选）<input name="age" type="number" min="1" max="130" step="1"></label><label>身高（cm，可选）<input name="height" type="number" min="50" max="250" step="0.1"></label></div><div id="uploadMetrics" class="form-grid"></div><p class="muted">无需在名称中填写身份证号。手动录入的原件和记录保存在当前浏览器。清理浏览器数据会丢失记录。</p><button class="btn" type="submit">保存并进入核对演示 ↗</button><p id="uploadStatus" role="status"></p></form></dialog>
 <div id="toast" role="status" hidden></div>
 
-<div id="guardian-demo" hidden></div>
+
 </body>
 </html>
